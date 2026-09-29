@@ -43,6 +43,11 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 var(--sans); }
+html { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+button { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.tap.flash { animation: tapflash .18s ease-out; }
+@keyframes tapflash { from { background: var(--brand-yellow); color: #000; border-color: var(--brand-yellow); } }
+.tap { min-width: 104px; }
 body { min-height: 100dvh; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); overscroll-behavior-y: contain; }
 button, input, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; background: none; padding: 0; }
@@ -937,7 +942,7 @@ function trackForm(t) {
     <div class="row2"><div><label class="field">Maqam / scale</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
     <div><label class="field">On (tonic)</label><input id="f-tonic" type="text" value="${esc(t.tonic)}" placeholder="e.g. D"></div></div>
     <label class="field">Genre</label><div class="sugs" id="f-genre">${GENRES.map(g => `<button type="button" class="sug${t.genre === g ? ' on' : ''}">${esc(g)}</button>`).join('')}</div>
-    <label class="field">Pulse (bpm, quarter note) · sections can override it</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
+    <label class="field">Pulse (bpm) · tap along on the beat · sections can override it</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn tap" id="tap" type="button">Tap</button></div>
     <label class="field">Notes on the whole track</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>`;
 }
 function readTrackForm(root) {
@@ -946,14 +951,29 @@ function readTrackForm(root) {
 }
 function wireTap(root) {
   root.querySelectorAll('#f-genre .sug').forEach(b => b.onclick = () => { const was = b.classList.contains('on'); root.querySelectorAll('#f-genre .sug').forEach(x => x.classList.remove('on')); if (!was) b.classList.add('on'); });
+  tapTempo($('#tap', root), $('#f-tempo', root));
+}
+
+// Tap on the pulse: needs 3 taps, uses the median of the last 8 gaps so one stray tap can't throw it, resets after a 2 s pause.
+function tapTempo(btn, input) {
+  const label = btn.textContent;
   let taps = [];
-  $('#tap', root).onclick = () => {
-    const n = performance.now();
-    taps = taps.filter(x => n - x < 2500); taps.push(n);
-    if (taps.length > 1) {
-      const gaps = taps.slice(1).map((x, i) => x - taps[i]);
-      $('#f-tempo', root).value = Math.round(60000 / (gaps.reduce((a, b) => a + b, 0) / gaps.length));
-    }
+  btn.onclick = e => e.preventDefault();
+  btn.onpointerdown = e => {
+    e.preventDefault();
+    const n = e.timeStamp || performance.now(), last = taps[taps.length - 1];
+    if (last && n - last < 120) return;
+    if (!last && document.activeElement && document.activeElement !== btn) document.activeElement.blur();
+    if (last && n - last > 2000) taps = [];
+    taps.push(n); if (taps.length > 9) taps.shift();
+    btn.classList.remove('flash'); void btn.offsetWidth; btn.classList.add('flash');
+    clearTimeout(btn._reset);
+    btn._reset = setTimeout(() => { taps = []; btn.textContent = label; }, 2000);
+    if (taps.length < 3) { btn.textContent = taps.length === 1 ? 'Again…' : 'Keep going'; return; }
+    const gaps = taps.slice(1).map((x, i) => x - taps[i]).sort((a, b) => a - b);
+    const bpm = Math.round(60000 / gaps[Math.floor(gaps.length / 2)]);
+    if (bpm >= 30 && bpm <= 300) input.value = bpm;
+    btn.textContent = `Tap · ${taps.length}`;
   };
 }
 
@@ -1041,7 +1061,7 @@ function editSection(focusId) {
     <label class="field">Name</label><input id="s-name" type="text" value="${esc(sec.name)}">
     <div class="row2"><div><label class="field">Maqam / scale</label><input id="s-maqam" type="text" list="maqamat" value="${esc(sec.maqam || '')}" placeholder="${esc(t.maqam || 'same as track')}"></div>
     <div><label class="field">Root</label><input id="s-tonic" type="text" value="${esc(sec.tonic || '')}" placeholder="${esc(t.tonic || '—')}"></div></div>
-    <label class="field">Pulse for this section</label><input id="s-tempo" type="number" inputmode="numeric" value="${sec.tempo || ''}" placeholder="${bpmOf(t)} (track)">
+    <label class="field">Pulse for this section</label><div class="tempo-row"><input id="s-tempo" type="number" inputmode="numeric" value="${sec.tempo || ''}" placeholder="${bpmOf(t)} (track)"><button class="btn tap" id="s-tap" type="button">Tap</button></div>
     ${meterHtml()}
     <label class="field">Energy · where it climbs and drops</label>
     <div class="sugs" id="energy">${[1, 2, 3, 4, 5].map(e => `<button class="sug" data-e="${e}">${energyBars(e)} ${ENERGY[e]}</button>`).join('')}</div>
@@ -1056,6 +1076,7 @@ function editSection(focusId) {
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>
     ${sections().length > 1 ? '<div style="margin-top:22px"><button class="btn danger block" id="del">Delete section</button></div>' : ''}`, root => {
     meterPicker(root, M);
+    tapTempo($('#s-tap', root), $('#s-tempo', root));
     if (focusId) setTimeout(() => $('#' + focusId, root).focus(), 50);
     const drawEnergy = () => root.querySelectorAll('#energy .sug').forEach(b => b.classList.toggle('on', +b.dataset.e === energy));
     root.querySelectorAll('#energy .sug').forEach(b => b.onclick = () => { energy = energy === +b.dataset.e ? 0 : +b.dataset.e; drawEnergy(); });
