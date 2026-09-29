@@ -238,17 +238,17 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 /* transport */
 .transport { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, #000 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
 .transport-in { max-width: 640px; margin: 0 auto; padding: 0 16px; display: flex; gap: 8px; align-items: stretch; }
-.tp-play { flex: 1; min-width: 0; padding: 0 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; background: var(--primary); color: var(--primary-ink); font: 800 12px/1 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .02em; min-height: 50px; }
+.tp-play { flex: 1; min-width: 0; padding: 0 10px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; background: var(--primary); color: var(--primary-ink); font: 800 12px/1 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .02em; min-height: 50px; }
 .tp-play svg { width: 16px; height: 16px; flex: none; }
 .tp-play span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tp-play.on { background: var(--brand-yellow); }
 .mixgroup { flex: none; display: flex; gap: 2px; padding: 3px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
-.mix { width: 38px; border-radius: 12px; display: grid; place-items: center; color: var(--faint); }
+.mix { width: 33px; border-radius: 12px; display: grid; place-items: center; color: var(--faint); }
 .mix svg { width: 18px; height: 18px; }
 .mix.on { color: #000; background: var(--text); }
 .tempo { display: flex; align-items: center; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); flex: none; }
-.tempo button { width: 26px; height: 50px; font-size: 19px; color: var(--muted); }
-.tempo .v { min-width: 36px; text-align: center; line-height: 1; cursor: pointer; }
+.tempo button { width: 22px; height: 50px; font-size: 18px; color: var(--muted); }
+.tempo .v { min-width: 34px; text-align: center; line-height: 1; cursor: pointer; }
 .tempo .v b { display: block; font: 800 16px/1 var(--display); font-variant-numeric: tabular-nums; }
 .tempo .v span { font: 700 8px/1 var(--display); color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
 .tempo .v.unset b { color: var(--faint); }
@@ -353,6 +353,17 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .mv-row.on .check { background: var(--brand-yellow); border-color: var(--brand-yellow); color: #000; }
 .mv-row input { margin-top: 10px; padding: 9px 12px; font-size: 16px; }
 .fl-sec { display: inline-flex; align-items: flex-end; gap: 5px; }
+.prog { display: block; width: 100%; text-align: left; margin: 0 0 16px; padding: 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid color-mix(in srgb, var(--bark) 35%, var(--line)); }
+.prog-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.prog-top .k { font: 800 9px/1 var(--display); font-stretch: 125%; letter-spacing: .08em; text-transform: uppercase; color: var(--bark); }
+.prog-top .nm { font: italic 14px/1.2 var(--serif); color: var(--muted); }
+.prog-top .ln { margin-left: auto; font: 700 9px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.prog-ghost { display: block; width: 100%; margin: 0 0 16px; }
+.chart { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-left: 2px solid color-mix(in srgb, var(--bark) 55%, transparent); }
+.cbar { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-around; gap: 4px; min-height: 42px; padding: 4px; border-right: 2px solid color-mix(in srgb, var(--bark) 55%, transparent); border-bottom: 1px solid var(--line); }
+.ch { font: 600 17px/1.1 var(--serif); padding: 3px 5px; border-radius: 6px; white-space: nowrap; }
+.ch.unk { color: var(--faint); font-style: italic; font-weight: 400; font-size: 14px; white-space: normal; text-align: center; }
+.ch.now { background: var(--bark); color: #000; }
 .help { margin-top: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; font: 15px/1.4 var(--serif); color: var(--muted); }
 .help summary { cursor: pointer; color: var(--text); font: 800 11px/1.3 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 .help ol { margin: 8px 0 0; padding-left: 18px; }
@@ -508,6 +519,7 @@ const ICON = {
   stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
   drum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v8c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/></svg>',
   stack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5Z"/><path d="M3 13l9 5 9-5"/></svg>',
+  chords: '<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="9" cy="18" rx="3.2" ry="2.3"/><ellipse cx="9" cy="12" rx="3.2" ry="2.3"/><ellipse cx="9" cy="6" rx="3.2" ry="2.3"/><rect x="11.4" y="3" width="1.8" height="16"/></svg>',
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
@@ -577,6 +589,81 @@ const maqamOf = sec => {
   const m = sec.maqam || S.track.maqam, t = sec.tonic || S.track.tonic;
   return m ? m + (t ? ' on ' + t : '') : '';
 };
+// Chords: "Fm | Db | Bb Ddim | C7" — bars split by |, chords in a bar by spaces, % repeats a bar.
+// Without |, commas (or spaces) separate bars, which matches how the Notion track list writes them.
+const PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const QUAL = [
+  [/^(maj7|M7|Δ7?|ma7)$/, [0, 4, 7, 11]], [/^(m7b5|ø7?|min7b5|-7b5)$/, [0, 3, 6, 10]], [/^(dim7|°7|o7)$/, [0, 3, 6, 9]], [/^(dim|°|o)$/, [0, 3, 6]],
+  [/^(m\(?maj7\)?|mM7|-maj7)$/, [0, 3, 7, 11]], [/^(m7|min7|-7)$/, [0, 3, 7, 10]], [/^(m9|min9|-9)$/, [0, 3, 7, 10, 14]], [/^(maj9|M9)$/, [0, 4, 7, 11, 14]],
+  [/^(m6|min6|-6)$/, [0, 3, 7, 9]], [/^(madd9)$/, [0, 3, 7, 14]], [/^(m|min|-)$/, [0, 3, 7]], [/^(7sus4?)$/, [0, 5, 7, 10]], [/^(sus2)$/, [0, 2, 7]],
+  [/^(sus4?)$/, [0, 5, 7]], [/^(aug|\+)$/, [0, 4, 8]], [/^(add9)$/, [0, 4, 7, 14]], [/^9$/, [0, 4, 7, 10, 14]], [/^7$/, [0, 4, 7, 10]], [/^6$/, [0, 4, 7, 9]],
+  [/^5$/, [0, 7]], [/^(maj|M|)$/, [0, 4, 7]],
+];
+const pcOf = (l, acc) => (PC[l] + (acc === '#' ? 1 : acc === 'b' ? -1 : 0) + 12) % 12;
+function parseChord(sym) {
+  const t = String(sym).trim().replace(/♭/g, 'b').replace(/♯/g, '#')
+    .replace(/\s*half[- ]?diminished(\s*7(th)?)?/i, 'm7b5').replace(/\s*diminished\s*7(th)?/i, 'dim7').replace(/\s*diminished/i, 'dim')
+    .replace(/\s*minor\s*7(th)?/i, 'm7').replace(/\s*major\s*7(th)?/i, 'maj7').replace(/\s*dominant\s*7(th)?/i, '7')
+    .replace(/\s*minor/i, 'm').replace(/\s*major/i, '').replace(/(\d)th$/, '$1').replace(/\s+/g, '');
+  if (/^(n\.?c\.?|-|x)$/i.test(t)) return { notes: [], bass: null };
+  const m = t.match(/^([A-G])([#b]?)([^/]*)(?:\/([A-G])([#b]?))?$/);
+  if (!m) return null;
+  const q = QUAL.find(([re]) => re.test(m[3]));
+  if (!q) return null;
+  const root = pcOf(m[1], m[2]);
+  const label = t;
+  return { notes: q[1].map(i => 48 + root + i).map(n => n > 72 ? n - 12 : n), bass: 36 + (m[4] ? pcOf(m[4], m[5]) : root), sym: label };
+}
+function parseProg(text) {
+  const t = (text || '').trim();
+  if (!t) return [];
+  const raw = t.includes('|') ? t.split('|').map(b => b.trim().split(/[\s,]+/).filter(Boolean))
+    : (t.includes(',') ? t.split(',') : t.split(/\s+/)).map(x => x.trim()).filter(Boolean).map(x => [x]);
+  const bars = [];
+  for (const b of raw) {
+    if (!b.length) continue;
+    if (b.length === 1 && (b[0] === '%' || b[0] === './.')) bars.push(bars.length ? bars[bars.length - 1].slice() : ['N.C.']);
+    else bars.push(b);
+  }
+  return bars;
+}
+const progOf = sec => sec.chords ? { text: sec.chords, own: true } : S.track.chords ? { text: S.track.chords, own: false } : null;
+function chordVoice(sec, text) {
+  const bars = parseProg(text != null ? text : (progOf(sec) || {}).text);
+  if (!bars.length) return null;
+  const barP = secBarPulses(sec), slots = [];
+  bars.forEach((b, bi) => b.forEach((c, ci) => {
+    const ch = parseChord(c);
+    slots.push({ start: bi * barP + ci * barP / b.length, dur: barP / b.length, notes: ch ? ch.notes : [], bass: ch ? ch.bass : null });
+  }));
+  return { layer: 'chords', slots, cycle: bars.length * barP, sub: 1 };
+}
+function chartHtml(bars) {
+  let k = 0;
+  return `<div class="chart" data-chart>${bars.map(b => `<div class="cbar">${b.map(c => {
+    const ch = parseChord(c);
+    return `<span class="ch${ch ? '' : ' unk'}" data-k="${k++}" title="${ch ? esc(c) : 'not recognised, won’t play'}">${esc(ch && ch.sym ? ch.sym : c)}</span>`;
+  }).join('')}</div>`).join('')}</div>`;
+}
+const SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const SOLFEGE = { do: 'C', re: 'D', mi: 'E', fa: 'F', sol: 'G', la: 'A', si: 'B' };
+function keyChords(sec) {
+  const scale = (sec.maqam || S.track.maqam || '').toLowerCase();
+  const mode = /minor|\bmin\b|aeolian/.test(scale) ? 'minor' : /major|\bmaj\b|ionian/.test(scale) ? 'major' : null;
+  if (!mode) return null;
+  let t = (sec.tonic || S.track.tonic || '').trim() || ((sec.maqam || S.track.maqam || '').match(/^([A-Ga-g][#b♭♯]?)\s/) || [])[1] || '';
+  const sol = t.toLowerCase().match(/^(do|re|mi|fa|sol|la|si)/); if (sol) t = SOLFEGE[sol[1]] + t.slice(sol[1].length);
+  const m = t.replace(/♭/g, 'b').replace(/♯/g, '#').match(/^([A-Ga-g])([#b]?)/);
+  if (!m) return null;
+  const root = pcOf(m[1].toUpperCase(), m[2]);
+  const flat = m[2] === 'b' || (mode === 'major' ? [5].includes(root) : [2, 7, 0, 5].includes(root));
+  const names = flat ? FLAT : SHARP;
+  const deg = mode === 'major' ? [[0, ''], [2, 'm'], [4, 'm'], [5, ''], [7, ''], [9, 'm'], [11, 'dim'], [7, '7']]
+    : [[0, 'm'], [2, 'dim'], [3, ''], [5, 'm'], [7, 'm'], [8, ''], [10, ''], [7, '7']];
+  return { label: `${names[root]} ${mode}`, chords: deg.map(([o, q]) => names[(root + o) % 12] + q) };
+}
+
 const movesOf = sec => { try { return JSON.parse(sec.moves || '{}') || {}; } catch { return {}; } };
 function energyBars(e, cls) {
   return `<span class="energy ${cls || ''}" title="${ENERGY[e] || 'energy not set'}">${[1, 2, 3, 4, 5].map(i => `<i class="${e && i <= e ? 'on' : ''}" style="height:${3 + i * 2.2}px"></i>`).join('')}</span>`;
@@ -816,6 +903,7 @@ function renderTrack() {
     panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button><button class="icon-btn sm" aria-label="Section options" onclick="sectionMenu()">${ICON.more}</button></div>
       <div class="chips sec-facts">${facts}</div>
       <div class="moves">${movesHtml || `<button class="move ghost" onclick="editSection()">+ moves · role swap, unison, silence…</button>`}</div>
+      ${progBlock(sec)}
       ${sec.notes ? `<button class="notes" style="margin:0 0 14px" onclick="editSection('s-notes')">${esc(sec.notes)}</button>` : ''}
       ${lineupStrip(sec)}
       <div class="tree">${layers}</div>`;
@@ -835,6 +923,7 @@ function renderTrack() {
       <div class="mixgroup">
         <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" aria-label="Rhythms in playback" title="Rhythms" onclick="toggleMix('beats')">${ICON.rhythm}</button>
         <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" aria-label="Parts in playback" title="Parts" onclick="toggleMix('recs')">${ICON.wave}</button>
+        <button class="mix${S.mix.chords !== false ? ' on' : ''}" data-mix="chords" aria-label="Chords in playback" title="Chords" onclick="toggleMix('chords')">${ICON.chords}</button>
         <button class="mix${S.mix.click ? ' on' : ''}" data-mix="click" aria-label="Click in playback" title="Click" onclick="toggleMix('click')">${ICON.metro}</button>
       </div>
       <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${curView().sec.tempo || t.tempo ? '' : ' unset'}" onclick="${curView().sec.tempo ? 'editSection()' : 'editTrack()'}"><b id="bpm">${curPulse()}</b><span>${curView().sec.tempo ? 'section' : 'pulse'}</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
@@ -847,13 +936,13 @@ function updateTransport() {
   if (!b || !S.track) return;
   b.classList.toggle('on', Player.on);
   const n = S.picked.size;
-  const what = n ? `${n} stacked` : curView().sec.name;
-  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>${esc(what)}</span>`;
+  const what = n ? `${n} stacked take${n > 1 ? 's' : ''}` : curView().sec.name;
+  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>${n ? 'Stack' : 'Play'}</span>`;
   b.setAttribute('aria-label', Player.on ? 'Stop' : 'Play ' + what);
 }
 function toggleMix(k) {
-  S.mix[k] = !S.mix[k]; store.set('mix', S.mix);
-  toast(`${{ beats: 'Rhythms', recs: 'Parts', click: 'Click' }[k]} ${S.mix[k] ? 'on' : 'off'} in playback`);
+  S.mix[k] = k === 'chords' ? S.mix.chords === false : !S.mix[k]; store.set('mix', S.mix);
+  toast(`${{ beats: 'Rhythms', recs: 'Parts', click: 'Click', chords: 'Chords' }[k]} ${S.mix[k] ? 'on' : 'off'} in playback`);
   document.querySelectorAll(`[data-mix="${k}"]`).forEach(b => b.classList.toggle('on', S.mix[k]));
   if (Player.on) togglePlayer().then(togglePlayer);
 }
@@ -875,7 +964,7 @@ function pickBar() {
 async function togglePlayer() {
   if (Player.on) { Player.stop(); return; }
   const picked = pickedIdeas();
-  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, ideas: picked.length ? picked : null, onStop: updateTransport });
+  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, chords: S.mix.chords !== false, ideas: picked.length ? picked : null, onStop: updateTransport });
   if (!r) toast(S.mix.click ? 'Nothing to play' : 'Nothing to play yet. Record a part or a rhythm, or switch on the click.');
   updateTransport();
 }
@@ -1133,6 +1222,63 @@ function newSection() {
       } catch (e) { toast(e.message); }
     };
   });
+}
+
+function progBlock(sec) {
+  const pg = progOf(sec), bars = pg ? parseProg(pg.text) : [];
+  if (!bars.length) return `<button class="move ghost prog-ghost" onclick="editChords()">+ chord progression · the harmony this section sits on</button>`;
+  const unk = bars.flat().filter(c => !parseChord(c)).length;
+  return `<button class="prog" onclick="editChords()"><div class="prog-top"><span class="k">Progression</span><span class="nm">${bars.length} bar${bars.length > 1 ? 's' : ''}${pg.own ? '' : ' · from the track'}${unk ? ` · ${unk} not recognised` : ''}</span><span class="ln">Tree Bark</span></div>${chartHtml(bars)}</button>`;
+}
+
+function editChords() {
+  const { sec } = curView();
+  const t = S.track, keys = keyChords(sec);
+  const start = sec.chords || t.chords || '';
+  const s = sheet(`<h3 style="color:var(--bark)">Chord progression · ${esc(sec.name)}</h3>
+    <p class="lede">The fixed harmony ${esc(sec.name)} sits on, in ${meterLabel(sec)}. Bars split by <b>|</b>, chords in one bar by spaces, <b>%</b> repeats a bar, <b>N.C.</b> for no chord.</p>
+    <textarea id="cp" rows="2" placeholder="e.g. Fm | Db | Bb Ddim | C7">${esc(start)}</textarea>
+    ${keys ? `<label class="field">In ${esc(keys.label)}</label><div class="sugs" id="kc" style="--c:var(--bark)">${keys.chords.map(c => `<button class="sug">${esc(c)}</button>`).join('')}</div>` : ''}
+    <div id="cprev" style="margin-top:14px"></div>
+    <div class="actions"><button class="btn" id="hear"></button></div>
+    <label class="field">Save it for</label>
+    <div class="actions" style="margin-top:6px"><button class="btn" id="saveTrack">The whole track</button><button class="btn primary" id="saveSec">Just ${esc(sec.name)}</button></div>
+    ${sec.chords && t.chords ? `<div class="sugs" style="margin-top:12px"><button class="sug" id="follow">Follow the track’s progression instead</button></div>` : ''}
+    ${sec.chords || t.chords ? `<div class="sugs" style="margin-top:8px"><button class="sug" id="clearAll">Remove the progression</button></div>` : ''}`, root => {
+    const cp = $('#cp', root);
+    const paintHear = () => { $('#hear', root).innerHTML = Beat.on ? ICON.stop + '<span>Stop</span>' : ICON.play + '<span>Hear it</span>'; };
+    const preview = () => {
+      const bars = parseProg(cp.value);
+      const unk = bars.flat().filter(c => !parseChord(c));
+      $('#cprev', root).innerHTML = bars.length ? chartHtml(bars) + (unk.length ? `<div class="small faint" style="margin-top:6px;font-style:italic">Not recognised (won’t play): ${unk.map(esc).join(', ')}</div>` : '') : '';
+      if (Beat.on) { const v = chordVoice(sec, cp.value); if (v) Beat.retune([v]); }
+    };
+    cp.oninput = preview;
+    root.querySelectorAll('#kc .sug').forEach(b => b.onclick = () => { cp.value = cp.value.trim() ? cp.value.trim() + ' | ' + b.textContent : b.textContent; preview(); });
+    $('#hear', root).onclick = () => {
+      if (Beat.on) { Beat.stop(); return paintHear(); }
+      const v = chordVoice(sec, cp.value);
+      if (!v) return toast('Type a few chords first');
+      Beat.start([v], pulseOf(sec), { onChange: paintHear }); paintHear();
+    };
+    const save = async (body, path) => { try { S.track = await api(path, { method: 'PATCH', body }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); } };
+    $('#saveSec', root).onclick = () => save({ chords: cp.value.trim() || '' }, '/sections/' + sec.id);
+    $('#saveTrack', root).onclick = async () => {
+      try {
+        await api('/tracks/' + t.id, { method: 'PATCH', body: { chords: cp.value.trim() } });
+        S.track = await api('/sections/' + sec.id, { method: 'PATCH', body: { chords: '' } });
+        closeSheet(); renderTrack();
+      } catch (e) { toast(e.message); }
+    };
+    const f = $('#follow', root); if (f) f.onclick = () => save({ chords: '' }, '/sections/' + sec.id);
+    const c = $('#clearAll', root); if (c) c.onclick = () => confirmSheet('Remove the progression?', `Clears ${sec.chords ? esc(sec.name) + '’s own progression' : ''}${sec.chords && t.chords ? ' and ' : ''}${t.chords ? 'the track’s progression (sections with their own keep theirs)' : ''}.`, 'Remove', async () => {
+      if (sec.chords) S.track = await api('/sections/' + sec.id, { method: 'PATCH', body: { chords: '' } });
+      if (t.chords) S.track = await api('/tracks/' + t.id, { method: 'PATCH', body: { chords: '' } });
+      renderTrack();
+    });
+    preview(); paintHear();
+  });
+  s._onclose = () => { Beat.stop(); updateTransport(); };
 }
 
 function editSection(focusId) {
@@ -1434,7 +1580,13 @@ const Beat = {
   },
   prep(voices) {
     const from = this.pulseAt(this.ctx.currentTime);
-    return voices.filter(v => v.metro || /[DTK]/.test(v.pattern)).map(v => ({ ...v, i: Math.ceil(from * v.sub - 1e-9) }));
+    return voices.filter(v => v.metro || v.slots || /[DTK]/.test(v.pattern)).map(v => {
+      if (!v.slots) return { ...v, i: Math.ceil(from * v.sub - 1e-9) };
+      if (from <= 0) return { ...v, i: 0 };
+      const n = v.slots.length, cyc = Math.floor(from / v.cycle), within = from - cyc * v.cycle;
+      const k = v.slots.findIndex(sl => sl.start >= within - 1e-9);
+      return { ...v, i: k < 0 ? (cyc + 1) * n : cyc * n + k };
+    });
   },
   start(voices, bpm, opts) {
     opts = opts || {};
@@ -1453,6 +1605,20 @@ const Beat = {
   pump() {
     const ctx = this.ctx, horizon = ctx.currentTime + 0.15;
     for (const v of this.voices) {
+      if (v.slots) {
+        for (;;) {
+          const n = v.slots.length, sl = v.slots[v.i % n];
+          const t = this.timeAt(Math.floor(v.i / n) * v.cycle + sl.start);
+          if (t >= horizon) break;
+          if (t >= ctx.currentTime - 0.02) {
+            const secs = sl.dur * 60 / this.bpm * 0.97;
+            sl.notes.forEach(nn => Synth.note(nn, 46, t, secs));
+            if (sl.bass != null) Synth.note(sl.bass, 64, t, secs);
+          }
+          v.i++;
+        }
+        continue;
+      }
       for (;;) {
         const t = this.timeAt(v.i / v.sub);
         if (t >= horizon) break;
@@ -1474,6 +1640,11 @@ const Beat = {
     if (p < 0) return;
     for (const v of this.voices) {
       if (v.metro) continue;
+      if (v.slots) {
+        const within = p % v.cycle, k = v.slots.findIndex(sl => within >= sl.start - 1e-9 && within < sl.start + sl.dur - 1e-9);
+        document.querySelectorAll(`[data-chart] [data-k="${k}"]`).forEach(e => e.classList.add('now'));
+        continue;
+      }
       const i = Math.floor(p * v.sub + 1e-9) % v.pattern.length;
       const cells = v.layer === 'edit' ? document.querySelectorAll('#grid button') : document.querySelectorAll(`[data-cells="${v.layer}"] i`);
       if (cells[i]) cells[i].classList.add('now');
@@ -1544,6 +1715,7 @@ const Player = {
     const sec = o.sec, bpm = pulseOf(o.sec), countIn = o.countIn || 0;
     const voices = [];
     if (o.beats) voices.push(...sectionVoices(sec.id, o.exceptLayer));
+    if (o.chords && o.exceptLayer !== 'bark') { const cv = chordVoice(sec); if (cv) voices.push(cv); }
     if (o.click || countIn) voices.push(metroVoice(sec, o.click ? null : 0));
     const audio = o.ideas ? o.ideas.filter(i => i.kind === 'audio') : o.recs ? stackIdeas(sec.id, o.exceptLayer) : [];
     const takes = o.ideas ? o.ideas.filter(i => i.kind === 'midi') : o.recs ? midiStack(sec.id, o.exceptLayer) : [];
@@ -1647,17 +1819,17 @@ async function postIdea(payload, root) {
 // Shared by the mic and MIDI recorders: count-in, click, and the rest of the section underneath.
 function backingHtml(lane) {
   const { sec } = curView();
-  const hasRest = sectionVoices(sec.id, lane).length + stackIdeas(sec.id, lane).length + midiStack(sec.id, lane).length > 0;
+  const hasRest = sectionVoices(sec.id, lane).length + stackIdeas(sec.id, lane).length + midiStack(sec.id, lane).length + (lane !== 'bark' && chordVoice(sec) ? 1 : 0) > 0;
   const B = { countIn: store.get('countIn', true), click: store.get('clickRec', true), rest: hasRest && store.get('along', true), hasRest };
   const html = `
     <button class="toggle${B.countIn ? ' on' : ''}" data-bk="countIn"><span class="sw"></span><span><b>Count in one bar</b><br><span class="small muted">${meterLabel(sec)} at ${pulseOf(sec)} bpm, then you’re on.</span></span></button>
     <button class="toggle${B.click ? ' on' : ''}" data-bk="click"><span class="sw"></span><span><b>Click while recording</b><br><span class="small muted">Metronome on the pulse, accent on each bar.</span></span></button>
-    ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ parts and rhythms. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
+    ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ parts, rhythms and the chord progression. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
   const wire = root => root.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
     const k = b.dataset.bk; B[k] = !B[k]; b.classList.toggle('on', B[k]);
     store.set({ countIn: 'countIn', click: 'clickRec', rest: 'along' }[k], B[k]);
   });
-  const start = () => Player.start({ sec, exceptLayer: lane, beats: B.rest, recs: B.rest, click: B.click, countIn: B.countIn ? secBarPulses(sec) : 0, clock: true });
+  const start = () => Player.start({ sec, exceptLayer: lane, beats: B.rest, recs: B.rest, chords: B.rest, click: B.click, countIn: B.countIn ? secBarPulses(sec) : 0, clock: true });
   const grid = () => B.countIn || B.click || B.rest;
   return { html, wire, start, B, grid, sec };
 }

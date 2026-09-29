@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS tracks (
   tonic TEXT NOT NULL DEFAULT '',
   tempo INTEGER,
   genre TEXT NOT NULL DEFAULT '',
+  chords TEXT NOT NULL DEFAULT '',
   notes TEXT NOT NULL DEFAULT '',
   created_by TEXT,
   created_at INTEGER NOT NULL,
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS sections (
   tempo INTEGER,
   energy INTEGER,
   moves TEXT NOT NULL DEFAULT '',
+  chords TEXT,
   notes TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL
 );

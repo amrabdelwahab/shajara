@@ -54,9 +54,9 @@ async function addSection(env, trackId, name, copyFrom) {
   const src = copyFrom ? await env.DB.prepare('SELECT * FROM sections WHERE id = ? AND track_id = ?').bind(copyFrom, trackId).first() : null;
   const sid = uid();
   const stmts = [
-    env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, maqam, tonic, tempo, energy, moves, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, maqam, tonic, tempo, energy, moves, chords, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
       .bind(sid, trackId, name, (last && last.p != null ? last.p : -1) + 1, src ? src.meter_n : 4, src ? src.meter_sub : 1,
-        src ? src.maqam : null, src ? src.tonic : null, src ? src.tempo : null, src ? src.energy : null, src ? src.moves : '', '', now()),
+        src ? src.maqam : null, src ? src.tonic : null, src ? src.tempo : null, src ? src.energy : null, src ? src.moves : '', src ? src.chords : null, '', now()),
   ];
   if (src) {
     stmts.push(
@@ -152,8 +152,8 @@ async function route(req, env, url, member) {
       const t = now();
       const tid = uid();
       await env.DB.prepare(
-        'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.notes, 4000), member, t, t).run();
+        'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, chords, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.chords, 1000), str(b.notes, 4000), member, t, t).run();
       await addSection(env, tid, str(b.section, 60) || 'Main');
       return json(await loadTrack(env, tid), 201);
     }
@@ -168,8 +168,8 @@ async function route(req, env, url, member) {
       if (!cur) return json({ error: 'not found' }, 404);
       const pick = (k, max) => (k in b ? str(b[k], max) : cur[k]);
       const tempo = 'tempo' in b ? intIn(b.tempo, 20, 400, null) : cur.tempo;
-      await env.DB.prepare('UPDATE tracks SET title = ?, maqam = ?, tonic = ?, tempo = ?, genre = ?, notes = ?, updated_at = ? WHERE id = ?')
-        .bind(pick('title', 120) || cur.title, pick('maqam', 60), pick('tonic', 20), tempo, pick('genre', 60), pick('notes', 4000), now(), id).run();
+      await env.DB.prepare('UPDATE tracks SET title = ?, maqam = ?, tonic = ?, tempo = ?, genre = ?, chords = ?, notes = ?, updated_at = ? WHERE id = ?')
+        .bind(pick('title', 120) || cur.title, pick('maqam', 60), pick('tonic', 20), tempo, pick('genre', 60), pick('chords', 1000), pick('notes', 4000), now(), id).run();
       return json(await loadTrack(env, id));
     }
     if (m === 'DELETE' && !sub) {
@@ -206,7 +206,7 @@ async function route(req, env, url, member) {
         try { JSON.parse(moves || '{}'); } catch { return json({ error: 'bad moves' }, 400); }
         if (moves.length > 4000) return json({ error: 'moves too long' }, 400);
       }
-      await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ?, maqam = ?, tonic = ?, tempo = ?, energy = ?, moves = ? WHERE id = ?').bind(
+      await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ?, maqam = ?, tonic = ?, tempo = ?, energy = ?, moves = ?, chords = ? WHERE id = ?').bind(
         str(b.name, 60) || cur.name,
         'notes' in b ? str(b.notes, 4000) : cur.notes,
         intIn(b.meter_n, 1, 32, cur.meter_n),
@@ -216,6 +216,7 @@ async function route(req, env, url, member) {
         'tempo' in b ? intIn(b.tempo, 20, 400, null) : cur.tempo,
         'energy' in b ? intIn(b.energy, 1, 5, null) : cur.energy,
         moves,
+        opt('chords', 1000),
         id,
       ).run();
       await touch(env, trackId);
