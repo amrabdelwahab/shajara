@@ -71,3 +71,12 @@ CREATE TABLE IF NOT EXISTS ideas (
 
 CREATE INDEX IF NOT EXISTS ideas_track ON ideas (track_id, created_at);
 CREATE INDEX IF NOT EXISTS sections_track ON sections (track_id, position);
+CREATE TABLE IF NOT EXISTS grooves (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  pattern TEXT NOT NULL,
+  sub INTEGER NOT NULL DEFAULT 2,
+  bar INTEGER NOT NULL DEFAULT 0,
+  created_by TEXT,
+  created_at INTEGER NOT NULL
+);

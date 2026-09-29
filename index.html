@@ -209,6 +209,18 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .compose button { flex: 1; min-width: 0; padding: 9px 2px 8px; border-radius: 12px; background: #000; border: 1px solid var(--line); font: 700 9px/1 var(--display); font-stretch: 112%; letter-spacing: .05em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: var(--text); }
 .compose button svg { width: 18px; height: 18px; flex: none; }
 .compose .rec { color: #fff; background: color-mix(in srgb, var(--danger) 22%, #000); border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
+.pick { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font: 700 9px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
+.pick svg { width: 13px; height: 13px; }
+.pick.on { background: var(--text); border-color: var(--text); color: #000; }
+.player.live .play { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--text)) 35%, transparent); }
+.wrap.with-picks { padding-bottom: 210px; }
+.pickbar { position: fixed; left: 0; right: 0; bottom: calc(71px + env(safe-area-inset-bottom)); z-index: 7; padding: 0 16px 8px; pointer-events: none; }
+.pb-in { max-width: 608px; margin: 0 auto; display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 16px; background: #1c1c1c; border: 1px solid color-mix(in srgb, var(--text) 30%, var(--line)); box-shadow: 0 8px 24px rgba(0,0,0,.6); pointer-events: auto; }
+.pb-in > svg { width: 18px; height: 18px; flex: none; }
+.pb-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pb-txt b { font: 800 11px/1.1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; }
+.pb-txt span { font: italic 13px/1.2 var(--serif); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pb-in .btn { padding: 9px 12px; }
 .part-tag { font: 800 9px/1 var(--display) !important; font-stretch: 125%; letter-spacing: .07em; text-transform: uppercase; color: var(--brand-yellow); font-style: normal !important; }
 .transition-card { border-radius: var(--radius); background: var(--surface); border: 1.5px dashed color-mix(in srgb, var(--brand-yellow) 45%, var(--line)); padding-top: 4px; }
 .transition-card .lede { padding: 10px 14px 6px; color: var(--muted); font: italic 15px/1.4 var(--serif); margin: 0; }
@@ -258,6 +270,8 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .sugs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .sug { font: 15px/1.1 var(--serif); padding: 7px 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
 .sug.on { background: var(--c, var(--text)); border-color: var(--c, var(--text)); color: #000; font-weight: 600; }
+.sug .chk { font: 700 8px/1 var(--display); font-style: normal; text-transform: uppercase; letter-spacing: .05em; color: var(--brand-yellow); margin-left: 3px; vertical-align: 2px; }
+.sug-group .ar { font-size: 15px; text-transform: none; letter-spacing: 0; margin-left: 6px; }
 .sug-group { font: 700 10px/1 var(--display); font-stretch: 112%; color: var(--faint); letter-spacing: .07em; text-transform: uppercase; margin: 12px 0 -1px; }
 .meter-preview { font: 800 30px/1 var(--display); font-stretch: 125%; margin-top: 10px; }
 
@@ -399,14 +413,35 @@ const ENERGY = ['', 'whisper', 'low', 'medium', 'high', 'peak'];
 
 // D = dum / kick, T = tak / snare, K = ka / hi-hat or light stroke. One string per bar.
 const GROOVES = [
+  // Arabic skeletons as notated on MaqamWorld (maqamworld.com/en/iqaa.php); players ornament on top.
   { group: 'Arabic', items: [
     { name: 'Maqsum', sub: 2, p: 'DT-TD-T-' },
     { name: 'Baladi', sub: 2, p: 'DD-TD-T-' },
-    { name: 'Saidi', sub: 2, p: 'DT-DD-T-' },
-    { name: 'Malfuf', sub: 4, p: 'D--T--T-' },
-    { name: 'Fallahi', sub: 4, p: 'DT-TD-T-' },
-    { name: 'Masmoudi Kabir', sub: 1, p: 'DD-T-D-T' },
-    { name: 'Karsilama 9/8', sub: 2, p: 'D-T-D-TTT' },
+    { name: 'Sa‘idi', sub: 2, p: 'DT-DD-T-' },
+    { name: 'Wahda', sub: 2, p: 'D--T--T-' },
+    { name: 'Wahda w-Nuss', sub: 4, p: 'D--T--T-D---T---' },
+    { name: 'Wahda Saghira 2/4', sub: 2, p: 'D-TT' },
+    { name: 'Zaffa', sub: 4, p: 'D-TKT-T-D-T-T---' },
+    { name: 'Malfuf 2/4', sub: 4, p: 'D--T--T-' },
+    { name: 'Fallahi 2/4', sub: 4, p: 'DKTKD-T-' },
+    { name: 'Ayyub 2/4', sub: 2, p: 'D-DT' },
+    { name: 'Karachi 2/4', sub: 2, p: 'T-TD' },
+  ] },
+  { group: 'Arabic · long cycles', items: [
+    { name: 'Wahda Kabira 8/4', sub: 2, p: 'D--T--T-D---T---' },
+    { name: 'Masmudi Kabir 8/4', sub: 1, p: 'DD-TD-TT' },
+    { name: 'Çiftetelli 8/4', sub: 2, p: 'D-TT-TT-D-D-T---' },
+    { name: 'Nawakht 7/4', sub: 1, p: 'D-TD-TT' },
+    { name: 'Sudasi 6/4', sub: 4, p: 'D-KKT-D-D-KKT-D-D---T---' },
+    { name: 'Sama‘i Darij 3/4', sub: 1, p: 'DTT' },
+  ] },
+  { group: 'Arabic · odd meters', items: [
+    { name: 'Dawr Hindi 7/8', sub: 2, p: 'DTTD-T-' },
+    { name: 'Sama‘i Thaqil 10/8', sub: 2, p: 'D--T-DDT--' },
+    { name: 'Jurjina 10/8', sub: 2, p: 'D-TT-D-T--' },
+    { name: '‘Awis 11/8', sub: 2, p: 'D-TD-TTDD-T' },
+    { name: 'Thurayya 5/8', sub: 2, p: 'D-T-T' },
+    { name: 'Yürük Semai 6/8', sub: 2, p: 'DTTDT-' },
   ] },
   { group: 'Rock, blues & pop', items: [
     { name: 'Rock', sub: 2, p: 'DKTKDKTK' },
@@ -444,6 +479,7 @@ const ICON = {
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1"/></svg>',
   stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
   drum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v8c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/></svg>',
+  stack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5Z"/><path d="M3 13l9 5 9-5"/></svg>',
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
@@ -463,9 +499,12 @@ const S = {
   mix: store.get('mix', { beats: true, recs: true, click: false }),
   members: [],
   tracks: [],
+  grooves: [],
   track: null,
   view: {},
   expanded: {},
+  picked: new Set(),
+  pickedTrack: null,
 };
 
 const $ = (sel, root) => (root || document).querySelector(sel);
@@ -540,6 +579,7 @@ async function loadState() {
   const d = await api('/state');
   S.members = d.members;
   S.tracks = d.tracks;
+  S.grooves = d.grooves || [];
 }
 
 /* ---------- routing ---------- */
@@ -634,6 +674,7 @@ function legend() {
 
 /* ---------- track ---------- */
 async function viewTrack(id) {
+  if (S.pickedTrack !== id) { S.picked = new Set(); S.pickedTrack = id; }
   const cached = S.track && S.track.id === id ? S.track : null;
   if (cached) renderTrack();
   else $('#app').innerHTML = topBar('', backBtn('')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
@@ -754,12 +795,13 @@ function renderTrack() {
 
   $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
     `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Track options" onclick="trackMenu()">${ICON.more}</button>`) +
-    `<div class="wrap">
+    `<div class="wrap${S.picked.size ? ' with-picks' : ''}">
       <div class="hero"><div class="chips">${chips}${t.notes ? '' : `<button class="chip ghost" onclick="editTrack('f-notes')">+ track note</button>`}</div>${trackNotes}</div>
       <div class="form">${form}</div>
       ${panel}
       <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ✦ makes an idea the layer’s part: a recording, MIDI, rhythm, note, anything. Play uses each layer’s part (or its latest take) and rhythm.</p>
     </div>
+    ${pickBar()}
     <div class="transport"><div class="transport-in">
       <button class="tp-play" id="tpPlay" onclick="togglePlayer()"></button>
       <div class="mixgroup">
@@ -776,8 +818,10 @@ function updateTransport() {
   const b = $('#tpPlay');
   if (!b || !S.track) return;
   b.classList.toggle('on', Player.on);
-  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>${esc(curView().sec.name)}</span>`;
-  b.setAttribute('aria-label', Player.on ? 'Stop' : 'Play ' + curView().sec.name);
+  const n = S.picked.size;
+  const what = n ? `${n} stacked` : curView().sec.name;
+  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>${esc(what)}</span>`;
+  b.setAttribute('aria-label', Player.on ? 'Stop' : 'Play ' + what);
 }
 function toggleMix(k) {
   S.mix[k] = !S.mix[k]; store.set('mix', S.mix);
@@ -785,9 +829,25 @@ function toggleMix(k) {
   document.querySelectorAll(`[data-mix="${k}"]`).forEach(b => b.classList.toggle('on', S.mix[k]));
   if (Player.on) togglePlayer().then(togglePlayer);
 }
+function pickedIdeas() { return S.track ? S.track.ideas.filter(i => S.picked.has(i.id)) : []; }
+function togglePick(id) {
+  if (S.picked.has(id)) S.picked.delete(id); else S.picked.add(id);
+  const i = S.track.ideas.find(x => x.id === id);
+  if (i && i.kind === 'audio' && S.picked.has(id)) audioBuffer(i).catch(() => {});
+  if (Player.on) Player.stop();
+  renderTrack();
+}
+function clearPicks() { S.picked.clear(); if (Player.on) Player.stop(); renderTrack(); }
+function pickBar() {
+  const list = pickedIdeas();
+  if (!list.length) return '';
+  const who = list.map(i => `${esc(memberName(i.author_id))} · ${esc(laneOf(i.layer).short)}${sections().length > 1 ? ' · ' + esc((secOfIdea(i) || {}).name || '') : ''}`).join(', ');
+  return `<div class="pickbar"><div class="pb-in">${ICON.stack}<span class="pb-txt"><b>${list.length} take${list.length > 1 ? 's' : ''} stacked</b><span>${who}</span></span><button class="btn" onclick="clearPicks()">Clear</button></div></div>`;
+}
 async function togglePlayer() {
   if (Player.on) { Player.stop(); return; }
-  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, onStop: updateTransport });
+  const picked = pickedIdeas();
+  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, ideas: picked.length ? picked : null, onStop: updateTransport });
   if (!r) toast(S.mix.click ? 'Nothing to play' : 'Nothing to play yet. Record a part or a rhythm, or switch on the click.');
   updateTransport();
 }
@@ -816,6 +876,7 @@ function ideaHtml(i, prevSeen) {
   else body = `<div class="idea-body">${esc(i.body)}</div>`;
   return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span><span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
     ${i.starred && i.layer !== 'transition' ? '<span class="part-tag">the part</span>' : ''}
+    ${i.kind === 'audio' || i.kind === 'midi' ? `<button class="pick${S.picked.has(i.id) ? ' on' : ''}" aria-label="Play together with other picked takes" onclick="togglePick('${esc(i.id)}')">${ICON.stack}<span>${S.picked.has(i.id) ? 'in stack' : 'stack'}</span></button>` : ''}
     <button class="star${i.starred ? ' on' : ''}" aria-label="Make this the part" onclick="toggleStar('${esc(i.id)}')">${i.starred ? '✦' : '✧'}</button>
     <button class="kebab" aria-label="More" onclick="ideaMenu('${esc(i.id)}')">⋯</button></div>${body}</div>`;
 }
@@ -1213,8 +1274,10 @@ function editBeat(layerKey) {
     <p class="lede">A rhythmic figure for this layer: a groove, a riff’s accents, a strum pattern. ${esc(sec.name)} is in ${meterLabel(sec)}; same pulse as the rest of the track.</p>
     <label class="field">Name</label><input id="bname" type="text" value="${esc(cur ? cur.name : '')}" placeholder="e.g. Maqsum, or anything">
     <label class="field">Start from a groove</label>
-    ${GROOVES.map(g => `<div class="sug-group">${g.group}</div>` + chipsHtml('', g.items.map(p => `<button class="sug" data-p="${esc(p.name)}">${esc(p.name)}</button>`).join(''), l.c)).join('')}
+    <div id="ours"></div>
+    ${GROOVES.map(g => `<div class="sug-group">${g.group}</div>` + chipsHtml('', g.items.map(p => `<button class="sug" data-p="${esc(p.name)}">${esc(p.name)}${p.check ? ' <i class="chk">check</i>' : ''}</button>`).join(''), l.c)).join('')}
     <div class="sugs" style="--c:${l.c}"><button class="sug" data-p="">Clear</button></div>
+    <div class="small faint" style="margin-top:8px;font-style:italic">Arabic grooves are the skeletons from <a href="https://www.maqamworld.com/en/iqaa.php" target="_blank" rel="noopener">MaqamWorld</a>; ornament them your way.</div>
     <label class="field">Subdivision</label>${chipsHtml('subs', SUBS.map(x => `<button class="sug" data-s="${x.v}">${x.label}</button>`).join(''), l.c)}
     <label class="field">Steps per bar</label>${chipsHtml('lens', lengths.map(n => `<button class="sug" data-n="${n}">${n}</button>`).join(''), l.c)}
     <label class="field">Bars</label>${chipsHtml('nbars', [1, 2, 3, 4].map(n => `<button class="sug" data-b="${n}">${n}</button>`).join(''), l.c)}
@@ -1223,6 +1286,7 @@ function editBeat(layerKey) {
     <div class="grid-key"><span><i style="background:${l.c}"></i>D · dum / kick</span><span><i style="background:color-mix(in srgb, ${l.c} 48%, transparent)"></i>T · tak / snare</span><span><i style="background:color-mix(in srgb, ${l.c} 18%, transparent)"></i>K · ka / hat</span><span>Tap a cell to cycle</span></div>
     ${others.length ? `<button class="toggle${withOthers ? ' on' : ''}" id="withOthers"><span class="sw"></span><span><b>Hear it with the other layers’ rhythms</b><br><span class="small muted">${others.map(b => esc(LAYER[b.layer].short) + ': ' + esc(b.name || 'beat')).join(' · ')}</span></span></button>` : ''}
     <div class="actions"><button class="btn" id="prev"></button><button class="btn primary" id="save">Save rhythm</button></div>
+    <div class="sugs" style="margin-top:12px"><button class="sug" id="toOurs">＋ Save to our grooves</button><button class="sug hidden" id="rmOurs"></button></div>
     ${cur ? '<div style="margin-top:14px"><button class="btn danger block" id="rm">Remove rhythm</button></div>' : ''}`, root => {
     const grid = $('#grid', root);
     const cols = n => n <= 9 ? n : n === 10 ? 5 : n === 12 ? 6 : n === 15 ? 5 : 8;
@@ -1230,7 +1294,16 @@ function editBeat(layerKey) {
     const voices = () => [{ layer: 'edit', pattern: pattern(), sub: B.sub, k: l.k }, ...(withOthers ? sectionVoices(sec.id, layerKey) : [])];
     const paintPrev = () => { $('#prev', root).innerHTML = Beat.on ? ICON.stop + '<span>Stop</span>' : ICON.play + '<span>Preview</span>'; };
     const on = (sel, attr, v) => root.querySelectorAll(sel + ' .sug').forEach(b => b.classList.toggle('on', +b.dataset[attr] === v));
+    const wireLen = b => b.onclick = () => {
+      B.bar = +b.dataset.n;
+      B.bars = B.bars.map(bar => Array.from({ length: B.bar }, (_, i) => bar[i] || '-'));
+      draw();
+    };
     const draw = () => {
+      if (!root.querySelector(`#lens [data-n="${B.bar}"]`)) {
+        $('#lens', root).insertAdjacentHTML('beforeend', `<button class="sug" data-n="${B.bar}">${B.bar}</button>`);
+        wireLen($('#lens', root).lastElementChild);
+      }
       grid.innerHTML = B.bars.map((bar, bi) => `${B.bars.length > 1 ? `<div class="bar-label">Bar ${bi + 1}</div>` : ''}<div class="grid" style="grid-template-columns:repeat(${cols(B.bar)}, 1fr)">${bar.map((c, i) => `<button data-b="${bi}" data-i="${i}" class="${c === '-' ? 'R' : c}">${c === '-' ? '·' : c}</button>`).join('')}</div>`).join('');
       on('#subs', 's', B.sub); on('#lens', 'n', B.bar); on('#nbars', 'b', B.bars.length);
       const pulses = B.bar / B.sub, secP = secBarPulses(sec);
@@ -1244,18 +1317,42 @@ function editBeat(layerKey) {
       bar[i] = { '-': 'D', D: 'T', T: 'K', K: '-' }[bar[i]];
       draw();
     };
-    root.querySelectorAll('[data-p]').forEach(b => b.onclick = () => {
-      const p = GROOVES.flatMap(g => g.items).find(x => x.name === b.dataset.p);
-      if (p) { B.sub = p.sub; B.bar = p.p.length; B.bars = B.bars.map(() => p.p.split('')); $('#bname', root).value = p.name; if (!lengths.includes(B.bar)) lengths.push(B.bar); }
+    let loadedOurs = null;
+    const loadPreset = name => {
+      const p = GROOVES.flatMap(g => g.items).find(x => x.name === name);
+      if (p) { B.sub = p.sub; B.bar = p.p.length; B.bars = B.bars.map(() => p.p.split('')); $('#bname', root).value = p.name; }
       else B.bars = B.bars.map(bar => bar.map(() => '-'));
-      draw();
-    });
+      loadedOurs = null; drawOurs(); draw();
+    };
+    const drawOurs = () => {
+      const box = $('#ours', root);
+      box.innerHTML = S.grooves.length ? `<div class="sug-group">Ours <span class="ar">بتاعتنا</span></div>` + chipsHtml('', S.grooves.map(g => `<button class="sug${loadedOurs === g.id ? ' on' : ''}" data-g="${esc(g.id)}">${esc(g.name)}</button>`).join(''), l.c) : '';
+      box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
+        const g = S.grooves.find(x => x.id === b.dataset.g);
+        B.sub = g.sub; B.bar = g.bar || g.pattern.length; B.bars = [];
+        for (let i = 0; i < g.pattern.length; i += B.bar) B.bars.push(g.pattern.slice(i, i + B.bar).split(''));
+        $('#bname', root).value = g.name; loadedOurs = g.id; drawOurs(); draw();
+      });
+      const rm = $('#rmOurs', root), g = S.grooves.find(x => x.id === loadedOurs);
+      rm.classList.toggle('hidden', !g);
+      if (g) { rm.textContent = `Remove “${g.name}” from our grooves`; rm.onclick = () => confirmSheet(`Remove ${esc(g.name)}?`, 'It comes off everyone’s groove list. Rhythms already saved on layers stay as they are.', 'Remove', async () => {
+        await api('/grooves/' + g.id, { method: 'DELETE' }); S.grooves = S.grooves.filter(x => x.id !== g.id); toast('Removed from our grooves');
+      }); }
+    };
+    root.querySelectorAll('[data-p]').forEach(b => b.onclick = () => loadPreset(b.dataset.p));
+    $('#toOurs', root).onclick = async () => {
+      const name = $('#bname', root).value.trim();
+      if (!name) { toast('Give it a name first, e.g. Wehda kbeera'); $('#bname', root).focus(); return; }
+      if (!/[DTK]/.test(pattern())) return toast('Tap a few cells first');
+      try {
+        const g = await api('/grooves', { method: 'POST', body: { name, pattern: pattern(), sub: B.sub, bar: B.bar } });
+        S.grooves = [...S.grooves.filter(x => x.id !== g.id), g].sort((a, b) => a.name.localeCompare(b.name));
+        loadedOurs = g.id; drawOurs(); toast(`${name} is in our grooves`);
+      } catch (e) { toast(e.message); }
+    };
+    drawOurs();
     root.querySelectorAll('#subs .sug').forEach(b => b.onclick = () => { B.sub = +b.dataset.s; draw(); });
-    root.querySelectorAll('#lens .sug').forEach(b => b.onclick = () => {
-      B.bar = +b.dataset.n;
-      B.bars = B.bars.map(bar => Array.from({ length: B.bar }, (_, i) => bar[i] || '-'));
-      draw();
-    });
+    root.querySelectorAll('#lens .sug').forEach(wireLen);
     root.querySelectorAll('#nbars .sug').forEach(b => b.onclick = () => {
       const n = +b.dataset.b;
       while (B.bars.length < n) B.bars.push(B.bars[B.bars.length - 1].slice());
@@ -1411,7 +1508,7 @@ function audioBuffer(idea) {
   return bufCache.get(idea.audio_id);
 }
 const Player = {
-  on: false, sources: [], endTimer: null, t0: 0,
+  on: false, sources: [], endTimer: null, t0: 0, vis: [], raf: 0,
   async start(o) {
     this.stop();
     const ctx = Beat.ensure();
@@ -1419,8 +1516,8 @@ const Player = {
     const voices = [];
     if (o.beats) voices.push(...sectionVoices(sec.id, o.exceptLayer));
     if (o.click || countIn) voices.push(metroVoice(sec, o.click ? null : 0));
-    const audio = o.recs ? stackIdeas(sec.id, o.exceptLayer) : [];
-    const takes = o.recs ? midiStack(sec.id, o.exceptLayer) : [];
+    const audio = o.ideas ? o.ideas.filter(i => i.kind === 'audio') : o.recs ? stackIdeas(sec.id, o.exceptLayer) : [];
+    const takes = o.ideas ? o.ideas.filter(i => i.kind === 'midi') : o.recs ? midiStack(sec.id, o.exceptLayer) : [];
     if (!voices.length && !audio.length && !takes.length && !o.clock) return false;
     let bufs = [];
     if (audio.length) bufs = (await Promise.all(audio.map(i => audioBuffer(i).then(b => [i, b]).catch(() => null)))).filter(Boolean);
@@ -1434,8 +1531,21 @@ const Player = {
       const off = Math.min(parseData(i).offset || 0, b.duration);
       src.start(T0, off);
       this.sources.push(src);
+      this.vis.push({ id: i.id, off, dur: b.duration });
       longest = Math.max(longest, b.duration - off);
     }
+    const tick = () => {
+      const now = ctx.currentTime;
+      for (const v of this.vis) {
+        const el = playerEl(v.id); if (!el) continue;
+        const pos = Math.max(0, now - T0) + v.off;
+        $('.bar i', el).style.width = Math.min(100, 100 * pos / v.dur) + '%';
+        $('.time', el).textContent = fmtTime(Math.min(pos, v.dur));
+        el.classList.toggle('live', pos < v.dur && now >= T0);
+      }
+      this.raf = requestAnimationFrame(tick);
+    };
+    if (this.vis.length) tick();
     for (const i of takes) { Takes.play(i, T0); longest = Math.max(longest, parseTake(i).len * 60 / bpm); }
     if (!voices.some(v => !v.metro || v.until == null) && !o.clock) {
       this.endTimer = setTimeout(() => this.stop(), (T0 - ctx.currentTime + longest + 0.3) * 1000);
@@ -1444,6 +1554,13 @@ const Player = {
   },
   stop() {
     clearTimeout(this.endTimer);
+    cancelAnimationFrame(this.raf);
+    for (const v of this.vis) {
+      const el = playerEl(v.id); if (!el) continue;
+      el.classList.remove('live'); $('.bar i', el).style.width = '0';
+      const i = S.track && S.track.ideas.find(x => x.id === v.id); $('.time', el).textContent = fmtTime(i ? i.duration : 0);
+    }
+    this.vis = [];
     this.sources.forEach(s => { try { s.stop(); } catch {} });
     this.sources = [];
     Takes.stopAll();

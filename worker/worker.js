@@ -80,13 +80,14 @@ async function route(req, env, url, member) {
   const [a, id, sub, subId] = parts;
 
   if (a === 'state' && m === 'GET') {
-    const [members, tracks, sections, holders, beats, counts] = await Promise.all([
+    const [members, tracks, sections, holders, beats, counts, grooves] = await Promise.all([
       env.DB.prepare('SELECT * FROM members ORDER BY created_at').all(),
       env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
       env.DB.prepare('SELECT id, track_id, name, position, meter_n, meter_sub, energy FROM sections ORDER BY position, created_at').all(),
       env.DB.prepare('SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id').all(),
       env.DB.prepare('SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id').all(),
       env.DB.prepare('SELECT track_id, COUNT(*) AS n FROM ideas GROUP BY track_id').all(),
+      env.DB.prepare('SELECT * FROM grooves ORDER BY name').all(),
     ]);
     const byTrack = {};
     for (const t of tracks.results) byTrack[t.id] = { ...t, sections: [], holders: [], beats: [], ideas: 0 };
@@ -94,7 +95,28 @@ async function route(req, env, url, member) {
     for (const h of holders.results) byTrack[h.track_id]?.holders.push(h);
     for (const b of beats.results) byTrack[b.track_id]?.beats.push(b);
     for (const c of counts.results) if (byTrack[c.track_id]) byTrack[c.track_id].ideas = c.n;
-    return json({ members: members.results, tracks: tracks.results.map(t => byTrack[t.id]) });
+    return json({ members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
+  }
+
+  if (a === 'grooves') {
+    if (m === 'POST' && !id) {
+      const b = await body(req);
+      const name = str(b.name, 60);
+      const pattern = typeof b.pattern === 'string' ? b.pattern.toUpperCase() : '';
+      const sub = [1, 2, 3, 4, 6, 8].includes(Number(b.sub)) ? Number(b.sub) : 2;
+      const bar = Number(b.bar) || pattern.length;
+      if (!name) return json({ error: 'name required' }, 400);
+      if (!/^[DTK-]{2,128}$/.test(pattern) || !/[DTK]/.test(pattern) || bar < 1 || bar > 32 || pattern.length % bar) return json({ error: 'bad pattern' }, 400);
+      const same = await env.DB.prepare('SELECT id FROM grooves WHERE lower(name) = lower(?)').bind(name).first();
+      const gid = same ? same.id : uid();
+      await env.DB.prepare('INSERT OR REPLACE INTO grooves (id, name, pattern, sub, bar, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .bind(gid, name, pattern, sub, bar, member, now()).run();
+      return json(await env.DB.prepare('SELECT * FROM grooves WHERE id = ?').bind(gid).first(), 201);
+    }
+    if (m === 'DELETE' && id) {
+      await env.DB.prepare('DELETE FROM grooves WHERE id = ?').bind(id).run();
+      return json({ ok: true });
+    }
   }
 
   if (a === 'members') {

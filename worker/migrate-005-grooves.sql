@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS grooves (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  pattern TEXT NOT NULL,
+  sub INTEGER NOT NULL DEFAULT 2,
+  bar INTEGER NOT NULL DEFAULT 0,
+  created_by TEXT,
+  created_at INTEGER NOT NULL
+);
