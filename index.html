@@ -96,7 +96,22 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .hello h2 { font: 800 26px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 0; }
 .hello .ar { font-size: 28px; color: var(--muted); line-height: 1.2; }
 .track-row { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 14px 12px; margin-bottom: 12px; position: relative; }
-.track-row .t { font: 800 18px/1.15 var(--display); font-stretch: 125%; text-transform: uppercase; padding-right: 22px; }
+.track-row { cursor: pointer; }
+.track-row .tr-top { display: flex; align-items: flex-start; gap: 8px; }
+.track-row .t { flex: 1; font: 800 18px/1.15 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.track-row .kebab { margin: -6px -6px 0 0; padding: 4px 8px; font-size: 20px; color: var(--muted); }
+.track-row .dot { position: static; margin-top: 1px; }
+.list-head { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 0 10px; }
+.list-head b { font: 800 13px/1 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .02em; }
+.list-head .ar { font-size: 22px; color: var(--muted); }
+.menu { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.menu-item { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); text-align: left; }
+.menu-item svg { width: 19px; height: 19px; flex: none; }
+.menu-item b { display: block; font: 800 12px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; }
+.menu-item .small { display: block; font: italic 14px/1.3 var(--serif); margin-top: 3px; }
+.menu-item.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); }
+.btn.danger-solid { background: var(--danger); border-color: var(--danger); color: #000; }
+.member-row .nm-act { display: flex; align-items: center; gap: 10px; }
 .track-row .meta { font: italic 14px/1.3 var(--serif); color: var(--muted); margin: 4px 0 8px; }
 .track-row .form-line { font: 700 11px/1.3 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .05em; color: var(--text); margin-bottom: 10px; }
 .track-row .form-line .arr { color: var(--brand-yellow); padding: 0 6px; }
@@ -110,7 +125,7 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .empty { text-align: center; padding: 48px 12px; color: var(--muted); font-family: var(--serif); font-size: 18px; }
 .fab { position: fixed; right: max(16px, calc(50% - 304px)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 10px 28px rgba(0,0,0,.6); padding: 16px 22px; }
 
-.legend { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-top: 22px; font-size: 14px; }
+.legend { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-top: 4px; font-size: 14px; }
 .legend h4 { margin: 0 0 8px; font: 800 13px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; display: flex; justify-content: space-between; align-items: baseline; }
 .legend h4 .ar { font-size: 20px; color: var(--muted); text-transform: none; }
 .legend .l { display: grid; grid-template-columns: 150px 1fr; padding: 4px 0; align-items: baseline; }
@@ -424,6 +439,8 @@ const ICON = {
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1"/></svg>',
   stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
   drum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v8c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
   rhythm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="4" height="8" rx="1.2" fill="currentColor"/><rect x="10" y="8" width="4" height="8" rx="1.2"/><rect x="17" y="8" width="4" height="8" rx="1.2" fill="currentColor" fill-opacity=".45"/></svg>',
   metro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 18H5L9 3Z"/><path d="M12 17l5-9"/><path d="M8 13h8"/></svg>',
@@ -583,16 +600,18 @@ function viewHome() {
         const beats = [...new Set(t.beats.filter(b => b.layer === l.key).map(b => b.name || 'beat'))];
         return `<div class="mini-layer" style="--c:${l.c}"><span class="ln">${l.short}</span><span class="who">${names.length ? names.map(esc).join(', ') : '<span class="open">open</span>'}</span><span class="bt">${beats.length ? '◆ ' + beats.map(esc).join(' / ') : ''}</span></div>`;
       }).join('');
-      return `<button class="track-row" onclick="go('t/${esc(t.id)}')">${unseen ? '<i class="dot">✦</i>' : ''}
-        <div class="t">${esc(t.title)}</div><div class="meta">${meta ? meta + ' · ' : ''}${ago(t.updated_at)}</div>
-        ${form}<div class="mini-tree">${mini}</div></button>`;
+      return `<div class="track-row" role="link" tabindex="0" onclick="go('t/${esc(t.id)}')">
+        <div class="tr-top"><div class="t">${esc(t.title)}</div>${unseen ? '<i class="dot">✦</i>' : ''}<button class="kebab" aria-label="Track options" onclick="event.stopPropagation(); trackMenu('${esc(t.id)}')">⋯</button></div>
+        <div class="meta">${meta ? meta + ' · ' : ''}${ago(t.updated_at)}</div>
+        ${form}<div class="mini-tree">${mini}</div></div>`;
     }).join('');
     $('#app').innerHTML = topBar('Shajara', `<img class="logo" src="logo.png" alt="‘ala bab allah">`,
       `<button class="icon-btn" aria-label="Band" onclick="go('band')">${ICON.people}</button>`) +
       `<div class="wrap">
         <div class="hello"><div><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} growing</div></div><span class="ar">شجرة</span></div>
-        ${list || `<div class="empty">No tracks yet.<br>Plant the first one.</div>`}
         ${legend()}
+        <div class="list-head"><b>Tracks</b><span class="ar">التراكات</span></div>
+        ${list || `<div class="empty">No tracks yet.<br>Plant the first one.</div>`}
       </div>
       <button class="btn primary fab" onclick="newTrack()">+ New track</button>`;
   };
@@ -720,7 +739,7 @@ function renderTrack() {
     ].join('');
     const movesHtml = MOVES.filter(m => mv[m.k] != null).map(m => `<button class="move" onclick="editSection()"><b>${m.label}</b>${mv[m.k] ? ' · ' + esc(mv[m.k]) : ''}</button>`)
       .concat(Object.keys(mv).filter(k => k.startsWith('x:')).map(k => `<button class="move" onclick="editSection()"><b>${esc(k.slice(2))}</b>${mv[k] ? ' · ' + esc(mv[k]) : ''}</button>`)).join('');
-    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button></div>
+    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button><button class="icon-btn sm" aria-label="Section options" onclick="sectionMenu()">${ICON.more}</button></div>
       <div class="chips sec-facts">${facts}</div>
       <div class="moves">${movesHtml || `<button class="move ghost" onclick="editSection()">+ moves · role swap, unison, silence…</button>`}</div>
       ${sec.notes ? `<button class="notes" style="margin:0 0 14px" onclick="editSection('s-notes')">${esc(sec.notes)}</button>` : ''}
@@ -729,7 +748,7 @@ function renderTrack() {
   }
 
   $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
-    `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Edit" onclick="editTrack()">${ICON.edit}</button>`) +
+    `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Track options" onclick="trackMenu()">${ICON.more}</button>`) +
     `<div class="wrap">
       <div class="hero"><div class="chips">${chips}${t.notes ? '' : `<button class="chip ghost" onclick="editTrack('f-notes')">+ track note</button>`}</div>${trackNotes}</div>
       <div class="form">${form}</div>
@@ -821,10 +840,65 @@ function ideaMenu(id) {
       closeSheet();
       try { await api('/ideas/' + id, { method: 'PATCH', body: { body } }); i.body = body.trim(); renderTrack(); } catch (e) { toast(e.message); }
     };
-    confirmBtn($('#del', root), 'Tap again to delete', async () => {
-      closeSheet();
-      try { await api('/ideas/' + id, { method: 'DELETE' }); S.track.ideas = S.track.ideas.filter(x => x.id !== id); renderTrack(); } catch (e) { toast(e.message); }
+    $('#del', root).onclick = () => confirmSheet('Delete this idea?', `${esc(laneOf(i.layer).name)} · by ${esc(memberName(i.author_id))}${i.kind === 'audio' ? ', and its recording' : ''}. It can’t be undone.`, 'Delete idea', async () => {
+      await api('/ideas/' + id, { method: 'DELETE' }); S.track.ideas = S.track.ideas.filter(x => x.id !== id); renderTrack();
     });
+  });
+}
+
+function menuSheet(title, items) {
+  sheet(`<h3>${title}</h3><div class="menu">${items.map((it, i) => `<button class="menu-item${it.danger ? ' danger' : ''}" data-i="${i}">${it.icon || ''}<span><b>${esc(it.label)}</b>${it.hint ? `<span class="small muted">${esc(it.hint)}</span>` : ''}</span></button>`).join('')}</div>
+    <div class="actions"><button class="btn block" onclick="closeSheet()">Cancel</button></div>`, root => {
+    root.querySelectorAll('.menu-item').forEach(b => b.onclick = () => { closeSheet(); items[+b.dataset.i].run(); });
+  });
+}
+function confirmSheet(title, detail, label, fn) {
+  sheet(`<h3>${title}</h3><p class="lede">${detail}</p>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Keep it</button><button class="btn danger-solid" id="ok">${esc(label)}</button></div>`, root => {
+    $('#ok', root).onclick = async () => { $('#ok', root).disabled = true; try { await fn(); closeSheet(); } catch (e) { toast(e.message); $('#ok', root).disabled = false; } };
+  });
+}
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+
+function trackMenu(id) {
+  const t = id ? S.tracks.find(x => x.id === id) : S.track;
+  if (!t) return;
+  const onPage = !id || (S.track && S.track.id === id && location.hash.includes(id));
+  menuSheet(esc(t.title), [
+    ...(onPage ? [{ label: 'Edit track details', hint: 'title, maqam, pulse, genre, notes', icon: ICON.edit, run: () => editTrack() },
+      { label: 'Add a section', icon: ICON.note, run: () => newSection() }] : [{ label: 'Open', icon: ICON.play, run: () => go('t/' + t.id) }]),
+    { label: 'Delete track', hint: 'every section, idea and recording in it', icon: ICON.trash, danger: true, run: () => deleteTrack(t) },
+  ]);
+}
+function deleteTrack(t) {
+  const nSec = (t.sections || []).length;
+  const nIdeas = Array.isArray(t.ideas) ? t.ideas.length : t.ideas || 0;
+  confirmSheet(`Delete ${esc(t.title)}?`, `This removes ${plural(nSec, 'section')} and ${plural(nIdeas, 'idea')}, recordings included, for the whole band. It can’t be undone.`, 'Delete track', async () => {
+    await api('/tracks/' + t.id, { method: 'DELETE' });
+    S.tracks = S.tracks.filter(x => x.id !== t.id);
+    if (S.track && S.track.id === t.id) S.track = null;
+    if (location.hash.replace(/^#\/?/, '') === '') route(); else go('');
+    toast('Track deleted');
+  });
+}
+function sectionMenu() {
+  const { sec } = curView();
+  const idx = sections().indexOf(sec);
+  menuSheet(`Section · ${esc(sec.name)}`, [
+    { label: 'Edit section', hint: 'maqam, pulse, time, energy, moves', icon: ICON.edit, run: () => editSection() },
+    { label: 'Line-up', hint: 'who is where', icon: ICON.people, run: () => editLineup() },
+    { label: 'New section after this', icon: ICON.note, run: () => newSection() },
+    ...(sections().length > 1 ? [{ label: 'Delete section', hint: 'its line-up, rhythms, ideas and recordings', icon: ICON.trash, danger: true, run: () => deleteSection(sec, idx) }] : []),
+  ]);
+}
+function deleteSection(sec, idx) {
+  const n = S.track.ideas.filter(i => i.section_id === sec.id).length;
+  const nx = nextSection(sec);
+  const tr = nx ? S.track.ideas.filter(i => i.section_id === sec.id && i.layer === 'transition').length : 0;
+  confirmSheet(`Delete ${esc(sec.name)}?`, `This removes its line-up, rhythms and ${plural(n, 'idea')}${tr ? `, including ${plural(tr, 'transition idea')} into ${esc(nx.name)}` : ''}. It can’t be undone.`, 'Delete section', async () => {
+    S.track = await api('/sections/' + sec.id, { method: 'DELETE' });
+    selectView(sections()[Math.max(0, idx - 1)].id);
+    toast('Section deleted');
   });
 }
 
@@ -910,9 +984,7 @@ function editTrack(focusId) {
       if (!f.title.trim()) return toast('Title can’t be empty');
       try { S.track = await api('/tracks/' + t.id, { method: 'PATCH', body: f }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
     };
-    confirmBtn($('#del', root), 'Tap again: deletes every section, idea and recording', async () => {
-      try { await api('/tracks/' + t.id, { method: 'DELETE' }); closeSheet(); S.track = null; go(''); } catch (e) { toast(e.message); }
-    });
+    $('#del', root).onclick = () => deleteTrack(t);
   });
 }
 
@@ -1014,9 +1086,7 @@ function editSection(focusId) {
       catch (e) { toast(e.message); }
     };
     const del = $('#del', root);
-    if (del) confirmBtn(del, 'Tap again: deletes its ideas and recordings', async () => {
-      try { S.track = await api('/sections/' + sec.id, { method: 'DELETE' }); closeSheet(); selectView(sections()[Math.max(0, idx - 1)].id); } catch (e) { toast(e.message); }
-    });
+    if (del) del.onclick = () => deleteSection(sec, idx);
   });
 }
 
@@ -1888,13 +1958,22 @@ function viewBand() {
   const render = () => {
     $('#app').innerHTML = topBar('The band', S.me ? backBtn('') : '') + `<div class="wrap">
       <p class="muted small">Tap “this is me” to switch who you are on this phone. Everyone’s instruments show up as one-tap choices in the line-up; you can still type anything.</p>
-      ${S.members.map(m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b>${m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}</div>
+      ${S.members.map(m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b><span class="nm-act">${m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}<button class="icon-btn sm" aria-label="Remove ${esc(m.name)}" data-rm="${esc(m.id)}">${ICON.trash}</button></span></div>
         <input type="text" data-inst="${esc(m.id)}" value="${esc(m.instruments)}" placeholder="instruments, comma separated" style="margin-top:8px"></div>`).join('')}
       <label class="field">Add someone (guest, 5th member…)</label>
       <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="add">Add</button></div>
       <div style="margin-top:28px"><button class="btn block" id="logout">Sign out of this phone</button></div>
     </div>`;
     $('#app').querySelectorAll('[data-me]').forEach(b => b.onclick = () => { S.me = b.dataset.me; store.set('me', S.me); render(); });
+    $('#app').querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
+      const m = S.members.find(x => x.id === b.dataset.rm);
+      confirmSheet(`Remove ${esc(m.name)} from the band list?`, 'They come off every line-up. Their ideas and recordings stay, still credited to them.', 'Remove', async () => {
+        await api('/members/' + m.id, { method: 'DELETE' });
+        S.members = S.members.filter(x => x.id !== m.id);
+        if (S.me === m.id) { S.me = ''; store.set('me', ''); }
+        render();
+      });
+    });
     $('#app').querySelectorAll('[data-inst]').forEach(inp => inp.onchange = async () => {
       try { const m = await api('/members/' + inp.dataset.inst, { method: 'PATCH', body: { instruments: inp.value } }); Object.assign(S.members.find(x => x.id === m.id), m); toast('Saved'); } catch (e) { toast(e.message); }
     });
