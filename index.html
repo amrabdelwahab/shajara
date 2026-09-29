@@ -443,15 +443,43 @@ const GROOVES = [
     { name: 'Thurayya 5/8', sub: 2, p: 'D-T-T' },
     { name: 'Yürük Semai 6/8', sub: 2, p: 'DTTDT-' },
   ] },
-  { group: 'Rock, blues & pop', items: [
+  // Western skeletons: D = kick, T = snare (or rim/clap), K = hat, ride or bell. Where two hit together the grid keeps the kick or snare.
+  { group: 'Rock & pop', items: [
     { name: 'Rock', sub: 2, p: 'DKTKDKTK' },
     { name: 'Rock ballad', sub: 2, p: 'DKTKDDTK' },
+    { name: 'Rock · push', sub: 2, p: 'DKTDDKTK' },
     { name: 'Half-time', sub: 2, p: 'DKKKTKKK' },
+    { name: 'Punk', sub: 2, p: 'DTDTDTDT' },
+    { name: '12/8 ballad (half-time)', sub: 3, p: 'DKKKKKTKKKKK' },
+  ] },
+  { group: 'Blues, jazz & swing', items: [
     { name: 'Shuffle 12/8', sub: 3, p: 'D-KT-KD-KT-K' },
     { name: 'Slow blues 12/8', sub: 3, p: 'DKKTKKDKKTKK' },
+    { name: 'Jazz swing · ride', sub: 3, p: 'K--K-KK--K-K' },
+    { name: 'Jazz waltz · ride 3/4', sub: 3, p: 'K--K-KK--' },
+  ] },
+  { group: 'Funk, hip-hop & electronic', items: [
     { name: 'Funk 16ths', sub: 4, p: 'DKKKTKKDKKDKTKKK' },
-    { name: 'One drop', sub: 2, p: '-K-KDK-K' },
-    { name: '6/8 groove', sub: 2, p: 'DKKTKK' },
+    { name: 'Boom bap', sub: 4, p: 'D-K-T-KDK-D-T-K-' },
+    { name: 'Trap (half-time)', sub: 4, p: 'DKKKKKKKTKKKKKKK' },
+    { name: 'House · four on the floor', sub: 2, p: 'DKDKDKDK' },
+    { name: 'Techno 16ths', sub: 4, p: 'DKKKDKKKDKKKDKKK' },
+    { name: 'Drum & bass two-step', sub: 4, p: 'DKKKTKKKKKDKTKKK' },
+    { name: 'Dembow', sub: 4, p: 'D--TD-T-D--TD-T-' },
+  ] },
+  { group: 'Latin, Caribbean & African', items: [
+    { name: 'Son clave 3-2', sub: 2, bar: 8, p: 'T--T--T---T-T---' },
+    { name: 'Rumba clave 3-2', sub: 2, bar: 8, p: 'T--T---T--T-T---' },
+    { name: 'Bossa clave 3-2', sub: 2, bar: 8, p: 'T--T--T---T--T--' },
+    { name: 'Tresillo', sub: 2, p: 'D--D--D-' },
+    { name: 'Habanera 2/4', sub: 4, p: 'D--TD-T-' },
+    { name: 'West African bell 12/8', sub: 3, p: 'D-K-KK-K-K-K' },
+    { name: 'One drop (reggae)', sub: 2, p: '-K-KDK-K' },
+  ] },
+  { group: 'Odd meters', items: [
+    { name: '5/8 (3+2)', sub: 2, p: 'DKKTK' },
+    { name: '7/8 (2+2+3)', sub: 2, p: 'DKTKDKK' },
+    { name: '6/8', sub: 2, p: 'DKKTKK' },
   ] },
 ];
 const LENGTHS = [3, 4, 5, 6, 7, 8, 9, 10, 12, 16];
@@ -1320,7 +1348,8 @@ function editBeat(layerKey) {
     let loadedOurs = null;
     const loadPreset = name => {
       const p = GROOVES.flatMap(g => g.items).find(x => x.name === name);
-      if (p) { B.sub = p.sub; B.bar = p.p.length; B.bars = B.bars.map(() => p.p.split('')); $('#bname', root).value = p.name; }
+      if (p && p.bar && p.bar < p.p.length) { B.sub = p.sub; B.bar = p.bar; B.bars = []; for (let i = 0; i < p.p.length; i += p.bar) B.bars.push(p.p.slice(i, i + p.bar).split('')); $('#bname', root).value = p.name; }
+      else if (p) { B.sub = p.sub; B.bar = p.p.length; B.bars = B.bars.map(() => p.p.split('')); $('#bname', root).value = p.name; }
       else B.bars = B.bars.map(bar => bar.map(() => '-'));
       loadedOurs = null; drawOurs(); draw();
     };
