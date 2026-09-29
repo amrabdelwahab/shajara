@@ -1,0 +1,15 @@
+name = "shajara-api"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "shajara"
+database_id = "44311e67-a637-4820-bd4e-aab1bebb4906"
+
+[[kv_namespaces]]
+binding = "AUDIO"
+id = "75eacdb2c1c34adcb1ccb81fde55796a"
+
+[vars]
+ALLOWED_ORIGINS = "https://amrabdelwahab.github.io"

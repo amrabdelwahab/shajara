@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shajara</title>
+<meta name="theme-color" content="#16130f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shajara">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root {
+  --bg: #16130f;
+  --surface: #211d18;
+  --surface-2: #2b2620;
+  --line: #3a332b;
+  --text: #f1e9dd;
+  --muted: #a89b8a;
+  --faint: #6f6557;
+  --accent: #e0a458;
+  --danger: #e0675a;
+  --bloom: #e58fa5;
+  --bark: #c08457;
+  --ground: #8fae6b;
+  --substrate: #7f8fc7;
+  --radius: 14px;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 var(--sans); }
+body { min-height: 100dvh; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); overscroll-behavior-y: contain; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; }
+a { color: var(--accent); }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 120px; }
+.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.top-in { max-width: 640px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 10px; min-height: 56px; }
+.top h1 { font: 600 20px/1.2 var(--serif); margin: 0; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); color: var(--text); flex: none; }
+.icon-btn svg { width: 20px; height: 20px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: var(--surface-2); font-weight: 600; }
+.btn.primary { background: var(--accent); color: #1b140b; }
+.btn.danger { background: transparent; color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent); }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: .5; }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+.small { font-size: 13px; }
+.hidden { display: none !important; }
+input[type=text], input[type=password], input[type=number], input[type=url], textarea {
+  width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none;
+}
+input:focus, textarea:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 90px; }
+label.field { display: block; margin: 14px 0 6px; font-size: 13px; color: var(--muted); }
+
+/* gate */
+.gate { min-height: 90dvh; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.gate h2 { font: 600 34px/1.1 var(--serif); margin: 0; }
+.gate p { margin: 0 0 8px; }
+.people { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.person { background: var(--surface); border-radius: var(--radius); padding: 16px; text-align: left; }
+.person b { display: block; font-size: 17px; }
+
+/* home */
+.hello { margin: 8px 0 18px; }
+.hello h2 { font: 600 28px/1.15 var(--serif); margin: 0; }
+.track-row { display: block; width: 100%; text-align: left; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; position: relative; }
+.track-row .t { font: 600 19px/1.25 var(--serif); padding-right: 16px; }
+.track-row .meta { font-size: 13px; color: var(--muted); margin: 2px 0 10px; }
+.dot { position: absolute; top: 18px; right: 16px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.mini-tree { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.mini-layer { border-radius: 8px; padding: 6px 8px; font-size: 12px; background: color-mix(in srgb, var(--c) 14%, transparent); color: color-mix(in srgb, var(--c) 80%, var(--text)); min-height: 44px; }
+.mini-layer .ln { font-weight: 700; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.mini-layer .who { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.empty { text-align: center; padding: 48px 12px; color: var(--muted); }
+.fab { position: fixed; right: max(16px, calc(50% - 304px)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 8px 24px rgba(0,0,0,.45); border-radius: 999px; padding: 15px 22px; }
+
+/* track */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+.chip { background: var(--surface); border-radius: 999px; padding: 7px 13px; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.chip .k { color: var(--muted); font-size: 12px; }
+.chip.ghost { color: var(--faint); border: 1px dashed var(--line); background: transparent; }
+.notes { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; white-space: pre-wrap; font-size: 15px; }
+.tree-bar { display: flex; gap: 8px; margin-bottom: 14px; }
+.tree-bar .btn { flex: 1; padding: 11px 12px; font-size: 15px; }
+.layer { border-radius: var(--radius); background: var(--surface); margin-bottom: 12px; border-left: 4px solid var(--c); overflow: hidden; }
+.layer-head { padding: 12px 14px 10px; display: flex; gap: 10px; align-items: flex-start; }
+.layer-glyph { width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--c) 20%, transparent); color: var(--c); display: grid; place-items: center; flex: none; }
+.layer-glyph svg { width: 20px; height: 20px; }
+.layer-name { font: 600 18px/1.2 var(--serif); }
+.layer-role { font-size: 12px; color: var(--muted); }
+.holders { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
+.holder { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 18%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--text)); }
+.holder.add { background: transparent; border: 1px dashed color-mix(in srgb, var(--c) 45%, transparent); }
+.ideas { padding: 0 14px 4px; }
+.idea { border-top: 1px solid var(--line); padding: 10px 0; }
+.idea-top { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.idea-top .by { color: var(--text); font-weight: 600; }
+.idea-top .sp { flex: 1; }
+.new-tag { color: var(--accent); font-weight: 700; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+.idea-body { margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; }
+.star { color: var(--faint); font-size: 18px; line-height: 1; padding: 2px 4px; }
+.star.on { color: var(--accent); }
+.kebab { color: var(--faint); padding: 2px 6px; font-size: 18px; line-height: 1; }
+.more { display: block; width: 100%; padding: 8px 0 10px; color: var(--muted); font-size: 13px; text-align: left; border-top: 1px solid var(--line); }
+.compose { display: flex; gap: 8px; padding: 10px 14px 14px; }
+.compose button { flex: 1; padding: 10px 6px; border-radius: 10px; background: var(--surface-2); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.compose button svg { width: 16px; height: 16px; }
+.compose .rec { background: color-mix(in srgb, var(--danger) 20%, var(--surface-2)); }
+
+/* player */
+.player { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.play { width: 38px; height: 38px; border-radius: 50%; background: var(--c, var(--accent)); color: #17120c; display: grid; place-items: center; flex: none; }
+.play svg { width: 16px; height: 16px; }
+.bar { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); position: relative; overflow: hidden; }
+.bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--c, var(--accent)); }
+.time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; }
+
+/* sheet */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { width: 100%; max-width: 640px; max-height: 92dvh; overflow: auto; background: var(--bg); border-radius: 20px 20px 0 0; padding: 10px 16px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
+.sheet h3 { font: 600 22px/1.2 var(--serif); margin: 0 0 4px; }
+.sheet .actions { display: flex; gap: 10px; margin-top: 18px; }
+.sheet .actions .btn { flex: 1; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tempo-row { display: flex; gap: 8px; }
+.tempo-row input { flex: 1; }
+.pick { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.pick-row { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1px solid transparent; }
+.pick-row.on { border-color: var(--c, var(--accent)); }
+.pick-row .nm { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+.pick-row input { margin-top: 10px; }
+.check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 14px; }
+.pick-row.on .check { background: var(--c, var(--accent)); border-color: var(--c, var(--accent)); color: #17120c; }
+.sugs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.sug { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); }
+
+/* recorder */
+.rec-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 18px 0 6px; }
+.rec-big { width: 96px; height: 96px; border-radius: 50%; background: var(--danger); display: grid; place-items: center; box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 60%, transparent); transition: box-shadow .08s; }
+.rec-big i { width: 34px; height: 34px; border-radius: 50%; background: #fff; transition: border-radius .2s, width .2s, height .2s; }
+.rec-big.on i { width: 30px; height: 30px; border-radius: 6px; }
+.rec-time { font: 600 32px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.toggle { display: flex; align-items: center; gap: 10px; background: var(--surface); padding: 12px 14px; border-radius: 12px; width: 100%; text-align: left; }
+.toggle .sw { width: 42px; height: 26px; border-radius: 13px; background: var(--line); position: relative; flex: none; transition: background .2s; }
+.toggle .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .2s; }
+.toggle.on .sw { background: var(--accent); }
+.toggle.on .sw::after { left: 19px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 40; font-size: 14px; max-width: 90vw; }
+.member-row { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
+.member-row .nm { display: flex; justify-content: space-between; align-items: center; }
+.member-row .nm b { font-size: 17px; }
+.me-tag { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.legend { background: var(--surface); border-radius: var(--radius); padding: 14px; margin-top: 18px; font-size: 14px; }
+.legend div { display: flex; gap: 10px; align-items: baseline; padding: 4px 0; }
+.legend b { color: var(--c); font-family: var(--serif); font-size: 16px; min-width: 124px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<datalist id="maqamat">
+  <option>Rast</option><option>Bayati</option><option>Hijaz</option><option>Saba</option><option>Nahawand</option>
+  <option>Kurd</option><option>Ajam</option><option>Sikah</option><option>Huzam</option><option>Nawa Athar</option>
+  <option>Hijazkar</option><option>Shahnaz</option><option>Suznak</option><option>Jiharkah</option><option>Husseini</option>
+</datalist>
+<datalist id="iqaat">
+  <option>Maqsum 4/4</option><option>Baladi 4/4</option><option>Saidi 4/4</option><option>Masmoudi 8/4</option>
+  <option>Wahda 4/4</option><option>Ayyub 2/4</option><option>Malfuf 2/4</option><option>Fallahi 2/4</option>
+  <option>Samai Thaqil 10/8</option><option>Dawr Hindi 7/8</option><option>Aksak 9/8</option><option>Karsilama 9/8</option>
+  <option>Jurjina 10/16</option><option>Free (no meter)</option>
+</datalist>
+
+<script>
+const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:8787'
+  : 'https://shajara-api.amrabdelwahab.workers.dev';
+
+const LAYERS = [
+  { key: 'bloom', name: 'Flowers & Leaves', short: 'Flowers', role: 'melody & ornaments', c: 'var(--bloom)',
+    glyph: '<path d="M12 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"/><path d="M12 7.5C12 4 9.5 3 8 4s-1 4 1.5 5M12 7.5C12 4 14.5 3 16 4s1 4-1.5 5M9.5 11C6 11 5 13.5 6 15s4 1 5-1.5M14.5 11c3.5 0 4.5 2.5 3.5 4s-4 1-5-1.5M12 12.5V21"/>' },
+  { key: 'bark', name: 'Tree Bark', short: 'Bark', role: 'harmony', c: 'var(--bark)',
+    glyph: '<path d="M8 21V9c0-2 1-4 4-6 3 2 4 4 4 6v12"/><path d="M10.5 8v3M13.5 11v4M10.5 15v3"/>' },
+  { key: 'ground', name: 'Ground', short: 'Ground', role: 'bass & low line', c: 'var(--ground)',
+    glyph: '<path d="M3 14c3-2 6-2 9 0s6 2 9 0"/><path d="M3 19c3-2 6-2 9 0s6 2 9 0"/><path d="M12 11V4M12 6c-1.5-1.5-3.5-1.5-4.5-.5M12 7c1.5-1.5 3.5-1.5 4.5-.5"/>' },
+  { key: 'substrate', name: 'Substrate', short: 'Substrate', role: 'pulse & rhythm', c: 'var(--substrate)',
+    glyph: '<circle cx="6" cy="17" r="2.5"/><circle cx="13" cy="18.5" r="1.8"/><circle cx="18" cy="16" r="2.2"/><circle cx="9" cy="11" r="1.6"/><circle cx="15.5" cy="10.5" r="1.3"/><path d="M3 21h18"/>' },
+];
+const LAYER = Object.fromEntries(LAYERS.map(l => [l.key, l]));
+const INSTRUMENTS = ['oud', 'piano', 'bass', 'drums', 'darbuka', 'riq', 'daf', 'bendir', 'guitar', 'violin', 'nay', 'qanun', 'voice', 'synth', 'percussion'];
+const MAX_REC_SEC = 300;
+
+const ICON = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
+  people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14.5c2.3.2 3.7 1.8 4 4.5"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="M13.5 6.5l4 4"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14M5 10h14M5 15h9"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1"/></svg>',
+  tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-7M12 14l-3-3M12 16l3-3"/><path d="M7 12a5 5 0 1 1 10 0"/></svg>',
+};
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('sj_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('sj_' + k, JSON.stringify(v)); } catch {} },
+};
+
+const S = {
+  key: store.get('key', ''),
+  me: store.get('me', ''),
+  seen: store.get('seen', {}),
+  members: [],
+  tracks: [],
+  track: null,
+  expanded: {},
+};
+
+const $ = (sel, root) => (root || document).querySelector(sel);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const memberName = id => (S.members.find(m => m.id === id) || {}).name || 'Someone';
+const fmtTime = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+function ago(ts) {
+  const d = (Date.now() - ts) / 1000;
+  if (d < 60) return 'just now';
+  if (d < 3600) return Math.floor(d / 60) + 'm ago';
+  if (d < 86400) return Math.floor(d / 3600) + 'h ago';
+  if (d < 86400 * 7) return Math.floor(d / 86400) + 'd ago';
+  return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  const headers = { 'X-Band-Key': S.key, 'X-Member': S.me };
+  let body = opts.body;
+  if (body && !(body instanceof Blob)) { headers['Content-Type'] = 'application/json'; body = JSON.stringify(body); }
+  if (body instanceof Blob) headers['Content-Type'] = body.type || 'application/octet-stream';
+  const res = await fetch(API + '/api' + path, { method: opts.method || 'GET', headers, body });
+  if (res.status === 401) { S.key = ''; store.set('key', ''); route(); throw new Error('Wrong passcode'); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+async function loadState() {
+  const d = await api('/state');
+  S.members = d.members;
+  S.tracks = d.tracks;
+}
+
+/* ---------- routing ---------- */
+function route() {
+  stopAll();
+  const h = location.hash.replace(/^#\/?/, '');
+  if (!S.key) return viewGate();
+  if (h === 'band') return viewBand();
+  if (!S.me || (S.members.length && !S.members.some(m => m.id === S.me))) return viewWho();
+  if (h.startsWith('t/')) return viewTrack(h.slice(2));
+  return viewHome();
+}
+window.addEventListener('hashchange', route);
+const go = h => { location.hash = h; };
+
+function topBar(title, left, right) {
+  return `<div class="top"><div class="top-in">${left || ''}<h1>${title}</h1>${right || ''}</div></div>`;
+}
+const backBtn = to => `<button class="icon-btn" aria-label="Back" onclick="go('${to}')">${ICON.back}</button>`;
+
+/* ---------- gate & identity ---------- */
+function viewGate() {
+  $('#app').innerHTML = `<div class="wrap"><div class="gate">
+    <div>${treeMark(56)}</div>
+    <h2>Shajara</h2>
+    <p class="muted">Where ‘ala bab allah grows tracks. Enter the band passcode.</p>
+    <input id="pc" type="password" autocomplete="current-password" placeholder="Band passcode">
+    <button class="btn primary block" id="enter">Enter</button>
+  </div></div>`;
+  const submit = async () => {
+    const v = $('#pc').value.trim();
+    if (!v) return;
+    S.key = v;
+    try { await loadState(); store.set('key', v); route(); }
+    catch (e) { S.key = ''; toast(e.message); }
+  };
+  $('#enter').onclick = submit;
+  $('#pc').onkeydown = e => { if (e.key === 'Enter') submit(); };
+}
+
+async function viewWho() {
+  if (!S.members.length) { try { await loadState(); } catch (e) { return toast(e.message); } }
+  $('#app').innerHTML = `<div class="wrap"><div class="gate">
+    <h2>Who's this?</h2>
+    <p class="muted">So the band knows who posted what. You can change it later under Band.</p>
+    <div class="people">${S.members.map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(m.instruments) || '&nbsp;'}</span></button>`).join('')}</div>
+    <button class="btn block" onclick="go('band')">Someone else? Add to the band</button>
+  </div></div>`;
+  $('#app').querySelectorAll('.person').forEach(b => b.onclick = () => { S.me = b.dataset.id; store.set('me', S.me); route(); });
+}
+
+/* ---------- home ---------- */
+function viewHome() {
+  const render = () => {
+    const me = S.members.find(m => m.id === S.me);
+    const list = S.tracks.map(t => {
+      const unseen = (S.seen[t.id] || 0) < t.updated_at;
+      const meta = [t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.meter, t.tempo && t.tempo + ' bpm'].filter(Boolean).map(esc).join(' · ');
+      const mini = LAYERS.map(l => {
+        const hs = t.holders.filter(h => h.layer === l.key);
+        const who = hs.length ? hs.map(h => esc(memberName(h.member_id))).join(', ') : '<span style="opacity:.5">open</span>';
+        return `<div class="mini-layer" style="--c:${l.c}"><div class="ln">${l.short}${t.counts[l.key] ? ' · ' + t.counts[l.key] : ''}</div><div class="who">${who}</div></div>`;
+      }).join('');
+      return `<button class="track-row" onclick="go('t/${esc(t.id)}')">${unseen ? '<i class="dot"></i>' : ''}
+        <div class="t">${esc(t.title)}</div><div class="meta">${meta || 'no details yet'} · ${ago(t.updated_at)}</div>
+        <div class="mini-tree">${mini}</div></button>`;
+    }).join('');
+    $('#app').innerHTML = topBar('Shajara', `<span style="width:32px;display:grid;place-items:center">${treeMark(28)}</span>`,
+      `<button class="icon-btn" aria-label="Band" onclick="go('band')">${ICON.people}</button>`) +
+      `<div class="wrap">
+        <div class="hello"><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted small">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} growing</div></div>
+        ${list || `<div class="empty">No tracks yet.<br>Plant the first one.</div>`}
+        ${legend()}
+      </div>
+      <button class="btn primary fab" onclick="newTrack()">+ New track</button>`;
+  };
+  render();
+  loadState().then(render).catch(e => toast(e.message));
+  poll(() => loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === '') render(); }));
+}
+
+function legend() {
+  return `<div class="legend"><div class="small muted" style="display:block;margin-bottom:4px">The tree, from the top down</div>${LAYERS.map(l =>
+    `<div style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
+    <div class="small faint" style="display:block;margin-top:6px">Anyone can hold any layer, on any instrument.</div></div>`;
+}
+
+function treeMark(size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true">
+    <circle cx="32" cy="20" r="13" fill="var(--bloom)" opacity=".9"/><circle cx="20" cy="26" r="9" fill="var(--bloom)" opacity=".7"/><circle cx="44" cy="26" r="9" fill="var(--bloom)" opacity=".7"/>
+    <path d="M28 52V32h8v20z" fill="var(--bark)"/><path d="M8 52h48v4H8z" fill="var(--ground)"/><path d="M12 58h40v3H12z" fill="var(--substrate)"/></svg>`;
+}
+
+/* ---------- track ---------- */
+async function viewTrack(id) {
+  const cached = S.track && S.track.id === id ? S.track : null;
+  if (cached) renderTrack();
+  else $('#app').innerHTML = topBar('…', backBtn('')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
+  try {
+    if (!S.members.length) await loadState();
+    S.track = await api('/tracks/' + id);
+    renderTrack();
+  } catch (e) { toast(e.message); if (!cached) go(''); return; }
+  poll(async () => {
+    if (location.hash.replace(/^#\/?/, '') !== 't/' + id || playing.size || $('.scrim')) return;
+    const t = await api('/tracks/' + id);
+    if (t.updated_at !== S.track.updated_at || t.ideas.length !== S.track.ideas.length) { S.track = t; renderTrack(); }
+  });
+}
+
+function renderTrack() {
+  const t = S.track;
+  const prevSeen = S.seenBefore && S.seenBefore.id === t.id ? S.seenBefore.at : (S.seen[t.id] || 0);
+  S.seenBefore = { id: t.id, at: prevSeen };
+  S.seen[t.id] = Date.now(); store.set('seen', S.seen);
+
+  const chip = (k, v, ghost) => `<button class="chip${v ? '' : ' ghost'}" onclick="editTrack()">${v ? `<span class="k">${k}</span>${esc(v)}` : ghost}</button>`;
+  const chips = [
+    chip('Maqam', t.maqam ? t.maqam + (t.tonic ? ' on ' + t.tonic : '') : '', '+ maqam'),
+    chip('Iqa‘', t.meter, '+ iqa‘ / meter'),
+    chip('Tempo', t.tempo ? t.tempo + ' bpm' : '', '+ tempo'),
+  ].join('');
+
+  const layers = LAYERS.map(l => {
+    const hs = t.holders.filter(h => h.layer === l.key);
+    const ideas = t.ideas.filter(i => i.layer === l.key).sort((a, b) => b.starred - a.starred || b.created_at - a.created_at);
+    const open = S.expanded[l.key];
+    const shown = open ? ideas : ideas.slice(0, 3);
+    return `<section class="layer" style="--c:${l.c}" id="L-${l.key}">
+      <div class="layer-head"><div class="layer-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
+        <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div></div>
+      <div class="holders">${hs.map(h => `<button class="holder" onclick="pickHolders('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')}
+        <button class="holder add" onclick="pickHolders('${l.key}')">${hs.length ? 'swap' : '+ who holds this?'}</button></div>
+      ${ideas.length ? `<div class="ideas">${shown.map(i => ideaHtml(i, prevSeen)).join('')}
+        ${ideas.length > 3 ? `<button class="more" onclick="S.expanded['${l.key}']=${!open};renderTrack()">${open ? 'Show fewer' : 'Show all ' + ideas.length + ' ideas'}</button>` : ''}</div>` : ''}
+      <div class="compose">
+        <button class="rec" onclick="openRecorder('${l.key}')">${ICON.mic}Record</button>
+        <button onclick="openNote('${l.key}')">${ICON.note}Note</button>
+        <button onclick="openLink('${l.key}')">${ICON.link}Link</button>
+      </div></section>`;
+  }).join('');
+
+  const treeAudio = stackIdeas().length;
+  if (treeAudio > 1) prefetchStack();
+  $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
+    `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Edit" onclick="editTrack()">${ICON.edit}</button>`) +
+    `<div class="wrap">
+      <div class="chips">${chips}</div>
+      ${t.notes ? `<div class="notes">${esc(t.notes)}</div>` : ''}
+      ${treeAudio > 1 ? `<div class="tree-bar"><button class="btn" id="treeBtn" onclick="toggleTree()">${ICON.tree}<span>Hear the tree (${treeAudio} layers)</span></button></div>` : ''}
+      ${layers}
+      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ marks the keeper for a layer; “Hear the tree” plays each layer’s keeper (or latest recording) together.</p>
+    </div>`;
+}
+
+function ideaHtml(i, prevSeen) {
+  const isNew = i.created_at > prevSeen && i.author_id !== S.me;
+  let body = '';
+  if (i.kind === 'audio') body = `<div class="player" data-audio="${esc(i.id)}"><button class="play" aria-label="Play" onclick="togglePlay('${esc(i.id)}')">${ICON.play}</button><div class="bar"><i></i></div><span class="time">${fmtTime(i.duration)}</span></div>${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
+  else if (i.kind === 'link') body = `<div class="idea-body"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(prettyUrl(i.url))}</a>${i.body ? '\n' + esc(i.body) : ''}</div>`;
+  else body = `<div class="idea-body">${esc(i.body)}</div>`;
+  return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span><span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
+    <button class="star${i.starred ? ' on' : ''}" aria-label="Keeper" onclick="toggleStar('${esc(i.id)}')">${i.starred ? '★' : '☆'}</button>
+    <button class="kebab" aria-label="More" onclick="ideaMenu('${esc(i.id)}')">⋯</button></div>${body}</div>`;
+}
+function prettyUrl(u) { try { const x = new URL(u); return x.hostname.replace(/^www\./, '') + (x.pathname.length > 1 ? x.pathname.slice(0, 28) + (x.pathname.length > 28 ? '…' : '') : ''); } catch { return u; } }
+
+async function toggleStar(id) {
+  const i = S.track.ideas.find(x => x.id === id);
+  i.starred = i.starred ? 0 : 1; renderTrack();
+  try { await api('/ideas/' + id, { method: 'PATCH', body: { starred: !!i.starred } }); } catch (e) { toast(e.message); }
+}
+
+function ideaMenu(id) {
+  const i = S.track.ideas.find(x => x.id === id);
+  sheet(`<h3>This idea</h3><p class="muted small">${esc(LAYER[i.layer].name)} · by ${esc(memberName(i.author_id))} · ${ago(i.created_at)}</p>
+    <label class="field">Move to layer</label>
+    <div class="sugs">${LAYERS.filter(l => l.key !== i.layer).map(l => `<button class="sug" style="color:${l.c}" data-move="${l.key}">${l.name}</button>`).join('')}</div>
+    <label class="field">Caption</label><textarea id="cap" rows="2">${esc(i.body)}</textarea>
+    <div class="actions"><button class="btn danger" id="del">Delete</button><button class="btn primary" id="save">Save</button></div>`, root => {
+    root.querySelectorAll('[data-move]').forEach(b => b.onclick = async () => {
+      closeSheet();
+      try { await api('/ideas/' + id, { method: 'PATCH', body: { layer: b.dataset.move } }); i.layer = b.dataset.move; renderTrack(); } catch (e) { toast(e.message); }
+    });
+    $('#save', root).onclick = async () => {
+      const body = $('#cap', root).value;
+      if (i.kind === 'text' && !body.trim()) return toast('A note can’t be empty');
+      closeSheet();
+      try { await api('/ideas/' + id, { method: 'PATCH', body: { body } }); i.body = body.trim(); renderTrack(); } catch (e) { toast(e.message); }
+    };
+    confirmBtn($('#del', root), 'Tap again to delete', async () => {
+      closeSheet();
+      try { await api('/ideas/' + id, { method: 'DELETE' }); S.track.ideas = S.track.ideas.filter(x => x.id !== id); renderTrack(); } catch (e) { toast(e.message); }
+    });
+  });
+}
+
+function confirmBtn(btn, label, fn) {
+  let armed = false;
+  btn.onclick = () => { if (armed) return fn(); armed = true; btn.textContent = label; setTimeout(() => { armed = false; }, 4000); };
+}
+
+/* ---------- sheets ---------- */
+function sheet(html, init) {
+  closeSheet();
+  const s = document.createElement('div');
+  s.className = 'scrim';
+  s.innerHTML = `<div class="sheet"><div class="grab"></div>${html}</div>`;
+  s.onclick = e => { if (e.target === s) closeSheet(); };
+  document.body.appendChild(s);
+  if (init) init(s);
+  return s;
+}
+function closeSheet() {
+  const s = $('.scrim');
+  if (!s) return;
+  if (s._onclose) s._onclose();
+  s.remove();
+}
+
+function trackForm(t) {
+  t = t || {};
+  return `<label class="field">Title</label><input id="f-title" type="text" value="${esc(t.title)}" placeholder="Working title is fine">
+    <div class="row2"><div><label class="field">Maqam</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
+    <div><label class="field">On (tonic)</label><input id="f-tonic" type="text" value="${esc(t.tonic)}" placeholder="e.g. D"></div></div>
+    <label class="field">Iqa‘ / meter</label><input id="f-meter" type="text" list="iqaat" value="${esc(t.meter)}" placeholder="e.g. Maqsum 4/4">
+    <label class="field">Tempo (bpm)</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
+    <label class="field">Notes</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>`;
+}
+function readTrackForm(root) {
+  return { title: $('#f-title', root).value, maqam: $('#f-maqam', root).value, tonic: $('#f-tonic', root).value,
+    meter: $('#f-meter', root).value, tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value };
+}
+function wireTap(root) {
+  let taps = [];
+  $('#tap', root).onclick = () => {
+    const n = performance.now();
+    taps = taps.filter(x => n - x < 2500); taps.push(n);
+    if (taps.length > 1) {
+      const gaps = taps.slice(1).map((x, i) => x - taps[i]);
+      $('#f-tempo', root).value = Math.round(60000 / (gaps.reduce((a, b) => a + b, 0) / gaps.length));
+    }
+  };
+}
+
+function newTrack() {
+  sheet(`<h3>New track</h3><p class="muted small">Only the title is needed. Everything else can grow later.</p>${trackForm()}
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Plant it</button></div>`, root => {
+    wireTap(root);
+    setTimeout(() => $('#f-title', root).focus(), 50);
+    $('#save', root).onclick = async () => {
+      const f = readTrackForm(root);
+      if (!f.title.trim()) return toast('Give it a name, even a working one');
+      $('#save', root).disabled = true;
+      try { const t = await api('/tracks', { method: 'POST', body: f }); S.track = t; closeSheet(); go('t/' + t.id); }
+      catch (e) { toast(e.message); $('#save', root).disabled = false; }
+    };
+  });
+}
+
+function editTrack() {
+  const t = S.track;
+  sheet(`<h3>Track details</h3>${trackForm(t)}
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>
+    <div style="margin-top:28px"><button class="btn danger block" id="del">Delete track</button></div>`, root => {
+    wireTap(root);
+    $('#save', root).onclick = async () => {
+      const f = readTrackForm(root);
+      if (!f.title.trim()) return toast('Title can’t be empty');
+      try { S.track = await api('/tracks/' + t.id, { method: 'PATCH', body: f }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+    };
+    confirmBtn($('#del', root), 'Tap again: deletes every idea and recording', async () => {
+      try { await api('/tracks/' + t.id, { method: 'DELETE' }); closeSheet(); S.track = null; go(''); } catch (e) { toast(e.message); }
+    });
+  });
+}
+
+function pickHolders(layerKey) {
+  const l = LAYER[layerKey];
+  const cur = Object.fromEntries(S.track.holders.filter(h => h.layer === layerKey).map(h => [h.member_id, h.instrument]));
+  const rows = S.members.map(m => {
+    const on = m.id in cur;
+    const mine = m.instruments.split(',').map(s => s.trim()).filter(Boolean);
+    const sugs = [...new Set([...mine, ...INSTRUMENTS])].slice(0, 10);
+    return `<div class="pick-row${on ? ' on' : ''}" data-id="${esc(m.id)}" style="--c:${l.c}">
+      <div class="nm"><span>${esc(m.name)}</span><span class="check">${on ? '✓' : ''}</span></div>
+      <div class="${on ? '' : 'hidden'} inst"><input type="text" placeholder="on which instrument?" value="${esc(cur[m.id] || '')}">
+      <div class="sugs">${sugs.map(s => `<button class="sug" type="button">${esc(s)}</button>`).join('')}</div></div></div>`;
+  }).join('');
+  sheet(`<h3 style="color:${l.c}">${l.name}</h3><p class="muted small">Who holds the ${l.role} on this track?</p><div class="pick">${rows}</div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>`, root => {
+    root.querySelectorAll('.pick-row').forEach(r => {
+      $('.nm', r).onclick = () => {
+        const on = r.classList.toggle('on');
+        $('.check', r).textContent = on ? '✓' : '';
+        $('.inst', r).classList.toggle('hidden', !on);
+        if (on && !$('input', r).value) { const m = S.members.find(x => x.id === r.dataset.id); const first = m.instruments.split(',')[0].trim(); if (first) $('input', r).value = first; }
+      };
+      r.querySelectorAll('.sug').forEach(s => s.onclick = () => { $('input', r).value = s.textContent; });
+    });
+    $('#save', root).onclick = async () => {
+      const holders = [...root.querySelectorAll('.pick-row.on')].map(r => ({ member_id: r.dataset.id, instrument: $('input', r).value }));
+      try { S.track = await api(`/tracks/${S.track.id}/layers/${layerKey}`, { method: 'PUT', body: { holders } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+    };
+  });
+}
+
+function openNote(layerKey) {
+  const l = LAYER[layerKey];
+  sheet(`<h3 style="color:${l.c}">Note · ${l.name}</h3><textarea id="txt" placeholder="e.g. half-time feel in the B part, leave space after the 3rd bar"></textarea>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Post</button></div>`, root => {
+    setTimeout(() => $('#txt', root).focus(), 50);
+    $('#save', root).onclick = () => postIdea({ layer: layerKey, kind: 'text', body: $('#txt', root).value }, root);
+  });
+}
+
+function openLink(layerKey) {
+  const l = LAYER[layerKey];
+  sheet(`<h3 style="color:${l.c}">Link · ${l.name}</h3><label class="field">Link</label><input id="url" type="url" inputmode="url" placeholder="https://youtube.com/…">
+    <label class="field">What to listen for</label><textarea id="txt" rows="2" placeholder="e.g. the bass under the chorus at 1:20"></textarea>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Post</button></div>`, root => {
+    $('#url', root).addEventListener('paste', () => setTimeout(() => $('#txt', root).focus(), 0));
+    setTimeout(() => $('#url', root).focus(), 50);
+    $('#save', root).onclick = () => {
+      let url = $('#url', root).value.trim();
+      if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+      postIdea({ layer: layerKey, kind: 'link', url, body: $('#txt', root).value }, root);
+    };
+  });
+}
+
+async function postIdea(payload, root) {
+  const btn = $('#save', root);
+  if (btn) btn.disabled = true;
+  try {
+    const idea = await api(`/tracks/${S.track.id}/ideas`, { method: 'POST', body: payload });
+    S.track.ideas.unshift(idea);
+    S.track.updated_at = idea.created_at;
+    closeSheet(); renderTrack();
+    const el = $('#L-' + payload.layer); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  } catch (e) { toast(e.message); if (btn) btn.disabled = false; }
+}
+
+/* ---------- recording ---------- */
+function pickMime() {
+  if (!window.MediaRecorder) return null;
+  return ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+}
+
+function openRecorder(layerKey) {
+  const l = LAYER[layerKey];
+  const mime = pickMime();
+  if (mime === null) return toast('This browser can’t record audio');
+  const stackable = stackIdeas().filter(i => i.layer !== layerKey).length;
+  let alongOn = store.get('along', false) && stackable > 0;
+  const R = { chunks: [], blob: null, secs: 0 };
+  if (stackable) prefetchStack();
+
+  const s = sheet(`<h3 style="color:${l.c}">Record · ${l.name}</h3><p class="muted small" id="hint">Tap to start. Hum it, play it, beatbox it.</p>
+    <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0:00</div></div>
+    ${stackable ? `<button class="toggle${alongOn ? ' on' : ''}" id="along"><span class="sw"></span><span><b>Play the tree while I record</b><br><span class="small muted">Hear the other layers (${stackable}) as you record. Use headphones.</span></span></button>` : ''}
+    <div id="review" class="hidden"><div class="player" data-local="1" style="--c:${l.c}"><button class="play" id="pv">${ICON.play}</button><div class="bar"><i></i></div><span class="time" id="pvTime"></span></div>
+      <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. idea for the intro, slow">
+      <div class="actions"><button class="btn" id="again">Redo</button><button class="btn primary" id="save">Post</button></div></div>`, root => {
+    const along = $('#along', root);
+    if (along) along.onclick = () => { alongOn = !alongOn; along.classList.toggle('on', alongOn); store.set('along', alongOn); };
+    $('#recBtn', root).onclick = () => (R.rec && R.rec.state === 'recording' ? stop() : start());
+    $('#again', root).onclick = () => { stopPreview(); R.blob = null; $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); if (along) along.classList.remove('hidden'); $('#recTime', root).textContent = '0:00'; $('#hint', root).textContent = 'Tap to start.'; };
+    $('#pv', root).onclick = () => togglePreview();
+    $('#save', root).onclick = save;
+  });
+  s._onclose = () => { cleanup(); stopPreview(); };
+
+  async function start() {
+    const els = alongOn ? stackEls(layerKey) : [];
+    unlockEls(els);
+    try {
+      R.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    } catch (e) { return toast('Microphone blocked. Allow it in your browser settings.'); }
+    R.chunks = [];
+    R.rec = new MediaRecorder(R.stream, mime ? { mimeType: mime, audioBitsPerSecond: 128000 } : { audioBitsPerSecond: 128000 });
+    R.rec.ondataavailable = e => { if (e.data && e.data.size) R.chunks.push(e.data); };
+    R.rec.onstop = () => {
+      R.blob = new Blob(R.chunks, { type: (R.rec.mimeType || mime || 'audio/mp4').split(';')[0] });
+      cleanup();
+      $('#recBtn', s).parentElement.classList.add('hidden');
+      const along = $('#along', s); if (along) along.classList.add('hidden');
+      $('#review', s).classList.remove('hidden');
+      $('#pvTime', s).textContent = fmtTime(R.secs);
+      $('#hint', s).textContent = 'Have a listen, then post it to the band.';
+    };
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      R.ctx = new Ctx();
+      const an = R.ctx.createAnalyser(); an.fftSize = 512;
+      R.ctx.createMediaStreamSource(R.stream).connect(an);
+      const buf = new Uint8Array(an.fftSize);
+      const btn = $('#recBtn', s);
+      const tick = () => {
+        an.getByteTimeDomainData(buf);
+        let sum = 0; for (const v of buf) sum += (v - 128) * (v - 128);
+        const lvl = Math.min(1, Math.sqrt(sum / buf.length) / 40);
+        btn.style.boxShadow = `0 0 0 ${Math.round(lvl * 22)}px color-mix(in srgb, var(--danger) 35%, transparent)`;
+        R.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch {}
+    if (els.length) startEls(els);
+    R.rec.start(1000);
+    R.t0 = performance.now();
+    $('#recBtn', s).classList.add('on');
+    $('#hint', s).textContent = 'Recording… tap to stop.';
+    R.timer = setInterval(() => {
+      R.secs = (performance.now() - R.t0) / 1000;
+      $('#recTime', s).textContent = fmtTime(R.secs);
+      if (R.secs >= MAX_REC_SEC) stop();
+    }, 250);
+  }
+  function stop() {
+    R.secs = (performance.now() - R.t0) / 1000;
+    clearInterval(R.timer);
+    stopAll();
+    if (R.rec && R.rec.state !== 'inactive') R.rec.stop();
+  }
+  function cleanup() {
+    clearInterval(R.timer);
+    cancelAnimationFrame(R.raf);
+    if (R.rec && R.rec.state === 'recording') { R.rec.onstop = null; R.rec.stop(); }
+    if (R.stream) R.stream.getTracks().forEach(t => t.stop());
+    if (R.ctx) R.ctx.close().catch(() => {});
+    R.stream = null; R.ctx = null;
+    stopAll();
+  }
+  let pvAudio = null;
+  function togglePreview() {
+    if (!R.blob) return;
+    if (!pvAudio) {
+      pvAudio = new Audio(URL.createObjectURL(R.blob));
+      const bar = $('#review .bar i', s);
+      pvAudio.ontimeupdate = () => { bar.style.width = (100 * pvAudio.currentTime / (pvAudio.duration && isFinite(pvAudio.duration) ? pvAudio.duration : R.secs)) + '%'; };
+      pvAudio.onended = () => { $('#pv', s).innerHTML = ICON.play; bar.style.width = '0'; };
+    }
+    if (pvAudio.paused) { pvAudio.play(); $('#pv', s).innerHTML = ICON.pause; } else { pvAudio.pause(); $('#pv', s).innerHTML = ICON.play; }
+  }
+  function stopPreview() { if (pvAudio) { pvAudio.pause(); URL.revokeObjectURL(pvAudio.src); pvAudio = null; } }
+  async function save() {
+    if (!R.blob) return;
+    const btn = $('#save', s); btn.disabled = true; btn.textContent = 'Uploading…';
+    try {
+      const up = await api('/audio', { method: 'POST', body: R.blob });
+      await postIdea({ layer: layerKey, kind: 'audio', audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10, body: $('#cap', s).value }, s);
+    } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Post'; }
+  }
+}
+
+/* ---------- playback ---------- */
+const audioCache = new Map();
+const playing = new Map();
+
+const inflight = new Map();
+function audioUrl(idea) {
+  const id = idea.audio_id;
+  if (audioCache.get(id)) return Promise.resolve(audioCache.get(id));
+  if (!inflight.has(id)) {
+    inflight.set(id, fetch(`${API}/api/audio/${id}`, { headers: { 'X-Band-Key': S.key } })
+      .then(res => { if (!res.ok) throw new Error('Could not load recording'); return res.blob(); })
+      .then(blob => { const url = URL.createObjectURL(blob); audioCache.set(id, url); return url; })
+      .finally(() => inflight.delete(id)));
+  }
+  return inflight.get(id);
+}
+
+function playerEl(id) { return document.querySelector(`[data-audio="${id}"]`); }
+function paint(id, state) {
+  const el = playerEl(id); if (!el) return;
+  $('.play', el).innerHTML = state === 'play' ? ICON.pause : ICON.play;
+  if (state === 'stop') $('.bar i', el).style.width = '0';
+}
+
+async function togglePlay(id) {
+  if (playing.has(id)) { const a = playing.get(id); a.pause(); playing.delete(id); paint(id, 'pause'); return; }
+  stopAll();
+  const idea = S.track.ideas.find(i => i.id === id);
+  let url = audioCache.get(idea.audio_id);
+  if (!url) { try { url = await audioUrl(idea); } catch (e) { return toast(e.message); } }
+  const a = new Audio(url);
+  wireProgress(id, a, idea.duration);
+  playing.set(id, a);
+  paint(id, 'play');
+  a.play().catch(e => {
+    if (e.name !== 'NotAllowedError' || playing.get(id) !== a) return;
+    playing.delete(id); paint(id, 'stop'); toast('Tap play again');
+  });
+}
+function wireProgress(id, a, fallbackDur) {
+  a.ontimeupdate = () => {
+    const el = playerEl(id); if (!el) return;
+    const d = a.duration && isFinite(a.duration) ? a.duration : fallbackDur || 1;
+    $('.bar i', el).style.width = Math.min(100, 100 * a.currentTime / d) + '%';
+    $('.time', el).textContent = fmtTime(a.currentTime);
+  };
+  a.onended = () => { playing.delete(id); paint(id, 'stop'); const el = playerEl(id); if (el) $('.time', el).textContent = fmtTime(fallbackDur); updateTreeBtn(); };
+}
+function stopAll() {
+  for (const [id, a] of playing) { a.pause(); paint(id, 'stop'); }
+  playing.clear();
+  updateTreeBtn();
+}
+
+function stackIdeas() {
+  if (!S.track) return [];
+  return LAYERS.map(l => {
+    const audio = S.track.ideas.filter(i => i.layer === l.key && i.kind === 'audio');
+    return audio.find(i => i.starred) || audio.sort((a, b) => b.created_at - a.created_at)[0];
+  }).filter(Boolean);
+}
+
+function prefetchStack() {
+  return Promise.all(stackIdeas().map(i => audioUrl(i).catch(() => null)));
+}
+function stackEls(exceptLayer) {
+  return stackIdeas().filter(i => i.layer !== exceptLayer && audioCache.get(i.audio_id)).map(i => [i, new Audio(audioCache.get(i.audio_id))]);
+}
+function unlockEls(els) {
+  for (const [, a] of els) {
+    a.muted = true;
+    a.play().then(() => { if (!a._go) { a.pause(); a.currentTime = 0; } }).catch(() => {});
+  }
+}
+function startEls(els) {
+  stopAll();
+  for (const [i, a] of els) { wireProgress(i.id, a, i.duration); playing.set(i.id, a); paint(i.id, 'play'); }
+  for (const [, a] of els) { a._go = true; a.muted = false; a.currentTime = 0; a.play().catch(() => {}); }
+  updateTreeBtn();
+}
+async function toggleTree() {
+  if (playing.size) return stopAll();
+  if (stackEls().length < stackIdeas().length) { toast('Loading the tree…'); await prefetchStack(); }
+  startEls(stackEls());
+}
+function updateTreeBtn() {
+  const b = $('#treeBtn'); if (!b) return;
+  $('span', b).textContent = playing.size > 1 ? 'Stop the tree' : `Hear the tree (${stackIdeas().length} layers)`;
+}
+
+/* ---------- band ---------- */
+function viewBand() {
+  const render = () => {
+    $('#app').innerHTML = topBar('The band', S.me ? backBtn('') : '') + `<div class="wrap">
+      <p class="muted small">Tap a name to switch who you are on this phone. Instruments are just suggestions for the layer picker; anyone can play anything.</p>
+      ${S.members.map(m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b>${m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}</div>
+        <input type="text" data-inst="${esc(m.id)}" value="${esc(m.instruments)}" placeholder="instruments, comma separated" style="margin-top:8px"></div>`).join('')}
+      <label class="field">Add someone (guest, 5th member…)</label>
+      <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="add">Add</button></div>
+      <div style="margin-top:28px"><button class="btn block" id="logout">Sign out of this phone</button></div>
+    </div>`;
+    $('#app').querySelectorAll('[data-me]').forEach(b => b.onclick = () => { S.me = b.dataset.me; store.set('me', S.me); render(); });
+    $('#app').querySelectorAll('[data-inst]').forEach(inp => inp.onchange = async () => {
+      try { const m = await api('/members/' + inp.dataset.inst, { method: 'PATCH', body: { instruments: inp.value } }); Object.assign(S.members.find(x => x.id === m.id), m); toast('Saved'); } catch (e) { toast(e.message); }
+    });
+    $('#add').onclick = async () => {
+      const name = $('#newName').value.trim(); if (!name) return;
+      try { const m = await api('/members', { method: 'POST', body: { name } }); S.members.push(m); if (!S.me) { S.me = m.id; store.set('me', m.id); } render(); } catch (e) { toast(e.message); }
+    };
+    confirmBtn($('#logout'), 'Tap again to sign out', () => { S.key = ''; S.me = ''; store.set('key', ''); store.set('me', ''); go(''); route(); });
+  };
+  render();
+  loadState().then(render).catch(e => toast(e.message));
+}
+
+function shareTrack() {
+  const t = S.track;
+  const url = location.origin + location.pathname + '#/t/' + t.id;
+  const text = `🌳 ${t.title}: new ideas in Shajara`;
+  if (navigator.share) navigator.share({ title: t.title, text, url }).catch(() => {});
+  else window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank');
+}
+
+/* ---------- polling ---------- */
+let pollTimer = null;
+function poll(fn) {
+  clearInterval(pollTimer);
+  pollTimer = setInterval(() => { if (document.visibilityState === 'visible') fn().catch(() => {}); }, 20000);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && S.key && !$('.scrim') && !playing.size) route();
+});
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+
+(async () => {
+  if (S.key) { try { await loadState(); } catch {} }
+  route();
+})();
+</script>
+</body>
+</html>
