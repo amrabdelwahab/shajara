@@ -17,25 +17,39 @@ CREATE TABLE IF NOT EXISTS tracks (
   updated_at INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS holders (
+CREATE TABLE IF NOT EXISTS sections (
+  id TEXT PRIMARY KEY,
   track_id TEXT NOT NULL,
+  name TEXT NOT NULL DEFAULT '',
+  position REAL NOT NULL DEFAULT 0,
+  meter_n INTEGER NOT NULL DEFAULT 4,
+  meter_sub INTEGER NOT NULL DEFAULT 1,
+  notes TEXT NOT NULL DEFAULT '',
+  created_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS holders (
+  section_id TEXT NOT NULL,
   layer TEXT NOT NULL,
   member_id TEXT NOT NULL,
   instrument TEXT NOT NULL DEFAULT '',
-  PRIMARY KEY (track_id, layer, member_id)
+  PRIMARY KEY (section_id, layer, member_id)
 );
 
 CREATE TABLE IF NOT EXISTS beats (
-  track_id TEXT NOT NULL,
+  section_id TEXT NOT NULL,
   layer TEXT NOT NULL,
   name TEXT NOT NULL DEFAULT '',
   pattern TEXT NOT NULL DEFAULT '',
-  PRIMARY KEY (track_id, layer)
+  sub INTEGER NOT NULL DEFAULT 2,
+  bar INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (section_id, layer)
 );
 
 CREATE TABLE IF NOT EXISTS ideas (
   id TEXT PRIMARY KEY,
   track_id TEXT NOT NULL,
+  section_id TEXT,
   layer TEXT NOT NULL,
   author_id TEXT,
   kind TEXT NOT NULL,
@@ -45,7 +59,9 @@ CREATE TABLE IF NOT EXISTS ideas (
   audio_mime TEXT,
   duration REAL,
   starred INTEGER NOT NULL DEFAULT 0,
+  data TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS ideas_track ON ideas (track_id, created_at);
+CREATE INDEX IF NOT EXISTS sections_track ON sections (track_id, position);

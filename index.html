@@ -26,6 +26,7 @@
   --bark: #c98d5e;
   --ground: #95b56f;
   --substrate: #8394d0;
+  --transition: #d9b36c;
   --radius: 16px;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
@@ -47,6 +48,8 @@ a { color: var(--accent); }
 .top h1 { font: 600 20px/1.2 var(--serif); margin: 0; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .icon-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); flex: none; }
 .icon-btn svg { width: 20px; height: 20px; }
+.icon-btn.sm { width: 34px; height: 34px; border-radius: 10px; }
+.icon-btn.sm svg { width: 17px; height: 17px; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: var(--surface-2); font-weight: 600; }
 .btn svg { width: 18px; height: 18px; }
@@ -75,13 +78,15 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .hello h2 { font: 600 30px/1.15 var(--serif); margin: 0; }
 .track-row { display: block; width: 100%; text-align: left; background: var(--surface); border-radius: var(--radius); padding: 14px 14px 12px; margin-bottom: 12px; position: relative; }
 .track-row .t { font: 600 20px/1.25 var(--serif); padding-right: 18px; }
-.track-row .meta { font-size: 13px; color: var(--muted); margin: 2px 0 12px; }
+.track-row .meta { font-size: 13px; color: var(--muted); margin: 2px 0 8px; }
+.track-row .form-line { font: 14px/1.3 var(--serif); color: color-mix(in srgb, var(--text) 80%, var(--muted)); margin-bottom: 10px; }
+.track-row .form-line .ar { color: var(--transition); padding: 0 4px; }
 .dot { position: absolute; top: 20px; right: 16px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
 .mini-tree { display: flex; flex-direction: column; gap: 4px; }
 .mini-layer { display: grid; grid-template-columns: 76px 1fr auto; gap: 8px; align-items: center; border-radius: 8px; padding: 6px 9px; font-size: 13px; background: color-mix(in srgb, var(--c) 11%, transparent); }
 .mini-layer .ln { font-weight: 700; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--c); }
 .mini-layer .who { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-layer .bt { font-size: 12px; color: color-mix(in srgb, var(--c) 75%, var(--text)); white-space: nowrap; }
+.mini-layer .bt { font-size: 12px; color: color-mix(in srgb, var(--c) 75%, var(--text)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
 .mini-layer .open { color: var(--faint); }
 .empty { text-align: center; padding: 48px 12px; color: var(--muted); }
 .fab { position: fixed; right: max(16px, calc(50% - 304px)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 10px 28px rgba(0,0,0,.5); border-radius: 999px; padding: 15px 22px; }
@@ -100,6 +105,24 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .chip.ghost { color: var(--faint); border: 1px dashed var(--line); background: transparent; }
 .notes { display: block; width: 100%; text-align: left; background: var(--surface); border-radius: 12px; padding: 12px 14px; margin-top: 12px; white-space: pre-wrap; font-size: 15px; color: color-mix(in srgb, var(--text) 85%, var(--muted)); }
 
+.form { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding: 4px 16px 12px; margin: 0 -16px 6px; scrollbar-width: none; }
+.form::-webkit-scrollbar { display: none; }
+.sec-pill { flex: none; padding: 9px 15px; border-radius: 12px; background: var(--surface); font: 600 16px/1.1 var(--serif); display: flex; flex-direction: column; align-items: flex-start; gap: 5px; border: 1.5px solid transparent; }
+.sec-pill .dots { display: flex; gap: 3px; }
+.sec-pill .dots i { width: 6px; height: 6px; border-radius: 2px; background: var(--c); opacity: .2; }
+.sec-pill .dots i.on { opacity: 1; }
+.sec-pill.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.tr-pill { flex: none; height: 34px; min-width: 34px; padding: 0 8px; border-radius: 999px; display: grid; place-items: center; color: var(--transition); border: 1.5px dashed color-mix(in srgb, var(--transition) 45%, transparent); font-size: 15px; position: relative; }
+.tr-pill.has { border-style: solid; background: color-mix(in srgb, var(--transition) 12%, transparent); }
+.tr-pill.sel { background: var(--transition); color: #1b140b; border-color: var(--transition); }
+.tr-pill b { font-size: 11px; margin-left: 3px; }
+.add-pill { flex: none; padding: 10px 14px; border-radius: 12px; border: 1.5px dashed var(--line); color: var(--muted); font-size: 14px; }
+
+.sec-head { display: flex; align-items: center; gap: 10px; margin: 6px 0 10px; }
+.sec-head h2 { font: 600 26px/1.1 var(--serif); margin: 0; }
+.sec-head .meter { font: 600 14px/1 var(--sans); padding: 6px 9px; border-radius: 8px; background: var(--surface); color: var(--muted); }
+.sec-head .sp { flex: 1; }
+
 .tree { position: relative; }
 .layer { position: relative; border-radius: var(--radius); margin-bottom: 14px; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 9%, var(--surface)) 0%, var(--surface) 55%); }
 .layer + .layer::before { content: ""; position: absolute; left: 30px; top: -14px; width: 4px; height: 14px; border-radius: 2px; background: linear-gradient(var(--pc), var(--c)); opacity: .7; }
@@ -116,14 +139,18 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .beat-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
 .beat-top .k { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c); }
 .beat-top .nm { font-weight: 600; font-size: 14px; }
-.beat-top .ln { margin-left: auto; font-size: 12px; color: var(--faint); }
+.beat-top .ln { margin-left: auto; font-size: 12px; color: var(--faint); white-space: nowrap; }
 .beat.ghost { border: 1px dashed color-mix(in srgb, var(--c) 35%, transparent); background: transparent; color: var(--muted); font-size: 14px; padding: 11px 12px; }
 .beat.ghost b { color: var(--c); font-weight: 600; }
-.cells { display: flex; gap: 3px; }
-.cells i { flex: 0 0 calc((100% - (var(--steps, 8) - 1) * 3px) / var(--steps, 8)); min-width: 0; height: 20px; border-radius: 5px; border: 1.5px solid color-mix(in srgb, var(--c) 30%, transparent); transition: transform .06s; }
-.cells i.D { background: var(--c); border-color: var(--c); }
-.cells i.T { background: color-mix(in srgb, var(--c) 42%, transparent); border-color: transparent; }
-.cells i.now { outline: 2px solid var(--text); outline-offset: 1px; transform: scale(1.08); }
+.lanes { display: flex; flex-direction: column; gap: 5px; }
+.cells { display: flex; }
+.cells i { display: block; flex: none; padding-right: 3px; }
+.cells i b { display: block; height: 20px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 30%, transparent); transition: transform .06s; }
+.cells i.D b { background: var(--c); box-shadow: none; }
+.cells i.T b { background: color-mix(in srgb, var(--c) 48%, transparent); box-shadow: none; }
+.cells i.K b { background: color-mix(in srgb, var(--c) 20%, transparent); box-shadow: none; height: 12px; margin-top: 4px; }
+.cells i.bs b { margin-left: 4px; }
+.cells i.now b { outline: 2px solid var(--text); outline-offset: 1px; transform: scale(1.08); }
 
 .ideas { padding: 0 14px 2px; }
 .idea { border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent); padding: 10px 0; }
@@ -136,10 +163,12 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .star.on { color: var(--accent); }
 .kebab { color: var(--faint); padding: 4px 6px; font-size: 18px; line-height: 1; }
 .more { display: block; width: 100%; padding: 8px 0 10px; color: var(--muted); font-size: 13px; text-align: left; border-top: 1px solid var(--line); }
-.compose { display: flex; gap: 8px; padding: 6px 14px 14px; }
-.compose button { flex: 1; padding: 10px 6px; border-radius: 11px; background: color-mix(in srgb, var(--bg) 45%, var(--surface-2)); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.compose button svg { width: 16px; height: 16px; }
+.compose { display: flex; gap: 6px; padding: 6px 14px 14px; }
+.compose button { flex: 1; min-width: 0; padding: 10px 4px; border-radius: 11px; background: color-mix(in srgb, var(--bg) 45%, var(--surface-2)); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.compose button svg { width: 16px; height: 16px; flex: none; }
 .compose .rec { color: #ffd9d3; background: color-mix(in srgb, var(--danger) 26%, var(--surface-2)); }
+.transition-card { border-radius: var(--radius); background: linear-gradient(160deg, color-mix(in srgb, var(--transition) 10%, var(--surface)) 0%, var(--surface) 60%); border: 1px dashed color-mix(in srgb, var(--transition) 40%, transparent); padding-top: 4px; }
+.transition-card .lede { padding: 10px 14px 6px; color: var(--muted); font-size: 14px; margin: 0; }
 
 .player { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
 .play { width: 38px; height: 38px; border-radius: 50%; background: var(--c, var(--accent)); color: #17120c; display: grid; place-items: center; flex: none; }
@@ -147,19 +176,28 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .bar { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); position: relative; overflow: hidden; }
 .bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--c, var(--accent)); }
 .time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; }
+.roll { display: block; width: 100%; height: 56px; margin-top: 6px; border-radius: 8px; background: color-mix(in srgb, var(--bg) 55%, transparent); }
+.roll .ph { stroke: var(--text); stroke-width: 1.5; opacity: 0; }
+.roll.on .ph { opacity: .9; }
 
 /* transport */
 .transport { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
-.transport-in { max-width: 640px; margin: 0 auto; padding: 0 16px; display: flex; gap: 8px; align-items: stretch; }
-.tp { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 13px; background: var(--surface); padding: 10px 8px; font-weight: 600; font-size: 14px; min-height: 48px; }
-.tp svg { width: 16px; height: 16px; }
-.tp.on { background: var(--accent); color: #1b140b; }
-.tp:disabled { opacity: .4; }
+.transport-in { max-width: 640px; margin: 0 auto; padding: 0 12px; display: flex; gap: 6px; align-items: stretch; }
+.tp-play { flex: 1; min-width: 64px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 13px; background: var(--accent); color: #1b140b; font-weight: 700; font-size: 15px; min-height: 50px; }
+.tp-play svg { width: 18px; height: 18px; flex: none; }
+.tp-play span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tp-play { min-width: 0; padding: 0 10px; }
+.tp-play.on { background: var(--text); }
+.tp-play:disabled { opacity: .4; }
+.mix { flex: none; width: 50px; border-radius: 13px; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--faint); }
+.mix svg { width: 17px; height: 17px; }
+.mix span { font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.mix.on { color: var(--text); background: var(--surface-2); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent); }
 .tempo { display: flex; align-items: center; border-radius: 13px; background: var(--surface); flex: none; }
-.tempo button { width: 34px; height: 48px; font-size: 20px; color: var(--muted); }
-.tempo .v { min-width: 44px; text-align: center; line-height: 1; cursor: pointer; }
+.tempo button { width: 28px; height: 50px; font-size: 20px; color: var(--muted); }
+.tempo .v { min-width: 40px; text-align: center; line-height: 1; cursor: pointer; }
 .tempo .v b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
-.tempo .v span { font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.tempo .v span { font-size: 9px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
 .tempo .v.unset b { color: var(--faint); }
 
 /* sheet */
@@ -185,28 +223,38 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .sugs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .sug { font-size: 13px; padding: 6px 11px; border-radius: 999px; background: var(--surface-2); }
 .sug.on { background: var(--c, var(--accent)); color: #17120c; font-weight: 600; }
+.sug-group { font-size: 11px; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin: 10px 0 -2px; }
+.meter-preview { font: 600 28px/1 var(--serif); margin-top: 10px; }
 
 /* beat editor */
-.grid { display: grid; gap: 6px; margin-top: 14px; }
+.grid { display: grid; gap: 6px; margin-top: 8px; }
 .grid button { aspect-ratio: 1; border-radius: 10px; border: 2px solid color-mix(in srgb, var(--c) 35%, transparent); font-weight: 700; font-size: 15px; color: #17120c; }
 .grid button.D { background: var(--c); border-color: var(--c); }
-.grid button.T { background: color-mix(in srgb, var(--c) 45%, transparent); border-color: transparent; color: var(--text); }
+.grid button.T { background: color-mix(in srgb, var(--c) 48%, transparent); border-color: transparent; color: var(--text); }
+.grid button.K { background: color-mix(in srgb, var(--c) 18%, transparent); border-color: transparent; color: var(--muted); }
 .grid button.R { color: var(--faint); font-weight: 400; }
 .grid button.now { outline: 2px solid var(--text); outline-offset: 2px; }
 .grid-key { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
 .grid-key i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+.bar-label { font-size: 11px; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; margin: 12px 0 0; }
+.pulse-hint { font-size: 12px; color: var(--faint); margin-top: 8px; }
 
-/* recorder */
-.rec-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 18px 0 8px; }
+/* recorders */
+.rec-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 16px 0 6px; }
 .rec-big { width: 96px; height: 96px; border-radius: 50%; background: var(--danger); display: grid; place-items: center; transition: box-shadow .08s; }
 .rec-big i { width: 34px; height: 34px; border-radius: 50%; background: #fff; transition: border-radius .2s, width .2s, height .2s; }
 .rec-big.on i { width: 30px; height: 30px; border-radius: 6px; }
-.rec-time { font: 600 32px/1 var(--sans); font-variant-numeric: tabular-nums; }
-.toggle { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 12px 14px; border-radius: 12px; width: 100%; text-align: left; margin-top: 14px; }
+.rec-time { font: 600 30px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.count { font: 600 15px/1 var(--sans); color: var(--accent); min-height: 16px; letter-spacing: .04em; }
+.toggle { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 11px 14px; border-radius: 12px; width: 100%; text-align: left; margin-top: 8px; }
 .toggle .sw { width: 42px; height: 26px; border-radius: 13px; background: var(--line); position: relative; flex: none; transition: background .2s; }
 .toggle .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .2s; }
 .toggle.on .sw { background: var(--accent); }
 .toggle.on .sw::after { left: 19px; }
+.midi-status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 6px; }
+.midi-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+.midi-status.live i { background: var(--ground); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ground) 25%, transparent); }
+.midi-status.hit i { background: var(--accent); }
 
 .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 40; font-size: 14px; max-width: 90vw; }
 .member-row { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
@@ -222,11 +270,6 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
   <option>Rast</option><option>Bayati</option><option>Hijaz</option><option>Saba</option><option>Nahawand</option>
   <option>Kurd</option><option>Ajam</option><option>Sikah</option><option>Huzam</option><option>Nawa Athar</option>
   <option>Hijazkar</option><option>Shahnaz</option><option>Suznak</option><option>Jiharkah</option><option>Husseini</option>
-</datalist>
-<datalist id="iqaat">
-  <option>Maqsum</option><option>Baladi</option><option>Saidi</option><option>Masmoudi</option><option>Wahda</option>
-  <option>Ayyub</option><option>Malfuf</option><option>Fallahi</option><option>Samai Thaqil</option><option>Dawr Hindi</option>
-  <option>Aksak</option><option>Karsilama</option><option>Jurjina</option><option>Free</option>
 </datalist>
 
 <script>
@@ -245,15 +288,44 @@ const LAYERS = [
     glyph: '<circle cx="6" cy="17" r="2.5"/><circle cx="13" cy="18.5" r="1.8"/><circle cx="18" cy="16" r="2.2"/><circle cx="9" cy="11" r="1.6"/><circle cx="15.5" cy="10.5" r="1.3"/><path d="M3 21h18"/>' },
 ];
 const LAYER = Object.fromEntries(LAYERS.map(l => [l.key, l]));
+const TRANSITION = { key: 'transition', name: 'Transition', short: 'Transition', c: 'var(--transition)', k: 1 };
+const laneOf = key => LAYER[key] || TRANSITION;
 const INSTRUMENTS = ['oud', 'piano', 'bass', 'drums', 'darbuka', 'riq', 'daf', 'bendir', 'guitar', 'violin', 'nay', 'qanun', 'voice', 'synth', 'percussion'];
-const PRESETS = [
-  { name: 'Maqsum', pattern: 'DT-TD-T-' },
-  { name: 'Baladi', pattern: 'DD-TD-T-' },
-  { name: 'Saidi', pattern: 'DT-DD-T-' },
+const SECTION_NAMES = ['Intro', 'A', 'B', 'C', 'Chorus', 'Bridge', 'Taqsim', 'Solo', 'Break', 'Outro'];
+
+// D = dum / kick, T = tak / snare, K = ka / hi-hat or light stroke. One string per bar.
+const GROOVES = [
+  { group: 'Arabic', items: [
+    { name: 'Maqsum', sub: 2, p: 'DT-TD-T-' },
+    { name: 'Baladi', sub: 2, p: 'DD-TD-T-' },
+    { name: 'Saidi', sub: 2, p: 'DT-DD-T-' },
+    { name: 'Malfuf', sub: 4, p: 'D--T--T-' },
+    { name: 'Fallahi', sub: 4, p: 'DT-TD-T-' },
+    { name: 'Masmoudi Kabir', sub: 1, p: 'DD-T-D-T' },
+    { name: 'Karsilama 9/8', sub: 2, p: 'D-T-D-TTT' },
+  ] },
+  { group: 'Rock, blues & pop', items: [
+    { name: 'Rock', sub: 2, p: 'DKTKDKTK' },
+    { name: 'Rock ballad', sub: 2, p: 'DKTKDDTK' },
+    { name: 'Half-time', sub: 2, p: 'DKKKTKKK' },
+    { name: 'Shuffle 12/8', sub: 3, p: 'D-KT-KD-KT-K' },
+    { name: 'Slow blues 12/8', sub: 3, p: 'DKKTKKDKKTKK' },
+    { name: 'Funk 16ths', sub: 4, p: 'DKKKTKKDKKDKTKKK' },
+    { name: 'One drop', sub: 2, p: '-K-KDK-K' },
+    { name: '6/8 groove', sub: 2, p: 'DKKTKK' },
+  ] },
 ];
-const LENGTHS = [4, 6, 7, 8, 9, 10, 12, 16];
+const LENGTHS = [3, 4, 5, 6, 7, 8, 9, 10, 12, 16];
+const SUBS = [
+  { v: 1, label: 'Quarters', sym: '¼' },
+  { v: 2, label: 'Eighths', sym: '⅛' },
+  { v: 3, label: 'Triplets', sym: '⅛³' },
+  { v: 4, label: 'Sixteenths', sym: '1⁄16' },
+];
+const METER_SUBS = [{ v: 1, d: 4 }, { v: 2, d: 8 }, { v: 4, d: 16 }];
 const DEFAULT_BPM = 90;
 const MAX_REC_SEC = 300;
+const HAS_MIDI = !!navigator.requestMIDIAccess;
 
 const ICON = {
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
@@ -263,11 +335,13 @@ const ICON = {
   mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
   note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14M5 10h14M5 15h9"/></svg>',
   link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+  keys: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v8M12 5v8M16 5v8M8 13v6M12 13v6M16 13v6"/></svg>',
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1"/></svg>',
   stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
   drum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v8c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
+  metro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 18H5L9 3Z"/><path d="M12 17l5-9"/><path d="M8 13h8"/></svg>',
 };
 
 const store = {
@@ -279,9 +353,11 @@ const S = {
   key: store.get('key', ''),
   me: store.get('me', ''),
   seen: store.get('seen', {}),
+  mix: store.get('mix', { beats: true, recs: true, click: false }),
   members: [],
   tracks: [],
   track: null,
+  view: {},
   expanded: {},
 };
 
@@ -290,7 +366,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&a
 const memberName = id => (S.members.find(m => m.id === id) || {}).name || 'Someone';
 const fmtTime = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const bpmOf = t => (t && t.tempo) || DEFAULT_BPM;
-const beatOf = (t, layer) => (t.beats || []).find(b => b.layer === layer);
+const parseData = i => { if (i._d === undefined) { try { i._d = i.data ? JSON.parse(i.data) : {}; } catch { i._d = {}; } } return i._d; };
 function ago(ts) {
   const d = (Date.now() - ts) / 1000;
   if (d < 60) return 'just now';
@@ -304,6 +380,28 @@ function toast(msg) {
   t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2600);
+}
+
+/* ---------- sections & beats ---------- */
+const sections = () => S.track.sections;
+const curView = () => {
+  const v = S.view[S.track.id] || {};
+  const sec = sections().find(s => s.id === v.sid) || sections()[0];
+  return { sec, transition: !!v.transition && sections().indexOf(sec) < sections().length - 1 };
+};
+const nextSection = sec => sections()[sections().indexOf(sec) + 1];
+const holdersOf = (sid, layer) => S.track.holders.filter(h => h.section_id === sid && h.layer === layer);
+const beatOf = (sid, layer) => S.track.beats.find(b => b.section_id === sid && b.layer === layer);
+const ideasOf = (sid, layer) => S.track.ideas.filter(i => i.section_id === sid && i.layer === layer);
+const meterLabel = sec => `${sec.meter_n}/${(METER_SUBS.find(m => m.v === sec.meter_sub) || METER_SUBS[0]).d}`;
+const secBarPulses = sec => sec.meter_n / sec.meter_sub;
+const subOf = b => b.sub || 2;
+const barOf = b => b.bar || b.pattern.length;
+const barPulses = b => barOf(b) / subOf(b);
+const subSym = v => (SUBS.find(x => x.v === v) || SUBS[1]).sym;
+function beatMeta(b) {
+  const bars = b.pattern.length / barOf(b);
+  return `${bars > 1 ? bars + ' bars · ' : ''}${barOf(b)} × ${subSym(subOf(b))}`;
 }
 
 async function api(path, opts) {
@@ -327,8 +425,7 @@ async function loadState() {
 
 /* ---------- routing ---------- */
 function route() {
-  stopAll();
-  Beat.stop();
+  stopEverything();
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
   if (h === 'band') return viewBand();
@@ -381,18 +478,16 @@ function viewHome() {
     const me = S.members.find(m => m.id === S.me);
     const list = S.tracks.map(t => {
       const unseen = (S.seen[t.id] || 0) < t.updated_at;
-      const meta = [t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.tempo && t.tempo + ' bpm'].filter(Boolean).map(esc).join(' · ');
+      const meta = [t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.tempo && t.tempo + ' bpm', t.ideas && t.ideas + ' idea' + (t.ideas > 1 ? 's' : '')].filter(Boolean).map(esc).join(' · ');
+      const form = t.sections.length > 1 ? `<div class="form-line">${t.sections.map(s => esc(s.name)).join('<span class="ar">→</span>')}</div>` : '';
       const mini = LAYERS.map(l => {
-        const hs = t.holders.filter(h => h.layer === l.key);
-        const b = beatOf(t, l.key);
-        const who = hs.length ? hs.map(h => esc(memberName(h.member_id)) + (h.instrument ? ` <span class="faint">${esc(h.instrument)}</span>` : '')).join(', ') : '<span class="open">open</span>';
-        const n = t.counts[l.key] || 0;
-        const bt = b ? '◆ ' + esc(b.name || 'beat') : n ? n + ' idea' + (n > 1 ? 's' : '') : '';
-        return `<div class="mini-layer" style="--c:${l.c}"><span class="ln">${l.short}</span><span class="who">${who}</span><span class="bt">${bt}</span></div>`;
+        const names = [...new Set(t.holders.filter(h => h.layer === l.key).map(h => memberName(h.member_id)))];
+        const beats = [...new Set(t.beats.filter(b => b.layer === l.key).map(b => b.name || 'beat'))];
+        return `<div class="mini-layer" style="--c:${l.c}"><span class="ln">${l.short}</span><span class="who">${names.length ? names.map(esc).join(', ') : '<span class="open">open</span>'}</span><span class="bt">${beats.length ? '◆ ' + beats.map(esc).join(' / ') : ''}</span></div>`;
       }).join('');
       return `<button class="track-row" onclick="go('t/${esc(t.id)}')">${unseen ? '<i class="dot"></i>' : ''}
         <div class="t">${esc(t.title)}</div><div class="meta">${meta ? meta + ' · ' : ''}${ago(t.updated_at)}</div>
-        <div class="mini-tree">${mini}</div></button>`;
+        ${form}<div class="mini-tree">${mini}</div></button>`;
     }).join('');
     $('#app').innerHTML = topBar('Shajara', `<span style="width:34px;display:grid;place-items:center">${treeMark(30)}</span>`,
       `<button class="icon-btn" aria-label="Band" onclick="go('band')">${ICON.people}</button>`) +
@@ -409,8 +504,9 @@ function viewHome() {
 }
 
 function legend() {
-  return `<div class="legend"><h4>The tree, from the top down</h4>${LAYERS.map(l =>
-    `<div class="l" style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
+  return `<div class="legend"><h4>How a track grows</h4>
+    <p style="margin:0 0 10px">A track is a run of sections (Intro, A, B…) with transitions between them. Each section is a tree, from the top down:</p>
+    ${LAYERS.map(l => `<div class="l" style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
     <p>Anyone can hold any layer, on any instrument. One pulse runs through the whole track, but every layer carries its own rhythm, so the Substrate can hold a maqsum while the Ground plays something else on top.</p></div>`;
 }
 
@@ -431,14 +527,45 @@ async function viewTrack(id) {
     renderTrack();
   } catch (e) { toast(e.message); if (!cached) go(''); return; }
   poll(async () => {
-    if (location.hash.replace(/^#\/?/, '') !== 't/' + id || playing.size || $('.scrim')) return;
+    if (location.hash.replace(/^#\/?/, '') !== 't/' + id || Player.on || playing.size || $('.scrim')) return;
     const t = await api('/tracks/' + id);
     if (t.updated_at !== S.track.updated_at || t.ideas.length !== S.track.ideas.length) { S.track = t; renderTrack(); }
   });
 }
 
-function cellsHtml(pattern, layerKey) {
-  return `<div class="cells" data-cells="${layerKey}">${pattern.split('').map(c => `<i class="${c === '-' ? 'R' : c}"></i>`).join('')}</div>`;
+function selectView(sid, transition) {
+  stopEverything();
+  S.view[S.track.id] = { sid, transition: !!transition };
+  renderTrack();
+  const el = $('.form .sel'); if (el) el.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+}
+
+function cellsHtml(b, layerKey, mp) {
+  const bar = barOf(b), sub = subOf(b), w = 100 / (sub * mp);
+  const row = bar * Math.max(1, Math.floor(mp / barPulses(b) + 1e-9));
+  const rows = [];
+  for (let i = 0; i < b.pattern.length; i += row) {
+    rows.push(`<div class="cells">${b.pattern.slice(i, i + row).split('').map((c, j) => `<i class="${c === '-' ? 'R' : c}${j && j % bar === 0 ? ' bs' : ''}" style="width:${w}%"><b></b></i>`).join('')}</div>`);
+  }
+  return `<div class="lanes" data-cells="${layerKey}">${rows.join('')}</div>`;
+}
+
+function composeHtml(lane) {
+  return `<div class="compose">
+    <button class="rec" onclick="openRecorder('${lane}')">${ICON.mic}Record</button>
+    ${HAS_MIDI ? `<button onclick="openMidi('${lane}')">${ICON.keys}MIDI</button>` : ''}
+    <button onclick="openNote('${lane}')">${ICON.note}Note</button>
+    <button onclick="openLink('${lane}')">${ICON.link}Link</button>
+  </div>`;
+}
+
+function ideasHtml(sid, lane, prevSeen) {
+  const ideas = ideasOf(sid, lane).sort((a, b) => b.starred - a.starred || b.created_at - a.created_at);
+  if (!ideas.length) return '';
+  const k = sid + lane, open = S.expanded[k];
+  const shown = open ? ideas : ideas.slice(0, 3);
+  return `<div class="ideas">${shown.map(i => ideaHtml(i, prevSeen)).join('')}
+    ${ideas.length > 3 ? `<button class="more" onclick="S.expanded['${k}']=${!open};renderTrack()">${open ? 'Show fewer' : 'Show all ' + ideas.length + ' ideas'}</button>` : ''}</div>`;
 }
 
 function renderTrack() {
@@ -446,63 +573,88 @@ function renderTrack() {
   const prevSeen = S.seenBefore && S.seenBefore.id === t.id ? S.seenBefore.at : (S.seen[t.id] || 0);
   S.seenBefore = { id: t.id, at: prevSeen };
   S.seen[t.id] = Date.now(); store.set('seen', S.seen);
+  const { sec, transition } = curView();
 
   const maqam = t.maqam ? t.maqam + (t.tonic ? ' on ' + t.tonic : '') : '';
   const chips = `<button class="chip${maqam ? '' : ' ghost'}" onclick="editTrack()">${maqam ? `<span class="k">Maqam</span>${esc(maqam)}` : '+ maqam'}</button>` +
     `<button class="chip${t.tempo ? '' : ' ghost'}" onclick="editTrack()">${t.tempo ? `<span class="k">Pulse</span>${t.tempo} bpm` : '+ pulse'}</button>`;
+  const trackNotes = t.notes ? `<button class="notes" onclick="editTrack('f-notes')">${esc(t.notes)}</button>` : '';
 
-  const layers = LAYERS.map((l, li) => {
-    const hs = t.holders.filter(h => h.layer === l.key);
-    const beat = beatOf(t, l.key);
-    const ideas = t.ideas.filter(i => i.layer === l.key).sort((a, b) => b.starred - a.starred || b.created_at - a.created_at);
-    const open = S.expanded[l.key];
-    const shown = open ? ideas : ideas.slice(0, 3);
-    const pc = li ? LAYERS[li - 1].c : l.c;
-    const beatHtml = beat
-      ? `<button class="beat" onclick="editBeat('${l.key}')"><div class="beat-top"><span class="k">Beat</span><span class="nm">${esc(beat.name || 'Untitled')}</span><span class="ln">${beat.pattern.length} ⅛</span></div>${cellsHtml(beat.pattern, l.key)}</button>`
-      : `<button class="beat ghost" onclick="editBeat('${l.key}')"><b>+ beat</b> · give this layer its own iqa‘</button>`;
-    return `<section class="layer" style="--c:${l.c};--pc:${pc}" id="L-${l.key}">
-      <div class="layer-head"><div class="layer-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
-        <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div></div>
-      <div class="holders">${hs.map(h => `<button class="holder" onclick="pickHolders('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')}
-        <button class="holder add" onclick="pickHolders('${l.key}')">${hs.length ? 'swap' : '+ who holds this?'}</button></div>
-      ${beatHtml}
-      ${ideas.length ? `<div class="ideas">${shown.map(i => ideaHtml(i, prevSeen)).join('')}
-        ${ideas.length > 3 ? `<button class="more" onclick="S.expanded['${l.key}']=${!open};renderTrack()">${open ? 'Show fewer' : 'Show all ' + ideas.length + ' ideas'}</button>` : ''}</div>` : ''}
-      <div class="compose">
-        <button class="rec" onclick="openRecorder('${l.key}')">${ICON.mic}Record</button>
-        <button onclick="openNote('${l.key}')">${ICON.note}Note</button>
-        <button onclick="openLink('${l.key}')">${ICON.link}Link</button>
-      </div></section>`;
-  }).join('');
+  const form = sections().map((s, i) => {
+    const dots = LAYERS.map(l => `<i style="--c:${l.c}" class="${holdersOf(s.id, l.key).length || beatOf(s.id, l.key) || ideasOf(s.id, l.key).length ? 'on' : ''}"></i>`).join('');
+    const pill = `<button class="sec-pill${s.id === sec.id && !transition ? ' sel' : ''}" onclick="selectView('${s.id}')">${esc(s.name)}<span class="dots">${dots}</span></button>`;
+    if (i === sections().length - 1) return pill;
+    const n = ideasOf(s.id, 'transition').length;
+    return pill + `<button class="tr-pill${n ? ' has' : ''}${s.id === sec.id && transition ? ' sel' : ''}" aria-label="Transition" onclick="selectView('${s.id}', true)">→${n ? `<b>${n}</b>` : ''}</button>`;
+  }).join('') + `<button class="add-pill" onclick="newSection()">+ section</button>`;
 
-  if (stackIdeas().length > 1) prefetchStack();
+  let panel;
+  if (transition) {
+    const nx = nextSection(sec);
+    panel = `<div class="sec-head"><h2>${esc(sec.name)} <span style="color:var(--transition)">→</span> ${esc(nx.name)}</h2></div>
+      <div class="transition-card" style="--c:var(--transition)">
+        <p class="lede">How we get from ${esc(sec.name)} into ${esc(nx.name)}: fills, cues, stops, who leads. Recording here plays ${esc(sec.name)} underneath.</p>
+        ${ideasHtml(sec.id, 'transition', prevSeen)}
+        ${composeHtml('transition')}
+      </div>`;
+  } else {
+    const secBeats = t.beats.filter(b => b.section_id === sec.id);
+    const mp = Math.max(2, secBarPulses(sec), ...secBeats.map(barPulses));
+    const layers = LAYERS.map((l, li) => {
+      const hs = holdersOf(sec.id, l.key);
+      const beat = beatOf(sec.id, l.key);
+      const pc = li ? LAYERS[li - 1].c : l.c;
+      const beatHtml = beat
+        ? `<button class="beat" onclick="editBeat('${l.key}')"><div class="beat-top"><span class="k">Beat</span><span class="nm">${esc(beat.name || 'Untitled')}</span><span class="ln">${beatMeta(beat)}</span></div>${cellsHtml(beat, l.key, mp)}</button>`
+        : `<button class="beat ghost" onclick="editBeat('${l.key}')"><b>+ beat</b> · give this layer its own rhythm</button>`;
+      return `<section class="layer" style="--c:${l.c};--pc:${pc}" id="L-${l.key}">
+        <div class="layer-head"><div class="layer-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
+          <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div></div>
+        <div class="holders">${hs.map(h => `<button class="holder" onclick="pickHolders('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')}
+          <button class="holder add" onclick="pickHolders('${l.key}')">${hs.length ? 'swap' : '+ who holds this?'}</button></div>
+        ${beatHtml}
+        ${ideasHtml(sec.id, l.key, prevSeen)}
+        ${composeHtml(l.key)}</section>`;
+    }).join('');
+    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><button class="meter" onclick="editSection()">${meterLabel(sec)}</button><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button></div>
+      ${sec.notes ? `<button class="notes" style="margin:0 0 14px" onclick="editSection('s-notes')">${esc(sec.notes)}</button>` : ''}
+      <div class="tree">${layers}</div>`;
+  }
+
   $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
     `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Edit" onclick="editTrack()">${ICON.edit}</button>`) +
     `<div class="wrap">
-      <div class="hero"><div class="chips">${chips}</div>${t.notes ? `<button class="notes" onclick="editTrack('f-notes')">${esc(t.notes)}</button>` : `<button class="chip ghost" style="margin-top:10px" onclick="editTrack('f-notes')">+ note on the whole track</button>`}</div>
-      <div class="tree" style="--steps:${Math.max(8, ...(t.beats || []).map(b => b.pattern.length))}">${layers}</div>
-      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ marks a layer’s keeper. One beat cell is an eighth note of the track’s pulse.</p>
+      <div class="hero"><div class="chips">${chips}${t.notes ? '' : `<button class="chip ghost" onclick="editTrack('f-notes')">+ track note</button>`}</div>${trackNotes}</div>
+      <div class="form">${form}</div>
+      ${panel}
+      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ marks a layer’s keeper; Play uses keepers (or the latest take). Beat cells are drawn to scale against the pulse.</p>
     </div>
     <div class="transport"><div class="transport-in">
-      <button class="tp" id="tpBeats" onclick="toggleBeats()"></button>
-      <button class="tp" id="tpTree" onclick="toggleTree()"></button>
+      <button class="tp-play" id="tpPlay" onclick="togglePlayer()"></button>
+      <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" onclick="toggleMix('beats')">${ICON.drum}<span>Beats</span></button>
+      <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" onclick="toggleMix('recs')">${ICON.wave}<span>Takes</span></button>
+      <button class="mix${S.mix.click ? ' on' : ''}" data-mix="click" onclick="toggleMix('click')">${ICON.metro}<span>Click</span></button>
       <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${t.tempo ? '' : ' unset'}" onclick="editTrack()"><b id="bpm">${bpmOf(t)}</b><span>pulse</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
     </div></div>`;
   updateTransport();
 }
 
 function updateTransport() {
-  const b = $('#tpBeats'), r = $('#tpTree');
+  const b = $('#tpPlay');
   if (!b || !S.track) return;
-  const nb = (S.track.beats || []).length, nr = stackIdeas().length;
-  b.disabled = !nb && !Beat.on;
-  b.classList.toggle('on', Beat.on);
-  b.innerHTML = (Beat.on ? ICON.stop : ICON.drum) + `<span>${Beat.on ? 'Stop' : nb > 1 ? nb + ' beats' : 'Beat'}</span>`;
-  const treeOn = playing.size > 1;
-  r.disabled = !nr && !treeOn;
-  r.classList.toggle('on', treeOn);
-  r.innerHTML = (treeOn ? ICON.stop : ICON.wave) + `<span>${treeOn ? 'Stop' : nr > 1 ? nr + ' recordings' : 'Recording'}</span>`;
+  b.classList.toggle('on', Player.on);
+  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>Play ${esc(curView().sec.name)}</span>`;
+}
+function toggleMix(k) {
+  S.mix[k] = !S.mix[k]; store.set('mix', S.mix);
+  document.querySelectorAll(`[data-mix="${k}"]`).forEach(b => b.classList.toggle('on', S.mix[k]));
+  if (Player.on) togglePlayer().then(togglePlayer);
+}
+async function togglePlayer() {
+  if (Player.on) { Player.stop(); return; }
+  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, onStop: updateTransport });
+  if (!r) toast(S.mix.click ? 'Nothing to play' : 'Nothing to play yet. Add a beat or a take, or switch on the click.');
+  updateTransport();
 }
 
 let tempoSave = null;
@@ -511,7 +663,7 @@ function nudgeTempo(d) {
   t.tempo = Math.max(30, Math.min(300, bpmOf(t) + d));
   $('#bpm').textContent = t.tempo;
   $('#bpm').parentElement.classList.remove('unset');
-  Beat.bpm = t.tempo;
+  Beat.setBpm(t.tempo);
   clearTimeout(tempoSave);
   tempoSave = setTimeout(() => api('/tracks/' + t.id, { method: 'PATCH', body: { tempo: t.tempo } }).then(x => { S.track.updated_at = x.updated_at; }).catch(e => toast(e.message)), 900);
 }
@@ -520,6 +672,10 @@ function ideaHtml(i, prevSeen) {
   const isNew = i.created_at > prevSeen && i.author_id !== S.me;
   let body = '';
   if (i.kind === 'audio') body = `<div class="player" data-audio="${esc(i.id)}"><button class="play" aria-label="Play" onclick="togglePlay('${esc(i.id)}')">${ICON.play}</button><div class="bar"><i></i></div><span class="time">${fmtTime(i.duration)}</span></div>${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
+  else if (i.kind === 'midi') {
+    const take = parseTake(i);
+    body = `<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${take.notes.length} notes · ${fmtTime(take.len * 60 / bpmOf(S.track))} · MIDI</span></div>${rollSvg(take, i.id)}${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
+  }
   else if (i.kind === 'link') body = `<div class="idea-body"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(prettyUrl(i.url))}</a>${i.body ? '\n' + esc(i.body) : ''}</div>`;
   else body = `<div class="idea-body">${esc(i.body)}</div>`;
   return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span><span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
@@ -536,9 +692,10 @@ async function toggleStar(id) {
 
 function ideaMenu(id) {
   const i = S.track.ideas.find(x => x.id === id);
-  sheet(`<h3>This idea</h3><p class="lede">${esc(LAYER[i.layer].name)} · by ${esc(memberName(i.author_id))} · ${ago(i.created_at)}</p>
-    <label class="field">Move to layer</label>
-    <div class="sugs">${LAYERS.filter(l => l.key !== i.layer).map(l => `<button class="sug" style="color:${l.c}" data-move="${l.key}">${l.name}</button>`).join('')}</div>
+  const lanes = [...LAYERS, ...(nextSection(sections().find(s => s.id === i.section_id)) ? [TRANSITION] : [])].filter(l => l.key !== i.layer);
+  sheet(`<h3>This idea</h3><p class="lede">${esc(laneOf(i.layer).name)} · by ${esc(memberName(i.author_id))} · ${ago(i.created_at)}</p>
+    <label class="field">Move to</label>
+    <div class="sugs">${lanes.map(l => `<button class="sug" style="color:${l.c}" data-move="${l.key}">${l.name}</button>`).join('')}</div>
     <label class="field">${i.kind === 'text' ? 'Note' : 'Caption'}</label><textarea id="cap" rows="2">${esc(i.body)}</textarea>
     <div class="actions"><button class="btn danger" id="del">Delete</button><button class="btn primary" id="save">Save</button></div>`, root => {
     root.querySelectorAll('[data-move]').forEach(b => b.onclick = async () => {
@@ -585,15 +742,15 @@ function closeSheet() {
   if (s._onclose) s._onclose();
   s.remove();
 }
+const chipsHtml = (id, items, c) => `<div class="sugs" id="${id}"${c ? ` style="--c:${c}"` : ''}>${items}</div>`;
 
 function trackForm(t) {
   t = t || {};
   return `<label class="field">Title</label><input id="f-title" type="text" value="${esc(t.title)}" placeholder="Working title is fine">
     <div class="row2"><div><label class="field">Maqam</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
     <div><label class="field">On (tonic)</label><input id="f-tonic" type="text" value="${esc(t.tonic)}" placeholder="e.g. D"></div></div>
-    <label class="field">Pulse (bpm, quarter note), shared by every layer</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
-    <label class="field">Notes</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>
-    <p class="small faint">One pulse for the whole track; each layer brings its own rhythm on top of it.</p>`;
+    <label class="field">Pulse (bpm, quarter note), shared by every section and layer</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
+    <label class="field">Notes on the whole track</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>`;
 }
 function readTrackForm(root) {
   return { title: $('#f-title', root).value, maqam: $('#f-maqam', root).value, tonic: $('#f-tonic', root).value,
@@ -612,7 +769,7 @@ function wireTap(root) {
 }
 
 function newTrack() {
-  sheet(`<h3>New track</h3><p class="lede">Only the title is needed. Everything else can grow later.</p>${trackForm()}
+  sheet(`<h3>New track</h3><p class="lede">Only the title is needed. Sections, layers and beats grow later.</p>${trackForm()}
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Plant it</button></div>`, root => {
     wireTap(root);
     setTimeout(() => $('#f-title', root).focus(), 50);
@@ -638,15 +795,91 @@ function editTrack(focusId) {
       if (!f.title.trim()) return toast('Title can’t be empty');
       try { S.track = await api('/tracks/' + t.id, { method: 'PATCH', body: f }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
     };
-    confirmBtn($('#del', root), 'Tap again: deletes every idea and recording', async () => {
+    confirmBtn($('#del', root), 'Tap again: deletes every section, idea and recording', async () => {
       try { await api('/tracks/' + t.id, { method: 'DELETE' }); closeSheet(); S.track = null; go(''); } catch (e) { toast(e.message); }
+    });
+  });
+}
+
+function meterPicker(root, M) {
+  const draw = () => {
+    root.querySelectorAll('#mn .sug').forEach(b => b.classList.toggle('on', +b.dataset.n === M.n));
+    root.querySelectorAll('#md .sug').forEach(b => b.classList.toggle('on', +b.dataset.v === M.sub));
+    $('#mprev', root).textContent = `${M.n}/${METER_SUBS.find(m => m.v === M.sub).d}`;
+  };
+  root.querySelectorAll('#mn .sug').forEach(b => b.onclick = () => { M.n = +b.dataset.n; draw(); });
+  root.querySelectorAll('#md .sug').forEach(b => b.onclick = () => { M.sub = +b.dataset.v; draw(); });
+  draw();
+}
+const meterHtml = () => `<label class="field">Time signature (drives the click and count-in)</label>
+  <div class="meter-preview" id="mprev"></div>
+  ${chipsHtml('mn', [2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 15].map(n => `<button class="sug" data-n="${n}">${n}</button>`).join(''))}
+  ${chipsHtml('md', METER_SUBS.map(m => `<button class="sug" data-v="${m.v}">/ ${m.d}</button>`).join(''))}`;
+
+function newSection() {
+  const { sec } = curView();
+  const used = sections().map(s => s.name);
+  const suggestion = SECTION_NAMES.find(n => !used.includes(n)) || '';
+  let copy = false;
+  sheet(`<h3>New section</h3><p class="lede">Each section is its own tree, with its own holders, beats and ideas. The pulse stays the track’s.</p>
+    <label class="field">Name</label><input id="s-name" type="text" value="${esc(suggestion)}" placeholder="e.g. Chorus">
+    ${chipsHtml('names', SECTION_NAMES.filter(n => !used.includes(n)).map(n => `<button class="sug">${n}</button>`).join(''))}
+    <button class="toggle" id="copy"><span class="sw"></span><span><b>Start as a copy of ${esc(sec.name)}</b><br><span class="small muted">Same holders, beats and time signature; no ideas.</span></span></button>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Add section</button></div>`, root => {
+    root.querySelectorAll('#names .sug').forEach(b => b.onclick = () => { $('#s-name', root).value = b.textContent; });
+    $('#copy', root).onclick = () => { copy = !copy; $('#copy', root).classList.toggle('on', copy); };
+    $('#save', root).onclick = async () => {
+      const name = $('#s-name', root).value.trim();
+      if (!name) return toast('Give the section a name');
+      try {
+        const r = await api(`/tracks/${S.track.id}/sections`, { method: 'POST', body: { name, copy_from: copy ? sec.id : '' } });
+        S.track = r; closeSheet(); selectView(r.new_section);
+      } catch (e) { toast(e.message); }
+    };
+  });
+}
+
+function editSection(focusId) {
+  const { sec } = curView();
+  const idx = sections().indexOf(sec);
+  const M = { n: sec.meter_n, sub: sec.meter_sub };
+  sheet(`<h3>Section · ${esc(sec.name)}</h3>
+    <label class="field">Name</label><input id="s-name" type="text" value="${esc(sec.name)}">
+    ${meterHtml()}
+    <label class="field">Notes on this section</label><textarea id="s-notes" placeholder="Feel, dynamics, how many times round, cues…">${esc(sec.notes)}</textarea>
+    <div class="sugs" style="margin-top:14px">
+      <button class="sug" id="mvL" ${idx === 0 ? 'disabled style="opacity:.4"' : ''}>← Move earlier</button>
+      <button class="sug" id="mvR" ${idx === sections().length - 1 ? 'disabled style="opacity:.4"' : ''}>Move later →</button>
+    </div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>
+    ${sections().length > 1 ? '<div style="margin-top:22px"><button class="btn danger block" id="del">Delete section</button></div>' : ''}`, root => {
+    meterPicker(root, M);
+    if (focusId) setTimeout(() => $('#' + focusId, root).focus(), 50);
+    const move = async d => {
+      const other = sections()[idx + d];
+      try {
+        await api('/sections/' + sec.id, { method: 'PATCH', body: { position: other.position } });
+        S.track = await api('/sections/' + other.id, { method: 'PATCH', body: { position: sec.position } });
+        closeSheet(); selectView(sec.id);
+      } catch (e) { toast(e.message); }
+    };
+    if (idx > 0) $('#mvL', root).onclick = () => move(-1);
+    if (idx < sections().length - 1) $('#mvR', root).onclick = () => move(1);
+    $('#save', root).onclick = async () => {
+      try { S.track = await api('/sections/' + sec.id, { method: 'PATCH', body: { name: $('#s-name', root).value, notes: $('#s-notes', root).value, meter_n: M.n, meter_sub: M.sub } }); closeSheet(); renderTrack(); }
+      catch (e) { toast(e.message); }
+    };
+    const del = $('#del', root);
+    if (del) confirmBtn(del, 'Tap again: deletes its ideas and recordings', async () => {
+      try { S.track = await api('/sections/' + sec.id, { method: 'DELETE' }); closeSheet(); selectView(sections()[Math.max(0, idx - 1)].id); } catch (e) { toast(e.message); }
     });
   });
 }
 
 function pickHolders(layerKey) {
   const l = LAYER[layerKey];
-  const cur = Object.fromEntries(S.track.holders.filter(h => h.layer === layerKey).map(h => [h.member_id, h.instrument]));
+  const { sec } = curView();
+  const cur = Object.fromEntries(holdersOf(sec.id, layerKey).map(h => [h.member_id, h.instrument]));
   const rows = S.members.map(m => {
     const on = m.id in cur;
     const mine = m.instruments.split(',').map(s => s.trim()).filter(Boolean);
@@ -656,7 +889,7 @@ function pickHolders(layerKey) {
       <div class="${on ? '' : 'hidden'} inst"><input type="text" placeholder="on which instrument?" value="${esc(cur[m.id] || '')}">
       <div class="sugs">${sugs.map(s => `<button class="sug" type="button">${esc(s)}</button>`).join('')}</div></div></div>`;
   }).join('');
-  sheet(`<h3 style="color:${l.c}">${l.name}</h3><p class="lede">Who holds the ${l.role} on this track, and on what?</p><div class="pick">${rows}</div>
+  sheet(`<h3 style="color:${l.c}">${l.name} · ${esc(sec.name)}</h3><p class="lede">Who holds the ${l.role} in this section, and on what?</p><div class="pick">${rows}</div>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>`, root => {
     root.querySelectorAll('.pick-row').forEach(r => {
       $('.nm', r).onclick = () => {
@@ -669,7 +902,7 @@ function pickHolders(layerKey) {
     });
     $('#save', root).onclick = async () => {
       const holders = [...root.querySelectorAll('.pick-row.on')].map(r => ({ member_id: r.dataset.id, instrument: $('input', r).value }));
-      try { S.track = await api(`/tracks/${S.track.id}/layers/${layerKey}`, { method: 'PUT', body: { holders } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+      try { S.track = await api(`/sections/${sec.id}/layers/${layerKey}`, { method: 'PUT', body: { holders } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
     };
   });
 }
@@ -677,61 +910,81 @@ function pickHolders(layerKey) {
 /* ---------- beat editor ---------- */
 function editBeat(layerKey) {
   const l = LAYER[layerKey];
-  const cur = beatOf(S.track, layerKey);
-  const B = { pattern: (cur ? cur.pattern : 'D---T---').split('') };
-  const others = (S.track.beats || []).filter(b => b.layer !== layerKey);
+  const { sec } = curView();
+  const cur = beatOf(sec.id, layerKey);
+  const defSub = sec.meter_sub === 1 ? 2 : sec.meter_sub;
+  const defBar = sec.meter_sub === 1 ? sec.meter_n * 2 : sec.meter_n;
+  const B = { sub: cur ? subOf(cur) : defSub, bar: cur ? barOf(cur) : defBar, bars: [] };
+  const src = cur ? cur.pattern : ('D' + '-'.repeat(defBar - 1));
+  for (let i = 0; i < src.length; i += B.bar) B.bars.push(src.slice(i, i + B.bar).split(''));
+  const others = S.track.beats.filter(b => b.section_id === sec.id && b.layer !== layerKey);
   let withOthers = others.length > 0;
-  Beat.stop(); stopAll();
+  stopEverything();
 
+  const lengths = [...new Set([...LENGTHS, B.bar])].sort((a, b) => a - b);
   const s = sheet(`<h3 style="color:${l.c}">${l.name} · beat</h3>
-    <p class="lede">Same pulse as the rest of the track, its own rhythm. Stack different beats across layers and hear them against each other.</p>
-    <label class="field">Name</label><input id="bname" type="text" list="iqaat" value="${esc(cur ? cur.name : '')}" placeholder="e.g. Maqsum, or anything">
-    <label class="field">Start from</label><div class="sugs" id="presets" style="--c:${l.c}">${PRESETS.map(p => `<button class="sug" data-p="${p.name}">${p.name}</button>`).join('')}<button class="sug" data-p="">Empty</button></div>
-    <label class="field">Length in eighth notes</label><div class="sugs" id="lens" style="--c:${l.c}">${LENGTHS.map(n => `<button class="sug" data-n="${n}">${n}</button>`).join('')}</div>
-    <div class="grid" id="grid" style="--c:${l.c}"></div>
-    <div class="grid-key"><span><i style="background:${l.c}"></i>Dum · low</span><span><i style="background:color-mix(in srgb, ${l.c} 45%, transparent)"></i>Tak · high</span><span><i style="border:1.5px solid var(--line)"></i>rest</span><span>Tap a cell to cycle</span></div>
+    <p class="lede">${esc(sec.name)} is in ${meterLabel(sec)}. Same pulse as the rest of the track, its own rhythm on top.</p>
+    <label class="field">Name</label><input id="bname" type="text" value="${esc(cur ? cur.name : '')}" placeholder="e.g. Maqsum, or anything">
+    <label class="field">Start from a groove</label>
+    ${GROOVES.map(g => `<div class="sug-group">${g.group}</div>` + chipsHtml('', g.items.map(p => `<button class="sug" data-p="${esc(p.name)}">${esc(p.name)}</button>`).join(''), l.c)).join('')}
+    <div class="sugs" style="--c:${l.c}"><button class="sug" data-p="">Clear</button></div>
+    <label class="field">Subdivision</label>${chipsHtml('subs', SUBS.map(x => `<button class="sug" data-s="${x.v}">${x.label}</button>`).join(''), l.c)}
+    <label class="field">Steps per bar</label>${chipsHtml('lens', lengths.map(n => `<button class="sug" data-n="${n}">${n}</button>`).join(''), l.c)}
+    <label class="field">Bars</label>${chipsHtml('nbars', [1, 2, 3, 4].map(n => `<button class="sug" data-b="${n}">${n}</button>`).join(''), l.c)}
+    <div class="pulse-hint" id="phint"></div>
+    <div id="grid" style="--c:${l.c}"></div>
+    <div class="grid-key"><span><i style="background:${l.c}"></i>D · dum / kick</span><span><i style="background:color-mix(in srgb, ${l.c} 48%, transparent)"></i>T · tak / snare</span><span><i style="background:color-mix(in srgb, ${l.c} 18%, transparent)"></i>K · ka / hat</span><span>Tap a cell to cycle</span></div>
     ${others.length ? `<button class="toggle${withOthers ? ' on' : ''}" id="withOthers"><span class="sw"></span><span><b>Hear it with the other layers</b><br><span class="small muted">${others.map(b => esc(LAYER[b.layer].short) + ': ' + esc(b.name || 'beat')).join(' · ')}</span></span></button>` : ''}
     <div class="actions"><button class="btn" id="prev"></button><button class="btn primary" id="save">Save beat</button></div>
     ${cur ? '<div style="margin-top:14px"><button class="btn danger block" id="rm">Remove beat</button></div>' : ''}`, root => {
     const grid = $('#grid', root);
-    const cols = n => n <= 9 ? n : n === 10 ? 5 : n === 12 ? 6 : 8;
-    const voices = () => [{ layer: 'edit', pattern: B.pattern.join(''), k: l.k }, ...(withOthers ? others.map(b => ({ layer: b.layer, pattern: b.pattern, k: LAYER[b.layer].k })) : [])];
+    const cols = n => n <= 9 ? n : n === 10 ? 5 : n === 12 ? 6 : n === 15 ? 5 : 8;
+    const pattern = () => B.bars.map(b => b.join('')).join('');
+    const voices = () => [{ layer: 'edit', pattern: pattern(), sub: B.sub, k: l.k }, ...(withOthers ? sectionVoices(sec.id, layerKey) : [])];
     const paintPrev = () => { $('#prev', root).innerHTML = Beat.on ? ICON.stop + '<span>Stop</span>' : ICON.play + '<span>Preview</span>'; };
-    const restart = () => { Beat.start(voices(), bpmOf(S.track), paintPrev); paintPrev(); };
+    const on = (sel, attr, v) => root.querySelectorAll(sel + ' .sug').forEach(b => b.classList.toggle('on', +b.dataset[attr] === v));
     const draw = () => {
-      grid.style.gridTemplateColumns = `repeat(${cols(B.pattern.length)}, 1fr)`;
-      grid.innerHTML = B.pattern.map((c, i) => `<button data-i="${i}" class="${c === '-' ? 'R' : c}">${c === '-' ? '·' : c}</button>`).join('');
-      root.querySelectorAll('#lens .sug').forEach(b => b.classList.toggle('on', +b.dataset.n === B.pattern.length));
+      grid.innerHTML = B.bars.map((bar, bi) => `${B.bars.length > 1 ? `<div class="bar-label">Bar ${bi + 1}</div>` : ''}<div class="grid" style="grid-template-columns:repeat(${cols(B.bar)}, 1fr)">${bar.map((c, i) => `<button data-b="${bi}" data-i="${i}" class="${c === '-' ? 'R' : c}">${c === '-' ? '·' : c}</button>`).join('')}</div>`).join('');
+      on('#subs', 's', B.sub); on('#lens', 'n', B.bar); on('#nbars', 'b', B.bars.length);
+      const pulses = B.bar / B.sub, secP = secBarPulses(sec);
+      $('#phint', root).textContent = `One bar = ${+pulses.toFixed(2)} pulse${pulses === 1 ? '' : 's'}` +
+        (Math.abs(pulses - secP) > 1e-6 ? ` · the section’s ${meterLabel(sec)} bar is ${+secP.toFixed(2)}, so this one drifts against it.` : ` · matches the section’s ${meterLabel(sec)}.`);
       if (Beat.on) Beat.retune(voices());
     };
     grid.onclick = e => {
       const b = e.target.closest('button'); if (!b) return;
-      const i = +b.dataset.i;
-      B.pattern[i] = { '-': 'D', D: 'T', T: '-' }[B.pattern[i]];
+      const bar = B.bars[+b.dataset.b], i = +b.dataset.i;
+      bar[i] = { '-': 'D', D: 'T', T: 'K', K: '-' }[bar[i]];
       draw();
     };
-    root.querySelectorAll('#presets .sug').forEach(b => b.onclick = () => {
-      const p = PRESETS.find(x => x.name === b.dataset.p);
-      B.pattern = (p ? p.pattern : '-'.repeat(B.pattern.length)).split('');
-      if (p) $('#bname', root).value = p.name;
+    root.querySelectorAll('[data-p]').forEach(b => b.onclick = () => {
+      const p = GROOVES.flatMap(g => g.items).find(x => x.name === b.dataset.p);
+      if (p) { B.sub = p.sub; B.bar = p.p.length; B.bars = B.bars.map(() => p.p.split('')); $('#bname', root).value = p.name; if (!lengths.includes(B.bar)) lengths.push(B.bar); }
+      else B.bars = B.bars.map(bar => bar.map(() => '-'));
       draw();
     });
+    root.querySelectorAll('#subs .sug').forEach(b => b.onclick = () => { B.sub = +b.dataset.s; draw(); });
     root.querySelectorAll('#lens .sug').forEach(b => b.onclick = () => {
-      const n = +b.dataset.n;
-      B.pattern = Array.from({ length: n }, (_, i) => B.pattern[i] || '-');
+      B.bar = +b.dataset.n;
+      B.bars = B.bars.map(bar => Array.from({ length: B.bar }, (_, i) => bar[i] || '-'));
+      draw();
+    });
+    root.querySelectorAll('#nbars .sug').forEach(b => b.onclick = () => {
+      const n = +b.dataset.b;
+      while (B.bars.length < n) B.bars.push(B.bars[B.bars.length - 1].slice());
+      B.bars.length = n;
       draw();
     });
     const wo = $('#withOthers', root);
     if (wo) wo.onclick = () => { withOthers = !withOthers; wo.classList.toggle('on', withOthers); if (Beat.on) Beat.retune(voices()); };
-    $('#prev', root).onclick = () => { if (Beat.on) { Beat.stop(); paintPrev(); } else restart(); };
+    $('#prev', root).onclick = () => { if (Beat.on) Beat.stop(); else Beat.start(voices(), bpmOf(S.track), { onChange: paintPrev }); paintPrev(); };
     $('#save', root).onclick = async () => {
-      const pattern = B.pattern.join('');
-      if (!/[DT]/.test(pattern)) return toast('Tap a few cells first, or remove the beat');
-      try { S.track = await api(`/tracks/${S.track.id}/beats/${layerKey}`, { method: 'PUT', body: { name: $('#bname', root).value, pattern } }); closeSheet(); renderTrack(); }
+      if (!/[DTK]/.test(pattern())) return toast('Tap a few cells first, or remove the beat');
+      try { S.track = await api(`/sections/${sec.id}/beats/${layerKey}`, { method: 'PUT', body: { name: $('#bname', root).value, pattern: pattern(), sub: B.sub, bar: B.bar } }); closeSheet(); renderTrack(); }
       catch (e) { toast(e.message); }
     };
     if (cur) confirmBtn($('#rm', root), 'Tap again to remove', async () => {
-      try { S.track = await api(`/tracks/${S.track.id}/beats/${layerKey}`, { method: 'PUT', body: { name: '', pattern: '' } }); closeSheet(); renderTrack(); }
+      try { S.track = await api(`/sections/${sec.id}/beats/${layerKey}`, { method: 'PUT', body: { name: '', pattern: '' } }); closeSheet(); renderTrack(); }
       catch (e) { toast(e.message); }
     });
     draw(); paintPrev();
@@ -740,9 +993,11 @@ function editBeat(layerKey) {
 }
 
 /* ---------- beat engine ---------- */
+// One pulse clock per playback. Every voice places its steps at pulse = step / subdivision,
+// and pulse 0 is the downbeat after any count-in.
 const Beat = {
   ctx: null, out: null, noise: null, timer: null, raf: 0, on: false,
-  voices: [], bpm: DEFAULT_BPM, n: 0, next: 0, marks: [], onChange: null,
+  voices: [], bpm: DEFAULT_BPM, t0: 0, p0: 0, onChange: null,
   ensure() {
     if (navigator.audioSession && navigator.audioSession.type === 'auto') { try { navigator.audioSession.type = 'playback'; } catch {} }
     if (!this.ctx) {
@@ -758,41 +1013,55 @@ const Beat = {
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
   },
-  start(voices, bpm, onChange) {
+  pulseAt(t) { return this.p0 + (t - this.t0) * this.bpm / 60; },
+  timeAt(p) { return this.t0 + (p - this.p0) * 60 / this.bpm; },
+  setBpm(b) {
+    if (this.on) { const now = this.ctx.currentTime; this.p0 = this.pulseAt(now); this.t0 = now; }
+    this.bpm = b;
+  },
+  prep(voices) {
+    const from = this.pulseAt(this.ctx.currentTime);
+    return voices.filter(v => v.metro || /[DTK]/.test(v.pattern)).map(v => ({ ...v, i: Math.ceil(from * v.sub - 1e-9) }));
+  },
+  start(voices, bpm, opts) {
+    opts = opts || {};
     this.stop();
     const ctx = this.ensure();
-    this.voices = voices.filter(v => /[DT]/.test(v.pattern));
-    if (!this.voices.length) return;
-    this.bpm = bpm; this.n = 0; this.marks = []; this.on = true; this.onChange = onChange || null;
-    this.next = ctx.currentTime + 0.08;
+    this.bpm = bpm; this.p0 = 0; this.t0 = opts.t0 || ctx.currentTime + 0.1;
+    this.voices = this.prep(voices);
+    this.on = true; this.onChange = opts.onChange || null;
     this.timer = setInterval(() => this.pump(), 25);
     this.pump();
     const frame = () => { this.paint(); this.raf = requestAnimationFrame(frame); };
     frame();
     if (this.onChange) this.onChange();
   },
-  retune(voices) { if (this.on) this.voices = voices.filter(v => /[DT]/.test(v.pattern)); },
+  retune(voices) { if (this.on) this.voices = this.prep(voices); },
   pump() {
-    const ctx = this.ctx;
-    while (this.next < ctx.currentTime + 0.15) {
-      for (const v of this.voices) {
-        const c = v.pattern[this.n % v.pattern.length];
-        if (c === 'D') this.dum(this.next, v.k); else if (c === 'T') this.tak(this.next, v.k);
+    const ctx = this.ctx, horizon = ctx.currentTime + 0.15;
+    for (const v of this.voices) {
+      for (;;) {
+        const t = this.timeAt(v.i / v.sub);
+        if (t >= horizon) break;
+        if (t >= ctx.currentTime - 0.02) {
+          if (v.metro) { if (v.i < (v.until == null ? Infinity : v.until * v.sub)) this.click(t, ((v.i % v.n) + v.n) % v.n === 0); }
+          else if (v.i >= 0) {
+            const c = v.pattern[v.i % v.pattern.length];
+            if (c === 'D') this.dum(t, v.k); else if (c === 'T') this.tak(t, v.k); else if (c === 'K') this.ka(t, v.k);
+          }
+        }
+        v.i++;
       }
-      this.marks.push([this.next, this.n]);
-      if (this.marks.length > 64) this.marks.splice(0, 32);
-      this.n++;
-      this.next += 30 / this.bpm;
     }
+    if (this.onTick) this.onTick(this.pulseAt(ctx.currentTime));
   },
   paint() {
-    const now = this.ctx.currentTime;
-    let step = -1;
-    for (const [t, n] of this.marks) if (t <= now) step = n;
     document.querySelectorAll('.now').forEach(e => e.classList.remove('now'));
-    if (step < 0) return;
+    const p = this.pulseAt(this.ctx.currentTime);
+    if (p < 0) return;
     for (const v of this.voices) {
-      const i = step % v.pattern.length;
+      if (v.metro) continue;
+      const i = Math.floor(p * v.sub + 1e-9) % v.pattern.length;
       const cells = v.layer === 'edit' ? document.querySelectorAll('#grid button') : document.querySelectorAll(`[data-cells="${v.layer}"] i`);
       if (cells[i]) cells[i].classList.add('now');
     }
@@ -808,47 +1077,114 @@ const Beat = {
     o.connect(g).connect(this.out);
     o.start(t); o.stop(t + 0.36);
   },
-  tak(t, k) {
+  noiseHit(t, freq, q, peak, decay, type) {
     const ctx = this.ctx, src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
     src.buffer = this.noise;
-    f.type = 'bandpass'; f.frequency.value = 2600 * k; f.Q.value = 1.4;
+    f.type = type || 'bandpass'; f.frequency.value = freq; f.Q.value = q;
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.7, t + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
     src.connect(f).connect(g).connect(this.out);
-    src.start(t); src.stop(t + 0.08);
+    src.start(t); src.stop(t + decay + 0.01);
+  },
+  tak(t, k) { this.noiseHit(t, 2600 * k, 1.4, 0.7, 0.07); },
+  ka(t, k) { this.noiseHit(t, 6500 * Math.sqrt(k), 0.8, 0.22, 0.035, 'highpass'); },
+  click(t, accent) {
+    const ctx = this.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'square'; o.frequency.value = accent ? 1760 : 1175;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(accent ? 0.35 : 0.2, t + 0.001);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+    o.connect(g).connect(this.out);
+    o.start(t); o.stop(t + 0.04);
   },
   stop() {
     clearInterval(this.timer); cancelAnimationFrame(this.raf);
-    this.timer = null; this.voices = [];
+    this.timer = null; this.voices = []; this.onTick = null;
     const was = this.on; this.on = false;
     document.querySelectorAll('.now').forEach(e => e.classList.remove('now'));
     if (was && this.onChange) this.onChange();
   },
 };
 
-function trackVoices(exceptLayer) {
-  return (S.track.beats || []).filter(b => b.layer !== exceptLayer).map(b => ({ layer: b.layer, pattern: b.pattern, k: LAYER[b.layer].k }));
+function sectionVoices(sid, exceptLayer) {
+  return S.track.beats.filter(b => b.section_id === sid && b.layer !== exceptLayer).map(b => ({ layer: b.layer, pattern: b.pattern, sub: subOf(b), k: LAYER[b.layer].k }));
 }
-function toggleBeats() {
-  if (Beat.on) Beat.stop();
-  else Beat.start(trackVoices(), bpmOf(S.track), updateTransport);
-  updateTransport();
+const metroVoice = (sec, until) => ({ metro: true, layer: 'click', n: sec.meter_n, sub: sec.meter_sub, until });
+
+/* ---------- section player ---------- */
+// Plays a section in sync: beats and click on the pulse clock, keeper takes scheduled on the same clock.
+const bufCache = new Map();
+function audioBuffer(idea) {
+  if (!bufCache.has(idea.audio_id)) {
+    bufCache.set(idea.audio_id, audioUrl(idea).then(u => fetch(u)).then(r => r.arrayBuffer())
+      .then(ab => new Promise((res, rej) => Beat.ensure().decodeAudioData(ab, res, rej)))
+      .catch(e => { bufCache.delete(idea.audio_id); throw e; }));
+  }
+  return bufCache.get(idea.audio_id);
 }
+const Player = {
+  on: false, sources: [], endTimer: null, t0: 0,
+  async start(o) {
+    this.stop();
+    const ctx = Beat.ensure();
+    const sec = o.sec, bpm = bpmOf(S.track), countIn = o.countIn || 0;
+    const voices = [];
+    if (o.beats) voices.push(...sectionVoices(sec.id, o.exceptLayer));
+    if (o.click || countIn) voices.push(metroVoice(sec, o.click ? null : 0));
+    const audio = o.recs ? stackIdeas(sec.id, o.exceptLayer) : [];
+    const takes = o.recs ? midiStack(sec.id, o.exceptLayer) : [];
+    if (!voices.length && !audio.length && !takes.length && !o.clock) return false;
+    let bufs = [];
+    if (audio.length) bufs = (await Promise.all(audio.map(i => audioBuffer(i).then(b => [i, b]).catch(() => null)))).filter(Boolean);
+    const T0 = ctx.currentTime + 0.12 + countIn * 60 / bpm;
+    this.t0 = T0; this.on = true; this.onStop = o.onStop || null;
+    Beat.start(voices, bpm, { t0: T0 });
+    let longest = 0;
+    for (const [i, b] of bufs) {
+      const src = ctx.createBufferSource();
+      src.buffer = b; src.connect(Beat.out);
+      const off = Math.min(parseData(i).offset || 0, b.duration);
+      src.start(T0, off);
+      this.sources.push(src);
+      longest = Math.max(longest, b.duration - off);
+    }
+    for (const i of takes) { Takes.play(i, T0); longest = Math.max(longest, parseTake(i).len * 60 / bpm); }
+    if (!voices.some(v => !v.metro || v.until == null) && !o.clock) {
+      this.endTimer = setTimeout(() => this.stop(), (T0 - ctx.currentTime + longest + 0.3) * 1000);
+    }
+    return true;
+  },
+  stop() {
+    clearTimeout(this.endTimer);
+    this.sources.forEach(s => { try { s.stop(); } catch {} });
+    this.sources = [];
+    Takes.stopAll();
+    const was = this.on; this.on = false;
+    Beat.stop();
+    if (was && this.onStop) this.onStop();
+  },
+};
+function stopEverything() { Player.stop(); Beat.stop(); stopAll(); Takes.stopAll(); updateTransport(); }
 
 /* ---------- notes & links ---------- */
-function openNote(layerKey) {
-  const l = LAYER[layerKey];
-  sheet(`<h3 style="color:${l.c}">Note · ${l.name}</h3><textarea id="txt" placeholder="e.g. half-time feel in the B part, leave space after the 3rd bar"></textarea>
+const laneTitle = lane => {
+  const { sec } = curView();
+  if (lane === 'transition') { const nx = nextSection(sec); return `${esc(sec.name)} → ${esc(nx ? nx.name : '')}`; }
+  return `${LAYER[lane].name} · ${esc(sec.name)}`;
+};
+function openNote(lane) {
+  const l = laneOf(lane);
+  sheet(`<h3 style="color:${l.c}">Note · ${laneTitle(lane)}</h3><textarea id="txt" placeholder="${lane === 'transition' ? 'e.g. everyone stops on 4, oud leads back in' : 'e.g. half-time feel, leave space after the 3rd bar'}"></textarea>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Post</button></div>`, root => {
     setTimeout(() => $('#txt', root).focus(), 50);
-    $('#save', root).onclick = () => postIdea({ layer: layerKey, kind: 'text', body: $('#txt', root).value }, root);
+    $('#save', root).onclick = () => postIdea({ layer: lane, kind: 'text', body: $('#txt', root).value }, root);
   });
 }
 
-function openLink(layerKey) {
-  const l = LAYER[layerKey];
-  sheet(`<h3 style="color:${l.c}">Link · ${l.name}</h3><label class="field">Link</label><input id="url" type="url" inputmode="url" placeholder="https://youtube.com/…">
+function openLink(lane) {
+  const l = laneOf(lane);
+  sheet(`<h3 style="color:${l.c}">Link · ${laneTitle(lane)}</h3><label class="field">Link</label><input id="url" type="url" inputmode="url" placeholder="https://youtube.com/…">
     <label class="field">What to listen for</label><textarea id="txt" rows="2" placeholder="e.g. the bass under the chorus at 1:20"></textarea>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Post</button></div>`, root => {
     $('#url', root).addEventListener('paste', () => setTimeout(() => $('#txt', root).focus(), 0));
@@ -856,7 +1192,7 @@ function openLink(layerKey) {
     $('#save', root).onclick = () => {
       let url = $('#url', root).value.trim();
       if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
-      postIdea({ layer: layerKey, kind: 'link', url, body: $('#txt', root).value }, root);
+      postIdea({ layer: lane, kind: 'link', url, body: $('#txt', root).value }, root);
     };
   });
 }
@@ -864,8 +1200,9 @@ function openLink(layerKey) {
 async function postIdea(payload, root) {
   const btn = $('#save', root);
   if (btn) btn.disabled = true;
+  const { sec } = curView();
   try {
-    const idea = await api(`/tracks/${S.track.id}/ideas`, { method: 'POST', body: payload });
+    const idea = await api(`/sections/${sec.id}/ideas`, { method: 'POST', body: payload });
     S.track.ideas.unshift(idea);
     S.track.updated_at = idea.created_at;
     closeSheet(); renderTrack();
@@ -873,39 +1210,58 @@ async function postIdea(payload, root) {
   } catch (e) { toast(e.message); if (btn) btn.disabled = false; }
 }
 
-/* ---------- recording ---------- */
+/* ---------- backing for recorders ---------- */
+// Shared by the mic and MIDI recorders: count-in, click, and the rest of the section underneath.
+function backingHtml(lane) {
+  const { sec } = curView();
+  const hasRest = sectionVoices(sec.id, lane).length + stackIdeas(sec.id, lane).length + midiStack(sec.id, lane).length > 0;
+  const B = { countIn: store.get('countIn', true), click: store.get('clickRec', true), rest: hasRest && store.get('along', true), hasRest };
+  const html = `
+    <button class="toggle${B.countIn ? ' on' : ''}" data-bk="countIn"><span class="sw"></span><span><b>Count in one bar</b><br><span class="small muted">${meterLabel(sec)} at ${bpmOf(S.track)} bpm, then you’re on.</span></span></button>
+    <button class="toggle${B.click ? ' on' : ''}" data-bk="click"><span class="sw"></span><span><b>Click while recording</b><br><span class="small muted">Metronome on the pulse, accent on each bar.</span></span></button>
+    ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ beats and takes. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
+  const wire = root => root.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
+    const k = b.dataset.bk; B[k] = !B[k]; b.classList.toggle('on', B[k]);
+    store.set({ countIn: 'countIn', click: 'clickRec', rest: 'along' }[k], B[k]);
+  });
+  const start = () => Player.start({ sec, exceptLayer: lane, beats: B.rest, recs: B.rest, click: B.click, countIn: B.countIn ? secBarPulses(sec) : 0, clock: true });
+  const grid = () => B.countIn || B.click || B.rest;
+  return { html, wire, start, B, grid, sec };
+}
+function countdown(el, sec) {
+  Beat.onTick = p => {
+    if (p < 0) el.textContent = `Count-in · ${Math.floor(p + secBarPulses(sec)) + 1} of ${sec.meter_n}`;
+    else el.textContent = `Bar ${Math.floor(p / secBarPulses(sec)) + 1}`;
+  };
+}
+
+/* ---------- mic recording ---------- */
 function pickMime() {
   if (!window.MediaRecorder) return null;
   return ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'].find(t => MediaRecorder.isTypeSupported(t)) || '';
 }
 
-function openRecorder(layerKey) {
-  const l = LAYER[layerKey];
+function openRecorder(lane) {
+  const l = laneOf(lane);
   const mime = pickMime();
   if (mime === null) return toast('This browser can’t record audio');
-  Beat.stop(); stopAll();
-  const otherBeats = trackVoices(layerKey);
-  const otherRecs = stackIdeas().filter(i => i.layer !== layerKey);
-  const canAlong = otherBeats.length + otherRecs.length > 0;
-  let alongOn = store.get('along', false) && canAlong;
-  const R = { chunks: [], blob: null, secs: 0 };
-  if (otherRecs.length) prefetchStack();
-  const alongDesc = [otherBeats.length && `${otherBeats.length} beat${otherBeats.length > 1 ? 's' : ''}`, otherRecs.length && `${otherRecs.length} recording${otherRecs.length > 1 ? 's' : ''}`].filter(Boolean).join(' + ');
+  stopEverything();
+  const bk = backingHtml(lane);
+  const R = { chunks: [], blob: null, secs: 0, offset: 0 };
+  prefetchStack(bk.sec.id);
 
-  const s = sheet(`<h3 style="color:${l.c}">Record · ${l.name}</h3><p class="lede" id="hint">Tap to start. Hum it, play it, beatbox it.</p>
-    <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0:00</div></div>
-    ${canAlong ? `<button class="toggle${alongOn ? ' on' : ''}" id="along"><span class="sw"></span><span><b>Play the other layers while I record</b><br><span class="small muted">${alongDesc}. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}
+  const s = sheet(`<h3 style="color:${l.c}">Record · ${laneTitle(lane)}</h3><p class="lede" id="hint">Tap to start. Hum it, play it, beatbox it.</p>
+    <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0:00</div><div class="count" id="count"></div></div>
+    <div id="bk">${bk.html}</div>
     <div id="review" class="hidden"><div class="player" style="--c:${l.c}"><button class="play" id="pv">${ICON.play}</button><div class="bar"><i></i></div><span class="time" id="pvTime"></span></div>
       <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. idea for the intro, slow">
       <div class="actions"><button class="btn" id="again">Redo</button><button class="btn primary" id="save">Post</button></div></div>`, root => {
-    const along = $('#along', root);
-    if (along) along.onclick = () => { alongOn = !alongOn; along.classList.toggle('on', alongOn); store.set('along', alongOn); };
+    bk.wire(root);
     $('#recBtn', root).onclick = () => (R.rec && R.rec.state === 'recording' ? stop() : start());
     $('#again', root).onclick = () => {
       stopPreview(); R.blob = null;
-      $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden');
-      if (along) along.classList.remove('hidden');
-      $('#recTime', root).textContent = '0:00'; $('#hint', root).textContent = 'Tap to start.';
+      $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); $('#bk', root).classList.remove('hidden');
+      $('#recTime', root).textContent = '0:00'; $('#count', root).textContent = ''; $('#hint', root).textContent = 'Tap to start.';
     };
     $('#pv', root).onclick = () => togglePreview();
     $('#save', root).onclick = save;
@@ -913,9 +1269,7 @@ function openRecorder(layerKey) {
   s._onclose = () => { cleanup(); stopPreview(); };
 
   async function start() {
-    const els = alongOn ? stackEls(layerKey) : [];
-    unlockEls(els);
-    if (alongOn && otherBeats.length) Beat.ensure();
+    const ctx = Beat.ensure();
     if (navigator.audioSession) { try { navigator.audioSession.type = 'play-and-record'; } catch {} }
     try {
       R.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
@@ -926,17 +1280,15 @@ function openRecorder(layerKey) {
     R.rec.onstop = () => {
       R.blob = new Blob(R.chunks, { type: (R.rec.mimeType || mime || 'audio/mp4').split(';')[0] });
       cleanup();
-      $('#recBtn', s).parentElement.classList.add('hidden');
-      const along = $('#along', s); if (along) along.classList.add('hidden');
+      $('#recBtn', s).parentElement.classList.add('hidden'); $('#bk', s).classList.add('hidden');
       $('#review', s).classList.remove('hidden');
       $('#pvTime', s).textContent = fmtTime(R.secs);
       $('#hint', s).textContent = 'Have a listen, then post it to the band.';
     };
     try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      R.ctx = new Ctx();
-      const an = R.ctx.createAnalyser(); an.fftSize = 512;
-      R.ctx.createMediaStreamSource(R.stream).connect(an);
+      R.actx = new (window.AudioContext || window.webkitAudioContext)();
+      const an = R.actx.createAnalyser(); an.fftSize = 512;
+      R.actx.createMediaStreamSource(R.stream).connect(an);
       const buf = new Uint8Array(an.fftSize);
       const btn = $('#recBtn', s);
       const tick = () => {
@@ -948,9 +1300,11 @@ function openRecorder(layerKey) {
       };
       tick();
     } catch {}
-    if (els.length) startEls(els);
-    if (alongOn && otherBeats.length) Beat.start(otherBeats, bpmOf(S.track));
+    const backed = bk.grid() ? await bk.start() : false;
     R.rec.start(1000);
+    const recAt = ctx.currentTime;
+    R.offset = backed ? Math.max(0, Player.t0 - recAt + (ctx.outputLatency || ctx.baseLatency || 0)) : 0;
+    if (backed) countdown($('#count', s), bk.sec);
     R.t0 = performance.now();
     $('#recBtn', s).classList.add('on');
     $('#hint', s).textContent = 'Recording… tap to stop.';
@@ -963,7 +1317,7 @@ function openRecorder(layerKey) {
   function stop() {
     R.secs = (performance.now() - R.t0) / 1000;
     clearInterval(R.timer);
-    stopAll(); Beat.stop();
+    Player.stop();
     if (R.rec && R.rec.state !== 'inactive') R.rec.stop();
   }
   function cleanup() {
@@ -971,9 +1325,9 @@ function openRecorder(layerKey) {
     cancelAnimationFrame(R.raf);
     if (R.rec && R.rec.state === 'recording') { R.rec.onstop = null; R.rec.stop(); }
     if (R.stream) R.stream.getTracks().forEach(t => t.stop());
-    if (R.ctx) R.ctx.close().catch(() => {});
-    R.stream = null; R.ctx = null;
-    stopAll(); Beat.stop();
+    if (R.actx) R.actx.close().catch(() => {});
+    R.stream = null; R.actx = null;
+    Player.stop();
     if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch {} }
   }
   let pvAudio = null;
@@ -993,12 +1347,225 @@ function openRecorder(layerKey) {
     const btn = $('#save', s); btn.disabled = true; btn.textContent = 'Uploading…';
     try {
       const up = await api('/audio', { method: 'POST', body: R.blob });
-      await postIdea({ layer: layerKey, kind: 'audio', audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10, body: $('#cap', s).value }, s);
+      await postIdea({ layer: lane, kind: 'audio', audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10, body: $('#cap', s).value,
+        data: R.offset ? JSON.stringify({ offset: Math.round(R.offset * 1000) / 1000 }) : '' }, s);
     } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Post'; }
   }
 }
 
-/* ---------- playback ---------- */
+/* ---------- synth & MIDI takes ---------- */
+// Notes are stored in pulses (t, d) so a take follows the track's pulse like the beats do.
+const Synth = {
+  voices: new Map(),
+  hz: n => 440 * Math.pow(2, (n - 69) / 12),
+  note(n, v, t, dur) {
+    const ctx = Beat.ensure();
+    const g = ctx.createGain(), f = ctx.createBiquadFilter();
+    const o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), o2g = ctx.createGain();
+    o1.type = 'triangle'; o2.type = 'sine';
+    o1.frequency.value = this.hz(n); o2.frequency.value = this.hz(n) * 2; o2g.gain.value = 0.25;
+    f.type = 'lowpass'; f.frequency.value = 1200 + v * 30;
+    const peak = 0.05 + (v / 127) * 0.3;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(peak * 0.45, t + 0.35);
+    const kill = ctx.createGain();
+    o1.connect(f); o2.connect(o2g).connect(f); f.connect(g).connect(kill).connect(Beat.out);
+    o1.start(t); o2.start(t);
+    if (dur != null) {
+      const end = t + dur;
+      g.gain.setTargetAtTime(0.0001, end, 0.12);
+      o1.stop(end + 0.8); o2.stop(end + 0.8);
+      return e => kill.gain.setTargetAtTime(0.0001, Math.max(e, ctx.currentTime), 0.03);
+    }
+    let done = false;
+    return e => {
+      if (done) return; done = true;
+      g.gain.cancelScheduledValues(e);
+      g.gain.setTargetAtTime(0.0001, e, 0.12);
+      o1.stop(e + 0.8); o2.stop(e + 0.8);
+    };
+  },
+  on(n, v) { this.off(n); this.voices.set(n, this.note(n, v, Beat.ensure().currentTime)); },
+  off(n) { const r = this.voices.get(n); if (r) { r(Beat.ctx.currentTime); this.voices.delete(n); } },
+};
+
+function parseTake(i) {
+  if (!i._take) { const d = parseData(i); i._take = Array.isArray(d.notes) ? d : { bpm: DEFAULT_BPM, notes: [], len: 0 }; }
+  return i._take;
+}
+
+function rollSvg(take, id) {
+  const notes = take.notes;
+  if (!notes.length) return '';
+  const lo = Math.min(...notes.map(n => n.n)) - 1, hi = Math.max(...notes.map(n => n.n)) + 1;
+  const span = Math.max(12, hi - lo), len = Math.max(take.len, 1);
+  const H = 56, W = 300, nh = Math.max(2, Math.min(6, (H - 8) / span));
+  const y = n => 4 + (hi - n) / span * (H - 8 - nh);
+  const bp = take.bar || 4, bars = [];
+  for (let p = bp; p < len; p += bp) bars.push(`<line x1="${p / len * W}" x2="${p / len * W}" y1="0" y2="${H}" stroke="var(--line)" stroke-width="1"/>`);
+  return `<svg class="roll" data-roll="${esc(id)}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bars.join('')}${notes.map(n =>
+    `<rect x="${n.t / len * W}" y="${y(n.n)}" width="${Math.max(1.5, n.d / len * W)}" height="${nh}" rx="1" fill="var(--c)" opacity="${0.45 + n.v / 254}"/>`).join('')}<line class="ph" x1="0" x2="0" y1="0" y2="${H}"/></svg>`;
+}
+
+const Takes = {
+  active: new Map(),
+  play(idea, startAt) {
+    const take = parseTake(idea), ctx = Beat.ensure();
+    const spp = 60 / bpmOf(S.track);
+    const t0 = startAt != null ? startAt : ctx.currentTime + 0.08;
+    const releases = take.notes.map(n => Synth.note(n.n, n.v, t0 + n.t * spp, Math.max(0.05, n.d * spp)));
+    const total = Math.max(0.1, take.len * spp);
+    const entry = { releases, raf: 0 };
+    this.stop(idea.id);
+    this.active.set(idea.id, entry);
+    paintTake(idea.id, true);
+    const frame = () => {
+      const x = (ctx.currentTime - t0) / total;
+      const el = document.querySelector(`[data-roll="${idea.id}"]`);
+      if (el) { el.classList.toggle('on', x >= 0); const ph = el.querySelector('.ph'); ph.setAttribute('x1', x * 300); ph.setAttribute('x2', x * 300); }
+      if (x >= 1) return this.stop(idea.id, true);
+      entry.raf = requestAnimationFrame(frame);
+    };
+    frame();
+  },
+  stop(id, ended) {
+    const e = this.active.get(id);
+    if (!e) return;
+    cancelAnimationFrame(e.raf);
+    if (!ended) { const now = Beat.ctx.currentTime; e.releases.forEach(r => { try { r(now); } catch {} }); }
+    this.active.delete(id);
+    const el = document.querySelector(`[data-roll="${id}"]`); if (el) el.classList.remove('on');
+    paintTake(id, false);
+  },
+  stopAll() { [...this.active.keys()].forEach(id => this.stop(id)); },
+};
+function paintTake(id, on) {
+  const el = document.querySelector(`[data-take="${id}"] .play`);
+  if (el) el.innerHTML = on ? ICON.stop : ICON.play;
+}
+function toggleTake(id) {
+  if (Takes.active.has(id)) return Takes.stop(id);
+  stopAll();
+  const idea = S.track.ideas.find(i => i.id === id);
+  let at = null;
+  if (Beat.on) {
+    const bp = secBarPulses(curView().sec);
+    at = Beat.timeAt(Math.ceil(Beat.pulseAt(Beat.ctx.currentTime + 0.05) / bp) * bp);
+  }
+  Takes.play(idea, at);
+}
+
+function openMidi(lane) {
+  const l = laneOf(lane);
+  stopEverything();
+  const bk = backingHtml(lane);
+  let monitor = store.get('midiMonitor', true);
+  const M = { access: null, input: null, notes: [], open: new Map(), pedal: false, held: new Set(), rec: false, len: 0, gridded: false };
+
+  const s = sheet(`<h3 style="color:${l.c}">MIDI · ${laneTitle(lane)}</h3><p class="lede" id="hint">Plug in a keyboard, then tap record and play.</p>
+    <div class="midi-status" id="mstat"><i></i><span>Looking for MIDI devices…</span></div>
+    <div class="sugs hidden" id="inputs" style="--c:${l.c}"></div>
+    <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0 notes</div><div class="count" id="count"></div></div>
+    <div id="bk">${bk.html}
+    <button class="toggle${monitor ? ' on' : ''}" id="mon"><span class="sw"></span><span><b>Play the notes through this device</b><br><span class="small muted">For keyboards without their own speakers.</span></span></button></div>
+    <div id="review" class="hidden" style="--c:${l.c}"><div id="rollWrap"></div>
+      <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. left hand for the B part">
+      <div class="actions"><button class="btn" id="again">Redo</button><button class="btn" id="pv">${ICON.play}<span>Play</span></button><button class="btn primary" id="save">Post</button></div></div>`, root => {
+    bk.wire(root);
+    $('#mon', root).onclick = () => { monitor = !monitor; $('#mon', root).classList.toggle('on', monitor); store.set('midiMonitor', monitor); };
+    $('#recBtn', root).onclick = () => (M.rec ? stop() : start());
+    $('#again', root).onclick = () => { Takes.stopAll(); M.notes = []; $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); $('#bk', root).classList.remove('hidden'); $('#recTime', root).textContent = '0 notes'; $('#count', root).textContent = ''; };
+    $('#pv', root).onclick = () => { const idea = draftIdea(); if (Takes.active.has(idea.id)) Takes.stop(idea.id); else Takes.play(idea); };
+    $('#save', root).onclick = async () => {
+      const take = { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes };
+      await postIdea({ layer: lane, kind: 'midi', data: JSON.stringify(take), duration: Math.round(M.len * 60 / take.bpm * 10) / 10, body: $('#cap', root).value }, root);
+    };
+  });
+  s._onclose = () => { if (M.rec) stop(); Takes.stopAll(); Player.stop(); for (const n of [...Synth.voices.keys()]) Synth.off(n); if (M.input) M.input.onmidimessage = null; };
+
+  const status = (text, cls) => { const el = $('#mstat', s); el.className = 'midi-status ' + (cls || ''); $('span', el).textContent = text; };
+  const draftIdea = () => ({ id: 'draft', data: '', _take: { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes } });
+
+  const listen = input => {
+    if (M.input) M.input.onmidimessage = null;
+    M.input = input;
+    status(`Listening to ${input.name || 'MIDI input'}`, 'live');
+    input.onmidimessage = onMsg;
+    $('#inputs', s).querySelectorAll('.sug').forEach(b => b.classList.toggle('on', b.dataset.id === input.id));
+  };
+  const refresh = () => {
+    const ins = [...M.access.inputs.values()];
+    const box = $('#inputs', s);
+    box.innerHTML = ins.map(i => `<button class="sug" data-id="${esc(i.id)}">${esc(i.name || 'MIDI input')}</button>`).join('');
+    box.classList.toggle('hidden', ins.length < 2);
+    box.querySelectorAll('.sug').forEach(b => b.onclick = () => listen(ins.find(i => i.id === b.dataset.id)));
+    if (!ins.length) { M.input = null; return status('No MIDI device found. Plug one in; it shows up here.'); }
+    if (!M.input || !ins.includes(M.input)) listen(ins[0]);
+  };
+  navigator.requestMIDIAccess().then(a => { M.access = a; a.onstatechange = refresh; refresh(); })
+    .catch(() => status('MIDI access was blocked. Allow it in Chrome’s site settings.'));
+
+  const perfToPulse = ms => {
+    const ctx = Beat.ctx, ts = ctx.getOutputTimestamp ? ctx.getOutputTimestamp() : null;
+    const t = ts && ts.performanceTime ? ts.contextTime + (ms - ts.performanceTime) / 1000 : ctx.currentTime - (performance.now() - ms) / 1000;
+    return Beat.pulseAt(t);
+  };
+  const endNote = (n, ms) => {
+    const o = M.open.get(n); if (!o) return;
+    M.open.delete(n);
+    if (!M.rec) return;
+    const start = M.gridded ? Math.max(0, o.p) : o.p;
+    M.notes.push({ n, v: o.v, t: start, d: Math.max(0.05, perfToPulse(ms) - start) });
+    $('#recTime', s).textContent = M.notes.length + ' notes';
+  };
+  function onMsg(e) {
+    const [st, a, b] = e.data, cmd = st & 0xf0, ms = e.timeStamp || performance.now();
+    const el = $('#mstat', s); el.classList.add('hit'); clearTimeout(M.hit); M.hit = setTimeout(() => el.classList.remove('hit'), 90);
+    if (cmd === 0x90 && b > 0) {
+      if (monitor) Synth.on(a, b);
+      M.held.add(a);
+      if (M.rec) { endNote(a, ms); M.open.set(a, { v: b, p: perfToPulse(ms) }); }
+    } else if (cmd === 0x80 || (cmd === 0x90 && b === 0)) {
+      M.held.delete(a);
+      if (M.pedal) return;
+      if (monitor) Synth.off(a);
+      endNote(a, ms);
+    } else if (cmd === 0xb0 && a === 64) {
+      M.pedal = b >= 64;
+      if (!M.pedal) for (const n of new Set([...M.open.keys(), ...Synth.voices.keys()])) if (!M.held.has(n)) { if (monitor) Synth.off(n); endNote(n, ms); }
+    }
+  }
+  async function start() {
+    if (!M.input) return toast('No MIDI device yet');
+    Beat.ensure();
+    M.notes = []; M.open.clear();
+    M.gridded = bk.grid();
+    await bk.start();
+    M.rec = true;
+    if (M.gridded) countdown($('#count', s), bk.sec);
+    $('#recBtn', s).classList.add('on');
+    $('#hint', s).textContent = 'Recording… tap to stop.';
+  }
+  function stop() {
+    const ms = performance.now();
+    for (const n of [...M.open.keys()]) endNote(n, ms);
+    const endP = perfToPulse(ms);
+    M.rec = false; Player.stop();
+    $('#recBtn', s).classList.remove('on');
+    if (!M.notes.length) { $('#hint', s).textContent = 'No notes came in. Check the device, then try again.'; return; }
+    M.notes.sort((x, y) => x.t - y.t);
+    if (!M.gridded) { const first = M.notes[0].t; M.notes.forEach(n => { n.t -= first; }); }
+    M.notes.forEach(n => { n.t = Math.round(n.t * 1000) / 1000; n.d = Math.round(n.d * 1000) / 1000; });
+    M.len = Math.max(...M.notes.map(n => n.t + n.d), M.gridded ? endP : 0);
+    $('#recBtn', s).parentElement.classList.add('hidden'); $('#bk', s).classList.add('hidden');
+    $('#review', s).classList.remove('hidden');
+    $('#rollWrap', s).innerHTML = rollSvg(draftIdea()._take, 'draft');
+    $('#hint', s).textContent = `${M.notes.length} notes. Have a listen, then post it to the band.`;
+  }
+}
+
+/* ---------- single-take playback ---------- */
 const audioCache = new Map();
 const inflight = new Map();
 const playing = new Map();
@@ -1023,7 +1590,7 @@ function paint(id, state) {
 }
 
 async function togglePlay(id) {
-  if (playing.has(id)) { const a = playing.get(id); a.pause(); playing.delete(id); paint(id, 'pause'); updateTransport(); return; }
+  if (playing.has(id)) { const a = playing.get(id); a.pause(); playing.delete(id); paint(id, 'pause'); return; }
   stopAll();
   const idea = S.track.ideas.find(i => i.id === id);
   let url = audioCache.get(idea.audio_id);
@@ -1044,44 +1611,23 @@ function wireProgress(id, a, fallbackDur) {
     $('.bar i', el).style.width = Math.min(100, 100 * a.currentTime / d) + '%';
     $('.time', el).textContent = fmtTime(a.currentTime);
   };
-  a.onended = () => { playing.delete(id); paint(id, 'stop'); const el = playerEl(id); if (el) $('.time', el).textContent = fmtTime(fallbackDur); updateTransport(); };
+  a.onended = () => { playing.delete(id); paint(id, 'stop'); const el = playerEl(id); if (el) $('.time', el).textContent = fmtTime(fallbackDur); };
 }
 function stopAll() {
   for (const [id, a] of playing) { a.pause(); paint(id, 'stop'); }
   playing.clear();
-  updateTransport();
 }
 
-function stackIdeas() {
+function keeper(list) { return list.find(i => i.starred) || list.slice().sort((a, b) => b.created_at - a.created_at)[0]; }
+function stackIdeas(sid, exceptLayer) {
   if (!S.track) return [];
-  return LAYERS.map(l => {
-    const audio = S.track.ideas.filter(i => i.layer === l.key && i.kind === 'audio');
-    return audio.find(i => i.starred) || audio.sort((a, b) => b.created_at - a.created_at)[0];
-  }).filter(Boolean);
+  return LAYERS.filter(l => l.key !== exceptLayer).map(l => keeper(ideasOf(sid, l.key).filter(i => i.kind === 'audio'))).filter(Boolean);
 }
-function prefetchStack() {
-  return Promise.all(stackIdeas().map(i => audioUrl(i).catch(() => null)));
+function midiStack(sid, exceptLayer) {
+  if (!S.track) return [];
+  return LAYERS.filter(l => l.key !== exceptLayer).map(l => keeper(ideasOf(sid, l.key).filter(i => i.kind === 'midi'))).filter(Boolean);
 }
-function stackEls(exceptLayer) {
-  return stackIdeas().filter(i => i.layer !== exceptLayer && audioCache.get(i.audio_id)).map(i => [i, new Audio(audioCache.get(i.audio_id))]);
-}
-function unlockEls(els) {
-  for (const [, a] of els) {
-    a.muted = true;
-    a.play().then(() => { if (!a._go) { a.pause(); a.currentTime = 0; } }).catch(() => {});
-  }
-}
-function startEls(els) {
-  stopAll();
-  for (const [i, a] of els) { wireProgress(i.id, a, i.duration); playing.set(i.id, a); paint(i.id, 'play'); }
-  for (const [, a] of els) { a._go = true; a.muted = false; a.currentTime = 0; a.play().catch(() => {}); }
-  updateTransport();
-}
-async function toggleTree() {
-  if (playing.size) return stopAll();
-  if (stackEls().length < stackIdeas().length) { toast('Loading recordings…'); await prefetchStack(); }
-  startEls(stackEls());
-}
+function prefetchStack(sid) { stackIdeas(sid).forEach(i => audioBuffer(i).catch(() => null)); }
 
 /* ---------- band ---------- */
 function viewBand() {
@@ -1120,10 +1666,10 @@ function shareTrack() {
 let pollTimer = null;
 function poll(fn) {
   clearInterval(pollTimer);
-  pollTimer = setInterval(() => { if (document.visibilityState === 'visible' && !Beat.on) fn().catch(() => {}); }, 20000);
+  pollTimer = setInterval(() => { if (document.visibilityState === 'visible' && !Player.on && !Beat.on) fn().catch(() => {}); }, 20000);
 }
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && S.key && !$('.scrim') && !playing.size && !Beat.on) route();
+  if (document.visibilityState === 'visible' && S.key && !$('.scrim') && !playing.size && !Player.on && !Beat.on) route();
 });
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
