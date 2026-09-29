@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS tracks (
   maqam TEXT NOT NULL DEFAULT '',
   tonic TEXT NOT NULL DEFAULT '',
   tempo INTEGER,
-  meter TEXT NOT NULL DEFAULT '',
   notes TEXT NOT NULL DEFAULT '',
   created_by TEXT,
   created_at INTEGER NOT NULL,
@@ -24,6 +23,14 @@ CREATE TABLE IF NOT EXISTS holders (
   member_id TEXT NOT NULL,
   instrument TEXT NOT NULL DEFAULT '',
   PRIMARY KEY (track_id, layer, member_id)
+);
+
+CREATE TABLE IF NOT EXISTS beats (
+  track_id TEXT NOT NULL,
+  layer TEXT NOT NULL,
+  name TEXT NOT NULL DEFAULT '',
+  pattern TEXT NOT NULL DEFAULT '',
+  PRIMARY KEY (track_id, layer)
 );
 
 CREATE TABLE IF NOT EXISTS ideas (

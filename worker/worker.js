@@ -29,11 +29,12 @@ const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max || 500) :
 async function loadTrack(env, id) {
   const track = await env.DB.prepare('SELECT * FROM tracks WHERE id = ?').bind(id).first();
   if (!track) return null;
-  const [holders, ideas] = await Promise.all([
+  const [holders, beats, ideas] = await Promise.all([
     env.DB.prepare('SELECT layer, member_id, instrument FROM holders WHERE track_id = ?').bind(id).all(),
+    env.DB.prepare('SELECT layer, name, pattern FROM beats WHERE track_id = ?').bind(id).all(),
     env.DB.prepare('SELECT * FROM ideas WHERE track_id = ? ORDER BY created_at DESC').bind(id).all(),
   ]);
-  return { ...track, holders: holders.results, ideas: ideas.results };
+  return { ...track, holders: holders.results, beats: beats.results, ideas: ideas.results };
 }
 
 async function touch(env, trackId) {
@@ -46,15 +47,17 @@ async function route(req, env, url, member) {
   const [a, id, sub, subId] = parts;
 
   if (a === 'state' && m === 'GET') {
-    const [members, tracks, holders, counts] = await Promise.all([
+    const [members, tracks, holders, beats, counts] = await Promise.all([
       env.DB.prepare('SELECT * FROM members ORDER BY created_at').all(),
-      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, meter, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
+      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
       env.DB.prepare('SELECT track_id, layer, member_id, instrument FROM holders').all(),
+      env.DB.prepare('SELECT track_id, layer, name, pattern FROM beats').all(),
       env.DB.prepare('SELECT track_id, layer, COUNT(*) AS n FROM ideas GROUP BY track_id, layer').all(),
     ]);
     const byTrack = {};
-    for (const t of tracks.results) byTrack[t.id] = { ...t, holders: [], counts: {} };
+    for (const t of tracks.results) byTrack[t.id] = { ...t, holders: [], beats: [], counts: {} };
     for (const h of holders.results) byTrack[h.track_id]?.holders.push(h);
+    for (const b of beats.results) byTrack[b.track_id]?.beats.push(b);
     for (const c of counts.results) if (byTrack[c.track_id]) byTrack[c.track_id].counts[c.layer] = c.n;
     return json({ members: members.results, tracks: tracks.results.map(t => byTrack[t.id]) });
   }
@@ -92,8 +95,8 @@ async function route(req, env, url, member) {
       const t = now();
       const tid = uid();
       await env.DB.prepare(
-        'INSERT INTO tracks (id, title, maqam, tonic, tempo, meter, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), Number(b.tempo) || null, str(b.meter, 60), str(b.notes, 4000), member, t, t).run();
+        'INSERT INTO tracks (id, title, maqam, tonic, tempo, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), Number(b.tempo) || null, str(b.notes, 4000), member, t, t).run();
       return json(await loadTrack(env, tid), 201);
     }
     if (!id) return null;
@@ -107,8 +110,8 @@ async function route(req, env, url, member) {
       if (!cur) return json({ error: 'not found' }, 404);
       const pick = (k, max) => (k in b ? str(b[k], max) : cur[k]);
       const tempo = 'tempo' in b ? Number(b.tempo) || null : cur.tempo;
-      await env.DB.prepare('UPDATE tracks SET title = ?, maqam = ?, tonic = ?, tempo = ?, meter = ?, notes = ?, updated_at = ? WHERE id = ?')
-        .bind(pick('title', 120) || cur.title, pick('maqam', 60), pick('tonic', 20), tempo, pick('meter', 60), pick('notes', 4000), now(), id).run();
+      await env.DB.prepare('UPDATE tracks SET title = ?, maqam = ?, tonic = ?, tempo = ?, notes = ?, updated_at = ? WHERE id = ?')
+        .bind(pick('title', 120) || cur.title, pick('maqam', 60), pick('tonic', 20), tempo, pick('notes', 4000), now(), id).run();
       return json(await loadTrack(env, id));
     }
     if (m === 'DELETE' && !sub) {
@@ -117,6 +120,7 @@ async function route(req, env, url, member) {
       await env.DB.batch([
         env.DB.prepare('DELETE FROM tracks WHERE id = ?').bind(id),
         env.DB.prepare('DELETE FROM holders WHERE track_id = ?').bind(id),
+        env.DB.prepare('DELETE FROM beats WHERE track_id = ?').bind(id),
         env.DB.prepare('DELETE FROM ideas WHERE track_id = ?').bind(id),
       ]);
       return json({ ok: true });
@@ -131,6 +135,19 @@ async function route(req, env, url, member) {
           .map(h => env.DB.prepare('INSERT OR REPLACE INTO holders (track_id, layer, member_id, instrument) VALUES (?, ?, ?, ?)')
             .bind(id, subId, h.member_id, str(h.instrument, 60))),
       ]);
+      await touch(env, id);
+      return json(await loadTrack(env, id));
+    }
+    if (sub === 'beats' && m === 'PUT' && LAYERS.includes(subId)) {
+      const b = await body(req);
+      const pattern = typeof b.pattern === 'string' ? b.pattern.toUpperCase() : '';
+      const name = str(b.name, 60);
+      if (!name && !/[DT]/.test(pattern)) {
+        await env.DB.prepare('DELETE FROM beats WHERE track_id = ? AND layer = ?').bind(id, subId).run();
+      } else {
+        if (!/^[DT-]{2,32}$/.test(pattern)) return json({ error: 'bad pattern' }, 400);
+        await env.DB.prepare('INSERT OR REPLACE INTO beats (track_id, layer, name, pattern) VALUES (?, ?, ?, ?)').bind(id, subId, name, pattern).run();
+      }
       await touch(env, id);
       return json(await loadTrack(env, id));
     }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Shajara</title>
-<meta name="theme-color" content="#16130f">
+<meta name="theme-color" content="#15120e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shajara">
@@ -13,107 +13,134 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root {
-  --bg: #16130f;
-  --surface: #211d18;
-  --surface-2: #2b2620;
+  --bg: #15120e;
+  --surface: #201c17;
+  --surface-2: #2a251f;
   --line: #3a332b;
-  --text: #f1e9dd;
-  --muted: #a89b8a;
-  --faint: #6f6557;
-  --accent: #e0a458;
-  --danger: #e0675a;
-  --bloom: #e58fa5;
-  --bark: #c08457;
-  --ground: #8fae6b;
-  --substrate: #7f8fc7;
-  --radius: 14px;
+  --text: #f3ebdf;
+  --muted: #a99c8b;
+  --faint: #6e6457;
+  --accent: #e3a95c;
+  --danger: #e36b5d;
+  --bloom: #ea94aa;
+  --bark: #c98d5e;
+  --ground: #95b56f;
+  --substrate: #8394d0;
+  --radius: 16px;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 var(--sans); }
 body { min-height: 100dvh; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); overscroll-behavior-y: contain; }
-button, input, textarea, select { font: inherit; color: inherit; }
+button, input, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; background: none; padding: 0; }
 a { color: var(--accent); }
-.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 120px; }
-.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.top-in { max-width: 640px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 10px; min-height: 56px; }
-.top h1 { font: 600 20px/1.2 var(--serif); margin: 0; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.icon-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); color: var(--text); flex: none; }
-.icon-btn svg { width: 20px; height: 20px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: var(--surface-2); font-weight: 600; }
-.btn.primary { background: var(--accent); color: #1b140b; }
-.btn.danger { background: transparent; color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent); }
-.btn.block { width: 100%; }
-.btn:disabled { opacity: .5; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 140px; }
 .muted { color: var(--muted); }
 .faint { color: var(--faint); }
 .small { font-size: 13px; }
 .hidden { display: none !important; }
+
+.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.top-in { max-width: 640px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 10px; min-height: 58px; }
+.top h1 { font: 600 20px/1.2 var(--serif); margin: 0; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); flex: none; }
+.icon-btn svg { width: 20px; height: 20px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 12px; background: var(--surface-2); font-weight: 600; }
+.btn svg { width: 18px; height: 18px; }
+.btn.primary { background: var(--accent); color: #1b140b; }
+.btn.danger { background: transparent; color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent); }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: .45; }
+
 input[type=text], input[type=password], input[type=number], input[type=url], textarea {
   width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none;
 }
 input:focus, textarea:focus { border-color: var(--accent); }
 textarea { resize: vertical; min-height: 90px; }
-label.field { display: block; margin: 14px 0 6px; font-size: 13px; color: var(--muted); }
+label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--muted); }
 
 /* gate */
-.gate { min-height: 90dvh; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.gate h2 { font: 600 34px/1.1 var(--serif); margin: 0; }
+.gate { min-height: 88dvh; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.gate h2 { font: 600 36px/1.1 var(--serif); margin: 0; }
 .gate p { margin: 0 0 8px; }
 .people { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.person { background: var(--surface); border-radius: var(--radius); padding: 16px; text-align: left; }
+.person { background: var(--surface); border-radius: var(--radius); padding: 16px; text-align: left; min-height: 72px; }
 .person b { display: block; font-size: 17px; }
 
 /* home */
-.hello { margin: 8px 0 18px; }
-.hello h2 { font: 600 28px/1.15 var(--serif); margin: 0; }
-.track-row { display: block; width: 100%; text-align: left; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; position: relative; }
-.track-row .t { font: 600 19px/1.25 var(--serif); padding-right: 16px; }
-.track-row .meta { font-size: 13px; color: var(--muted); margin: 2px 0 10px; }
-.dot { position: absolute; top: 18px; right: 16px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
-.mini-tree { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.mini-layer { border-radius: 8px; padding: 6px 8px; font-size: 12px; background: color-mix(in srgb, var(--c) 14%, transparent); color: color-mix(in srgb, var(--c) 80%, var(--text)); min-height: 44px; }
-.mini-layer .ln { font-weight: 700; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.hello { margin: 6px 0 18px; }
+.hello h2 { font: 600 30px/1.15 var(--serif); margin: 0; }
+.track-row { display: block; width: 100%; text-align: left; background: var(--surface); border-radius: var(--radius); padding: 14px 14px 12px; margin-bottom: 12px; position: relative; }
+.track-row .t { font: 600 20px/1.25 var(--serif); padding-right: 18px; }
+.track-row .meta { font-size: 13px; color: var(--muted); margin: 2px 0 12px; }
+.dot { position: absolute; top: 20px; right: 16px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
+.mini-tree { display: flex; flex-direction: column; gap: 4px; }
+.mini-layer { display: grid; grid-template-columns: 76px 1fr auto; gap: 8px; align-items: center; border-radius: 8px; padding: 6px 9px; font-size: 13px; background: color-mix(in srgb, var(--c) 11%, transparent); }
+.mini-layer .ln { font-weight: 700; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--c); }
 .mini-layer .who { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-layer .bt { font-size: 12px; color: color-mix(in srgb, var(--c) 75%, var(--text)); white-space: nowrap; }
+.mini-layer .open { color: var(--faint); }
 .empty { text-align: center; padding: 48px 12px; color: var(--muted); }
-.fab { position: fixed; right: max(16px, calc(50% - 304px)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 8px 24px rgba(0,0,0,.45); border-radius: 999px; padding: 15px 22px; }
+.fab { position: fixed; right: max(16px, calc(50% - 304px)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 6; box-shadow: 0 10px 28px rgba(0,0,0,.5); border-radius: 999px; padding: 15px 22px; }
+
+.legend { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-top: 22px; font-size: 14px; }
+.legend h4 { margin: 0 0 8px; font: 600 16px/1.2 var(--serif); }
+.legend .l { display: grid; grid-template-columns: 132px 1fr; padding: 3px 0; }
+.legend b { color: var(--c); font: 600 15px/1.3 var(--serif); }
+.legend p { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
 
 /* track */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
-.chip { background: var(--surface); border-radius: 999px; padding: 7px 13px; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.hero { padding: 2px 0 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--surface); border-radius: 999px; padding: 7px 13px; font-size: 14px; display: inline-flex; align-items: baseline; gap: 6px; }
 .chip .k { color: var(--muted); font-size: 12px; }
 .chip.ghost { color: var(--faint); border: 1px dashed var(--line); background: transparent; }
-.notes { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; white-space: pre-wrap; font-size: 15px; }
-.tree-bar { display: flex; gap: 8px; margin-bottom: 14px; }
-.tree-bar .btn { flex: 1; padding: 11px 12px; font-size: 15px; }
-.layer { border-radius: var(--radius); background: var(--surface); margin-bottom: 12px; border-left: 4px solid var(--c); overflow: hidden; }
-.layer-head { padding: 12px 14px 10px; display: flex; gap: 10px; align-items: flex-start; }
-.layer-glyph { width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--c) 20%, transparent); color: var(--c); display: grid; place-items: center; flex: none; }
-.layer-glyph svg { width: 20px; height: 20px; }
-.layer-name { font: 600 18px/1.2 var(--serif); }
-.layer-role { font-size: 12px; color: var(--muted); }
-.holders { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; }
-.holder { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 18%, transparent); color: color-mix(in srgb, var(--c) 70%, var(--text)); }
-.holder.add { background: transparent; border: 1px dashed color-mix(in srgb, var(--c) 45%, transparent); }
-.ideas { padding: 0 14px 4px; }
-.idea { border-top: 1px solid var(--line); padding: 10px 0; }
-.idea-top { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
-.idea-top .by { color: var(--text); font-weight: 600; }
-.idea-top .sp { flex: 1; }
-.new-tag { color: var(--accent); font-weight: 700; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
-.idea-body { margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; }
-.star { color: var(--faint); font-size: 18px; line-height: 1; padding: 2px 4px; }
-.star.on { color: var(--accent); }
-.kebab { color: var(--faint); padding: 2px 6px; font-size: 18px; line-height: 1; }
-.more { display: block; width: 100%; padding: 8px 0 10px; color: var(--muted); font-size: 13px; text-align: left; border-top: 1px solid var(--line); }
-.compose { display: flex; gap: 8px; padding: 10px 14px 14px; }
-.compose button { flex: 1; padding: 10px 6px; border-radius: 10px; background: var(--surface-2); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.compose button svg { width: 16px; height: 16px; }
-.compose .rec { background: color-mix(in srgb, var(--danger) 20%, var(--surface-2)); }
+.notes { display: block; width: 100%; text-align: left; background: var(--surface); border-radius: 12px; padding: 12px 14px; margin-top: 12px; white-space: pre-wrap; font-size: 15px; color: color-mix(in srgb, var(--text) 85%, var(--muted)); }
 
-/* player */
+.tree { position: relative; }
+.layer { position: relative; border-radius: var(--radius); margin-bottom: 14px; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 9%, var(--surface)) 0%, var(--surface) 55%); }
+.layer + .layer::before { content: ""; position: absolute; left: 30px; top: -14px; width: 4px; height: 14px; border-radius: 2px; background: linear-gradient(var(--pc), var(--c)); opacity: .7; }
+.layer-head { padding: 14px 14px 8px; display: flex; gap: 12px; align-items: center; }
+.layer-glyph { width: 36px; height: 36px; border-radius: 11px; background: color-mix(in srgb, var(--c) 22%, transparent); color: var(--c); display: grid; place-items: center; flex: none; }
+.layer-glyph svg { width: 21px; height: 21px; }
+.layer-name { font: 600 19px/1.15 var(--serif); }
+.layer-role { font-size: 12px; color: var(--muted); }
+.holders { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px 62px; }
+.holder { font-size: 13px; padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--c) 20%, transparent); color: color-mix(in srgb, var(--c) 65%, var(--text)); }
+.holder.add { background: transparent; border: 1px dashed color-mix(in srgb, var(--c) 50%, transparent); }
+
+.beat { display: block; width: calc(100% - 28px); margin: 0 14px 12px; text-align: left; background: color-mix(in srgb, var(--bg) 55%, transparent); border-radius: 12px; padding: 10px 12px; }
+.beat-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.beat-top .k { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c); }
+.beat-top .nm { font-weight: 600; font-size: 14px; }
+.beat-top .ln { margin-left: auto; font-size: 12px; color: var(--faint); }
+.beat.ghost { border: 1px dashed color-mix(in srgb, var(--c) 35%, transparent); background: transparent; color: var(--muted); font-size: 14px; padding: 11px 12px; }
+.beat.ghost b { color: var(--c); font-weight: 600; }
+.cells { display: flex; gap: 3px; }
+.cells i { flex: 0 0 calc((100% - (var(--steps, 8) - 1) * 3px) / var(--steps, 8)); min-width: 0; height: 20px; border-radius: 5px; border: 1.5px solid color-mix(in srgb, var(--c) 30%, transparent); transition: transform .06s; }
+.cells i.D { background: var(--c); border-color: var(--c); }
+.cells i.T { background: color-mix(in srgb, var(--c) 42%, transparent); border-color: transparent; }
+.cells i.now { outline: 2px solid var(--text); outline-offset: 1px; transform: scale(1.08); }
+
+.ideas { padding: 0 14px 2px; }
+.idea { border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent); padding: 10px 0; }
+.idea-top { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.idea-top .by { color: var(--text); font-weight: 600; font-size: 13px; }
+.idea-top .sp { flex: 1; }
+.new-tag { color: var(--accent); font-weight: 700; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.idea-body { margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; }
+.star { color: var(--faint); font-size: 18px; line-height: 1; padding: 4px; }
+.star.on { color: var(--accent); }
+.kebab { color: var(--faint); padding: 4px 6px; font-size: 18px; line-height: 1; }
+.more { display: block; width: 100%; padding: 8px 0 10px; color: var(--muted); font-size: 13px; text-align: left; border-top: 1px solid var(--line); }
+.compose { display: flex; gap: 8px; padding: 6px 14px 14px; }
+.compose button { flex: 1; padding: 10px 6px; border-radius: 11px; background: color-mix(in srgb, var(--bg) 45%, var(--surface-2)); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.compose button svg { width: 16px; height: 16px; }
+.compose .rec { color: #ffd9d3; background: color-mix(in srgb, var(--danger) 26%, var(--surface-2)); }
+
 .player { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
 .play { width: 38px; height: 38px; border-radius: 50%; background: var(--c, var(--accent)); color: #17120c; display: grid; place-items: center; flex: none; }
 .play svg { width: 16px; height: 16px; }
@@ -121,46 +148,71 @@ label.field { display: block; margin: 14px 0 6px; font-size: 13px; color: var(--
 .bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--c, var(--accent)); }
 .time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 38px; text-align: right; }
 
+/* transport */
+.transport { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
+.transport-in { max-width: 640px; margin: 0 auto; padding: 0 16px; display: flex; gap: 8px; align-items: stretch; }
+.tp { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 13px; background: var(--surface); padding: 10px 8px; font-weight: 600; font-size: 14px; min-height: 48px; }
+.tp svg { width: 16px; height: 16px; }
+.tp.on { background: var(--accent); color: #1b140b; }
+.tp:disabled { opacity: .4; }
+.tempo { display: flex; align-items: center; border-radius: 13px; background: var(--surface); flex: none; }
+.tempo button { width: 34px; height: 48px; font-size: 20px; color: var(--muted); }
+.tempo .v { min-width: 44px; text-align: center; line-height: 1; cursor: pointer; }
+.tempo .v b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.tempo .v span { font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.tempo .v.unset b { color: var(--faint); }
+
 /* sheet */
-.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
-.sheet { width: 100%; max-width: 640px; max-height: 92dvh; overflow: auto; background: var(--bg); border-radius: 20px 20px 0 0; padding: 10px 16px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; display: flex; align-items: flex-end; justify-content: center; animation: fade .15s ease-out; }
+.sheet { width: 100%; max-width: 640px; max-height: 92dvh; overflow: auto; background: var(--bg); border-radius: 22px 22px 0 0; padding: 10px 16px calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); animation: rise .2s ease-out; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes rise { from { transform: translateY(24px); opacity: .6; } }
 .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
-.sheet h3 { font: 600 22px/1.2 var(--serif); margin: 0 0 4px; }
-.sheet .actions { display: flex; gap: 10px; margin-top: 18px; }
+.sheet h3 { font: 600 23px/1.2 var(--serif); margin: 0 0 4px; }
+.sheet .lede { color: var(--muted); font-size: 14px; margin: 0 0 4px; }
+.sheet .actions { display: flex; gap: 10px; margin-top: 20px; }
 .sheet .actions .btn { flex: 1; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .tempo-row { display: flex; gap: 8px; }
 .tempo-row input { flex: 1; }
 .pick { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.pick-row { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1px solid transparent; }
+.pick-row { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1.5px solid transparent; }
 .pick-row.on { border-color: var(--c, var(--accent)); }
 .pick-row .nm { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
 .pick-row input { margin-top: 10px; }
 .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 14px; }
 .pick-row.on .check { background: var(--c, var(--accent)); border-color: var(--c, var(--accent)); color: #17120c; }
 .sugs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.sug { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); }
+.sug { font-size: 13px; padding: 6px 11px; border-radius: 999px; background: var(--surface-2); }
+.sug.on { background: var(--c, var(--accent)); color: #17120c; font-weight: 600; }
+
+/* beat editor */
+.grid { display: grid; gap: 6px; margin-top: 14px; }
+.grid button { aspect-ratio: 1; border-radius: 10px; border: 2px solid color-mix(in srgb, var(--c) 35%, transparent); font-weight: 700; font-size: 15px; color: #17120c; }
+.grid button.D { background: var(--c); border-color: var(--c); }
+.grid button.T { background: color-mix(in srgb, var(--c) 45%, transparent); border-color: transparent; color: var(--text); }
+.grid button.R { color: var(--faint); font-weight: 400; }
+.grid button.now { outline: 2px solid var(--text); outline-offset: 2px; }
+.grid-key { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+.grid-key i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
 
 /* recorder */
-.rec-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 18px 0 6px; }
-.rec-big { width: 96px; height: 96px; border-radius: 50%; background: var(--danger); display: grid; place-items: center; box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 60%, transparent); transition: box-shadow .08s; }
+.rec-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 18px 0 8px; }
+.rec-big { width: 96px; height: 96px; border-radius: 50%; background: var(--danger); display: grid; place-items: center; transition: box-shadow .08s; }
 .rec-big i { width: 34px; height: 34px; border-radius: 50%; background: #fff; transition: border-radius .2s, width .2s, height .2s; }
 .rec-big.on i { width: 30px; height: 30px; border-radius: 6px; }
 .rec-time { font: 600 32px/1 var(--sans); font-variant-numeric: tabular-nums; }
-.toggle { display: flex; align-items: center; gap: 10px; background: var(--surface); padding: 12px 14px; border-radius: 12px; width: 100%; text-align: left; }
+.toggle { display: flex; align-items: center; gap: 12px; background: var(--surface); padding: 12px 14px; border-radius: 12px; width: 100%; text-align: left; margin-top: 14px; }
 .toggle .sw { width: 42px; height: 26px; border-radius: 13px; background: var(--line); position: relative; flex: none; transition: background .2s; }
 .toggle .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .2s; }
 .toggle.on .sw { background: var(--accent); }
 .toggle.on .sw::after { left: 19px; }
 
-.toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 40; font-size: 14px; max-width: 90vw; }
+.toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 40; font-size: 14px; max-width: 90vw; }
 .member-row { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
 .member-row .nm { display: flex; justify-content: space-between; align-items: center; }
 .member-row .nm b { font-size: 17px; }
 .me-tag { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.legend { background: var(--surface); border-radius: var(--radius); padding: 14px; margin-top: 18px; font-size: 14px; }
-.legend div { display: flex; gap: 10px; align-items: baseline; padding: 4px 0; }
-.legend b { color: var(--c); font-family: var(--serif); font-size: 16px; min-width: 124px; }
 </style>
 </head>
 <body>
@@ -172,10 +224,9 @@ label.field { display: block; margin: 14px 0 6px; font-size: 13px; color: var(--
   <option>Hijazkar</option><option>Shahnaz</option><option>Suznak</option><option>Jiharkah</option><option>Husseini</option>
 </datalist>
 <datalist id="iqaat">
-  <option>Maqsum 4/4</option><option>Baladi 4/4</option><option>Saidi 4/4</option><option>Masmoudi 8/4</option>
-  <option>Wahda 4/4</option><option>Ayyub 2/4</option><option>Malfuf 2/4</option><option>Fallahi 2/4</option>
-  <option>Samai Thaqil 10/8</option><option>Dawr Hindi 7/8</option><option>Aksak 9/8</option><option>Karsilama 9/8</option>
-  <option>Jurjina 10/16</option><option>Free (no meter)</option>
+  <option>Maqsum</option><option>Baladi</option><option>Saidi</option><option>Masmoudi</option><option>Wahda</option>
+  <option>Ayyub</option><option>Malfuf</option><option>Fallahi</option><option>Samai Thaqil</option><option>Dawr Hindi</option>
+  <option>Aksak</option><option>Karsilama</option><option>Jurjina</option><option>Free</option>
 </datalist>
 
 <script>
@@ -184,17 +235,24 @@ const API = (location.hostname === 'localhost' || location.hostname === '127.0.0
   : 'https://shajara-api.amrabdelwahab.workers.dev';
 
 const LAYERS = [
-  { key: 'bloom', name: 'Flowers & Leaves', short: 'Flowers', role: 'melody & ornaments', c: 'var(--bloom)',
+  { key: 'bloom', name: 'Flowers & Leaves', short: 'Flowers', role: 'melody & ornaments', c: 'var(--bloom)', k: 1.5,
     glyph: '<path d="M12 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"/><path d="M12 7.5C12 4 9.5 3 8 4s-1 4 1.5 5M12 7.5C12 4 14.5 3 16 4s1 4-1.5 5M9.5 11C6 11 5 13.5 6 15s4 1 5-1.5M14.5 11c3.5 0 4.5 2.5 3.5 4s-4 1-5-1.5M12 12.5V21"/>' },
-  { key: 'bark', name: 'Tree Bark', short: 'Bark', role: 'harmony', c: 'var(--bark)',
+  { key: 'bark', name: 'Tree Bark', short: 'Bark', role: 'harmony', c: 'var(--bark)', k: 1.2,
     glyph: '<path d="M8 21V9c0-2 1-4 4-6 3 2 4 4 4 6v12"/><path d="M10.5 8v3M13.5 11v4M10.5 15v3"/>' },
-  { key: 'ground', name: 'Ground', short: 'Ground', role: 'bass & low line', c: 'var(--ground)',
+  { key: 'ground', name: 'Ground', short: 'Ground', role: 'bass & low line', c: 'var(--ground)', k: 0.8,
     glyph: '<path d="M3 14c3-2 6-2 9 0s6 2 9 0"/><path d="M3 19c3-2 6-2 9 0s6 2 9 0"/><path d="M12 11V4M12 6c-1.5-1.5-3.5-1.5-4.5-.5M12 7c1.5-1.5 3.5-1.5 4.5-.5"/>' },
-  { key: 'substrate', name: 'Substrate', short: 'Substrate', role: 'pulse & rhythm', c: 'var(--substrate)',
+  { key: 'substrate', name: 'Substrate', short: 'Substrate', role: 'rhythm & groove', c: 'var(--substrate)', k: 1,
     glyph: '<circle cx="6" cy="17" r="2.5"/><circle cx="13" cy="18.5" r="1.8"/><circle cx="18" cy="16" r="2.2"/><circle cx="9" cy="11" r="1.6"/><circle cx="15.5" cy="10.5" r="1.3"/><path d="M3 21h18"/>' },
 ];
 const LAYER = Object.fromEntries(LAYERS.map(l => [l.key, l]));
 const INSTRUMENTS = ['oud', 'piano', 'bass', 'drums', 'darbuka', 'riq', 'daf', 'bendir', 'guitar', 'violin', 'nay', 'qanun', 'voice', 'synth', 'percussion'];
+const PRESETS = [
+  { name: 'Maqsum', pattern: 'DT-TD-T-' },
+  { name: 'Baladi', pattern: 'DD-TD-T-' },
+  { name: 'Saidi', pattern: 'DT-DD-T-' },
+];
+const LENGTHS = [4, 6, 7, 8, 9, 10, 12, 16];
+const DEFAULT_BPM = 90;
 const MAX_REC_SEC = 300;
 
 const ICON = {
@@ -207,7 +265,9 @@ const ICON = {
   link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1"/></svg>',
-  tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-7M12 14l-3-3M12 16l3-3"/><path d="M7 12a5 5 0 1 1 10 0"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  drum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v8c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/></svg>',
+  wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
 };
 
 const store = {
@@ -229,6 +289,8 @@ const $ = (sel, root) => (root || document).querySelector(sel);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const memberName = id => (S.members.find(m => m.id === id) || {}).name || 'Someone';
 const fmtTime = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const bpmOf = t => (t && t.tempo) || DEFAULT_BPM;
+const beatOf = (t, layer) => (t.beats || []).find(b => b.layer === layer);
 function ago(ts) {
   const d = (Date.now() - ts) / 1000;
   if (d < 60) return 'just now';
@@ -266,6 +328,7 @@ async function loadState() {
 /* ---------- routing ---------- */
 function route() {
   stopAll();
+  Beat.stop();
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
   if (h === 'band') return viewBand();
@@ -284,10 +347,10 @@ const backBtn = to => `<button class="icon-btn" aria-label="Back" onclick="go('$
 /* ---------- gate & identity ---------- */
 function viewGate() {
   $('#app').innerHTML = `<div class="wrap"><div class="gate">
-    <div>${treeMark(56)}</div>
+    <div>${treeMark(60)}</div>
     <h2>Shajara</h2>
-    <p class="muted">Where ‘ala bab allah grows tracks. Enter the band passcode.</p>
-    <input id="pc" type="password" autocomplete="current-password" placeholder="Band passcode">
+    <p class="muted">Where ‘ala bab allah grows tracks, layer by layer. Enter the band passcode.</p>
+    <input id="pc" type="password" autocomplete="current-password" autocapitalize="off" placeholder="Band passcode">
     <button class="btn primary block" id="enter">Enter</button>
   </div></div>`;
   const submit = async () => {
@@ -318,17 +381,20 @@ function viewHome() {
     const me = S.members.find(m => m.id === S.me);
     const list = S.tracks.map(t => {
       const unseen = (S.seen[t.id] || 0) < t.updated_at;
-      const meta = [t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.meter, t.tempo && t.tempo + ' bpm'].filter(Boolean).map(esc).join(' · ');
+      const meta = [t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.tempo && t.tempo + ' bpm'].filter(Boolean).map(esc).join(' · ');
       const mini = LAYERS.map(l => {
         const hs = t.holders.filter(h => h.layer === l.key);
-        const who = hs.length ? hs.map(h => esc(memberName(h.member_id))).join(', ') : '<span style="opacity:.5">open</span>';
-        return `<div class="mini-layer" style="--c:${l.c}"><div class="ln">${l.short}${t.counts[l.key] ? ' · ' + t.counts[l.key] : ''}</div><div class="who">${who}</div></div>`;
+        const b = beatOf(t, l.key);
+        const who = hs.length ? hs.map(h => esc(memberName(h.member_id)) + (h.instrument ? ` <span class="faint">${esc(h.instrument)}</span>` : '')).join(', ') : '<span class="open">open</span>';
+        const n = t.counts[l.key] || 0;
+        const bt = b ? '◆ ' + esc(b.name || 'beat') : n ? n + ' idea' + (n > 1 ? 's' : '') : '';
+        return `<div class="mini-layer" style="--c:${l.c}"><span class="ln">${l.short}</span><span class="who">${who}</span><span class="bt">${bt}</span></div>`;
       }).join('');
       return `<button class="track-row" onclick="go('t/${esc(t.id)}')">${unseen ? '<i class="dot"></i>' : ''}
-        <div class="t">${esc(t.title)}</div><div class="meta">${meta || 'no details yet'} · ${ago(t.updated_at)}</div>
+        <div class="t">${esc(t.title)}</div><div class="meta">${meta ? meta + ' · ' : ''}${ago(t.updated_at)}</div>
         <div class="mini-tree">${mini}</div></button>`;
     }).join('');
-    $('#app').innerHTML = topBar('Shajara', `<span style="width:32px;display:grid;place-items:center">${treeMark(28)}</span>`,
+    $('#app').innerHTML = topBar('Shajara', `<span style="width:34px;display:grid;place-items:center">${treeMark(30)}</span>`,
       `<button class="icon-btn" aria-label="Band" onclick="go('band')">${ICON.people}</button>`) +
       `<div class="wrap">
         <div class="hello"><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted small">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} growing</div></div>
@@ -343,14 +409,14 @@ function viewHome() {
 }
 
 function legend() {
-  return `<div class="legend"><div class="small muted" style="display:block;margin-bottom:4px">The tree, from the top down</div>${LAYERS.map(l =>
-    `<div style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
-    <div class="small faint" style="display:block;margin-top:6px">Anyone can hold any layer, on any instrument.</div></div>`;
+  return `<div class="legend"><h4>The tree, from the top down</h4>${LAYERS.map(l =>
+    `<div class="l" style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
+    <p>Anyone can hold any layer, on any instrument. One pulse runs through the whole track, but every layer carries its own rhythm, so the Substrate can hold a maqsum while the Ground plays something else on top.</p></div>`;
 }
 
 function treeMark(size) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true">
-    <circle cx="32" cy="20" r="13" fill="var(--bloom)" opacity=".9"/><circle cx="20" cy="26" r="9" fill="var(--bloom)" opacity=".7"/><circle cx="44" cy="26" r="9" fill="var(--bloom)" opacity=".7"/>
+    <circle cx="32" cy="20" r="13" fill="var(--bloom)" opacity=".92"/><circle cx="20" cy="26" r="9" fill="var(--bloom)" opacity=".7"/><circle cx="44" cy="26" r="9" fill="var(--bloom)" opacity=".7"/>
     <path d="M28 52V32h8v20z" fill="var(--bark)"/><path d="M8 52h48v4H8z" fill="var(--ground)"/><path d="M12 58h40v3H12z" fill="var(--substrate)"/></svg>`;
 }
 
@@ -358,7 +424,7 @@ function treeMark(size) {
 async function viewTrack(id) {
   const cached = S.track && S.track.id === id ? S.track : null;
   if (cached) renderTrack();
-  else $('#app').innerHTML = topBar('…', backBtn('')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
+  else $('#app').innerHTML = topBar('', backBtn('')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
   try {
     if (!S.members.length) await loadState();
     S.track = await api('/tracks/' + id);
@@ -371,29 +437,36 @@ async function viewTrack(id) {
   });
 }
 
+function cellsHtml(pattern, layerKey) {
+  return `<div class="cells" data-cells="${layerKey}">${pattern.split('').map(c => `<i class="${c === '-' ? 'R' : c}"></i>`).join('')}</div>`;
+}
+
 function renderTrack() {
   const t = S.track;
   const prevSeen = S.seenBefore && S.seenBefore.id === t.id ? S.seenBefore.at : (S.seen[t.id] || 0);
   S.seenBefore = { id: t.id, at: prevSeen };
   S.seen[t.id] = Date.now(); store.set('seen', S.seen);
 
-  const chip = (k, v, ghost) => `<button class="chip${v ? '' : ' ghost'}" onclick="editTrack()">${v ? `<span class="k">${k}</span>${esc(v)}` : ghost}</button>`;
-  const chips = [
-    chip('Maqam', t.maqam ? t.maqam + (t.tonic ? ' on ' + t.tonic : '') : '', '+ maqam'),
-    chip('Iqa‘', t.meter, '+ iqa‘ / meter'),
-    chip('Tempo', t.tempo ? t.tempo + ' bpm' : '', '+ tempo'),
-  ].join('');
+  const maqam = t.maqam ? t.maqam + (t.tonic ? ' on ' + t.tonic : '') : '';
+  const chips = `<button class="chip${maqam ? '' : ' ghost'}" onclick="editTrack()">${maqam ? `<span class="k">Maqam</span>${esc(maqam)}` : '+ maqam'}</button>` +
+    `<button class="chip${t.tempo ? '' : ' ghost'}" onclick="editTrack()">${t.tempo ? `<span class="k">Pulse</span>${t.tempo} bpm` : '+ pulse'}</button>`;
 
-  const layers = LAYERS.map(l => {
+  const layers = LAYERS.map((l, li) => {
     const hs = t.holders.filter(h => h.layer === l.key);
+    const beat = beatOf(t, l.key);
     const ideas = t.ideas.filter(i => i.layer === l.key).sort((a, b) => b.starred - a.starred || b.created_at - a.created_at);
     const open = S.expanded[l.key];
     const shown = open ? ideas : ideas.slice(0, 3);
-    return `<section class="layer" style="--c:${l.c}" id="L-${l.key}">
+    const pc = li ? LAYERS[li - 1].c : l.c;
+    const beatHtml = beat
+      ? `<button class="beat" onclick="editBeat('${l.key}')"><div class="beat-top"><span class="k">Beat</span><span class="nm">${esc(beat.name || 'Untitled')}</span><span class="ln">${beat.pattern.length} ⅛</span></div>${cellsHtml(beat.pattern, l.key)}</button>`
+      : `<button class="beat ghost" onclick="editBeat('${l.key}')"><b>+ beat</b> · give this layer its own iqa‘</button>`;
+    return `<section class="layer" style="--c:${l.c};--pc:${pc}" id="L-${l.key}">
       <div class="layer-head"><div class="layer-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
         <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div></div>
       <div class="holders">${hs.map(h => `<button class="holder" onclick="pickHolders('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')}
         <button class="holder add" onclick="pickHolders('${l.key}')">${hs.length ? 'swap' : '+ who holds this?'}</button></div>
+      ${beatHtml}
       ${ideas.length ? `<div class="ideas">${shown.map(i => ideaHtml(i, prevSeen)).join('')}
         ${ideas.length > 3 ? `<button class="more" onclick="S.expanded['${l.key}']=${!open};renderTrack()">${open ? 'Show fewer' : 'Show all ' + ideas.length + ' ideas'}</button>` : ''}</div>` : ''}
       <div class="compose">
@@ -403,17 +476,44 @@ function renderTrack() {
       </div></section>`;
   }).join('');
 
-  const treeAudio = stackIdeas().length;
-  if (treeAudio > 1) prefetchStack();
+  if (stackIdeas().length > 1) prefetchStack();
   $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
     `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Edit" onclick="editTrack()">${ICON.edit}</button>`) +
     `<div class="wrap">
-      <div class="chips">${chips}</div>
-      ${t.notes ? `<div class="notes">${esc(t.notes)}</div>` : ''}
-      ${treeAudio > 1 ? `<div class="tree-bar"><button class="btn" id="treeBtn" onclick="toggleTree()">${ICON.tree}<span>Hear the tree (${treeAudio} layers)</span></button></div>` : ''}
-      ${layers}
-      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ marks the keeper for a layer; “Hear the tree” plays each layer’s keeper (or latest recording) together.</p>
-    </div>`;
+      <div class="hero"><div class="chips">${chips}</div>${t.notes ? `<button class="notes" onclick="editTrack('f-notes')">${esc(t.notes)}</button>` : `<button class="chip ghost" style="margin-top:10px" onclick="editTrack('f-notes')">+ note on the whole track</button>`}</div>
+      <div class="tree" style="--steps:${Math.max(8, ...(t.beats || []).map(b => b.pattern.length))}">${layers}</div>
+      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ marks a layer’s keeper. One beat cell is an eighth note of the track’s pulse.</p>
+    </div>
+    <div class="transport"><div class="transport-in">
+      <button class="tp" id="tpBeats" onclick="toggleBeats()"></button>
+      <button class="tp" id="tpTree" onclick="toggleTree()"></button>
+      <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${t.tempo ? '' : ' unset'}" onclick="editTrack()"><b id="bpm">${bpmOf(t)}</b><span>pulse</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
+    </div></div>`;
+  updateTransport();
+}
+
+function updateTransport() {
+  const b = $('#tpBeats'), r = $('#tpTree');
+  if (!b || !S.track) return;
+  const nb = (S.track.beats || []).length, nr = stackIdeas().length;
+  b.disabled = !nb && !Beat.on;
+  b.classList.toggle('on', Beat.on);
+  b.innerHTML = (Beat.on ? ICON.stop : ICON.drum) + `<span>${Beat.on ? 'Stop' : nb > 1 ? nb + ' beats' : 'Beat'}</span>`;
+  const treeOn = playing.size > 1;
+  r.disabled = !nr && !treeOn;
+  r.classList.toggle('on', treeOn);
+  r.innerHTML = (treeOn ? ICON.stop : ICON.wave) + `<span>${treeOn ? 'Stop' : nr > 1 ? nr + ' recordings' : 'Recording'}</span>`;
+}
+
+let tempoSave = null;
+function nudgeTempo(d) {
+  const t = S.track;
+  t.tempo = Math.max(30, Math.min(300, bpmOf(t) + d));
+  $('#bpm').textContent = t.tempo;
+  $('#bpm').parentElement.classList.remove('unset');
+  Beat.bpm = t.tempo;
+  clearTimeout(tempoSave);
+  tempoSave = setTimeout(() => api('/tracks/' + t.id, { method: 'PATCH', body: { tempo: t.tempo } }).then(x => { S.track.updated_at = x.updated_at; }).catch(e => toast(e.message)), 900);
 }
 
 function ideaHtml(i, prevSeen) {
@@ -436,10 +536,10 @@ async function toggleStar(id) {
 
 function ideaMenu(id) {
   const i = S.track.ideas.find(x => x.id === id);
-  sheet(`<h3>This idea</h3><p class="muted small">${esc(LAYER[i.layer].name)} · by ${esc(memberName(i.author_id))} · ${ago(i.created_at)}</p>
+  sheet(`<h3>This idea</h3><p class="lede">${esc(LAYER[i.layer].name)} · by ${esc(memberName(i.author_id))} · ${ago(i.created_at)}</p>
     <label class="field">Move to layer</label>
     <div class="sugs">${LAYERS.filter(l => l.key !== i.layer).map(l => `<button class="sug" style="color:${l.c}" data-move="${l.key}">${l.name}</button>`).join('')}</div>
-    <label class="field">Caption</label><textarea id="cap" rows="2">${esc(i.body)}</textarea>
+    <label class="field">${i.kind === 'text' ? 'Note' : 'Caption'}</label><textarea id="cap" rows="2">${esc(i.body)}</textarea>
     <div class="actions"><button class="btn danger" id="del">Delete</button><button class="btn primary" id="save">Save</button></div>`, root => {
     root.querySelectorAll('[data-move]').forEach(b => b.onclick = async () => {
       closeSheet();
@@ -460,7 +560,12 @@ function ideaMenu(id) {
 
 function confirmBtn(btn, label, fn) {
   let armed = false;
-  btn.onclick = () => { if (armed) return fn(); armed = true; btn.textContent = label; setTimeout(() => { armed = false; }, 4000); };
+  const orig = btn.textContent;
+  btn.onclick = () => {
+    if (armed) return fn();
+    armed = true; btn.textContent = label;
+    setTimeout(() => { armed = false; btn.textContent = orig; }, 4000);
+  };
 }
 
 /* ---------- sheets ---------- */
@@ -486,13 +591,13 @@ function trackForm(t) {
   return `<label class="field">Title</label><input id="f-title" type="text" value="${esc(t.title)}" placeholder="Working title is fine">
     <div class="row2"><div><label class="field">Maqam</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
     <div><label class="field">On (tonic)</label><input id="f-tonic" type="text" value="${esc(t.tonic)}" placeholder="e.g. D"></div></div>
-    <label class="field">Iqa‘ / meter</label><input id="f-meter" type="text" list="iqaat" value="${esc(t.meter)}" placeholder="e.g. Maqsum 4/4">
-    <label class="field">Tempo (bpm)</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
-    <label class="field">Notes</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>`;
+    <label class="field">Pulse (bpm, quarter note), shared by every layer</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
+    <label class="field">Notes</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>
+    <p class="small faint">One pulse for the whole track; each layer brings its own rhythm on top of it.</p>`;
 }
 function readTrackForm(root) {
   return { title: $('#f-title', root).value, maqam: $('#f-maqam', root).value, tonic: $('#f-tonic', root).value,
-    meter: $('#f-meter', root).value, tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value };
+    tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value };
 }
 function wireTap(root) {
   let taps = [];
@@ -507,7 +612,7 @@ function wireTap(root) {
 }
 
 function newTrack() {
-  sheet(`<h3>New track</h3><p class="muted small">Only the title is needed. Everything else can grow later.</p>${trackForm()}
+  sheet(`<h3>New track</h3><p class="lede">Only the title is needed. Everything else can grow later.</p>${trackForm()}
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Plant it</button></div>`, root => {
     wireTap(root);
     setTimeout(() => $('#f-title', root).focus(), 50);
@@ -521,12 +626,13 @@ function newTrack() {
   });
 }
 
-function editTrack() {
+function editTrack(focusId) {
   const t = S.track;
   sheet(`<h3>Track details</h3>${trackForm(t)}
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>
     <div style="margin-top:28px"><button class="btn danger block" id="del">Delete track</button></div>`, root => {
     wireTap(root);
+    if (focusId) setTimeout(() => $('#' + focusId, root).focus(), 50);
     $('#save', root).onclick = async () => {
       const f = readTrackForm(root);
       if (!f.title.trim()) return toast('Title can’t be empty');
@@ -550,7 +656,7 @@ function pickHolders(layerKey) {
       <div class="${on ? '' : 'hidden'} inst"><input type="text" placeholder="on which instrument?" value="${esc(cur[m.id] || '')}">
       <div class="sugs">${sugs.map(s => `<button class="sug" type="button">${esc(s)}</button>`).join('')}</div></div></div>`;
   }).join('');
-  sheet(`<h3 style="color:${l.c}">${l.name}</h3><p class="muted small">Who holds the ${l.role} on this track?</p><div class="pick">${rows}</div>
+  sheet(`<h3 style="color:${l.c}">${l.name}</h3><p class="lede">Who holds the ${l.role} on this track, and on what?</p><div class="pick">${rows}</div>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>`, root => {
     root.querySelectorAll('.pick-row').forEach(r => {
       $('.nm', r).onclick = () => {
@@ -568,6 +674,169 @@ function pickHolders(layerKey) {
   });
 }
 
+/* ---------- beat editor ---------- */
+function editBeat(layerKey) {
+  const l = LAYER[layerKey];
+  const cur = beatOf(S.track, layerKey);
+  const B = { pattern: (cur ? cur.pattern : 'D---T---').split('') };
+  const others = (S.track.beats || []).filter(b => b.layer !== layerKey);
+  let withOthers = others.length > 0;
+  Beat.stop(); stopAll();
+
+  const s = sheet(`<h3 style="color:${l.c}">${l.name} · beat</h3>
+    <p class="lede">Same pulse as the rest of the track, its own rhythm. Stack different beats across layers and hear them against each other.</p>
+    <label class="field">Name</label><input id="bname" type="text" list="iqaat" value="${esc(cur ? cur.name : '')}" placeholder="e.g. Maqsum, or anything">
+    <label class="field">Start from</label><div class="sugs" id="presets" style="--c:${l.c}">${PRESETS.map(p => `<button class="sug" data-p="${p.name}">${p.name}</button>`).join('')}<button class="sug" data-p="">Empty</button></div>
+    <label class="field">Length in eighth notes</label><div class="sugs" id="lens" style="--c:${l.c}">${LENGTHS.map(n => `<button class="sug" data-n="${n}">${n}</button>`).join('')}</div>
+    <div class="grid" id="grid" style="--c:${l.c}"></div>
+    <div class="grid-key"><span><i style="background:${l.c}"></i>Dum · low</span><span><i style="background:color-mix(in srgb, ${l.c} 45%, transparent)"></i>Tak · high</span><span><i style="border:1.5px solid var(--line)"></i>rest</span><span>Tap a cell to cycle</span></div>
+    ${others.length ? `<button class="toggle${withOthers ? ' on' : ''}" id="withOthers"><span class="sw"></span><span><b>Hear it with the other layers</b><br><span class="small muted">${others.map(b => esc(LAYER[b.layer].short) + ': ' + esc(b.name || 'beat')).join(' · ')}</span></span></button>` : ''}
+    <div class="actions"><button class="btn" id="prev"></button><button class="btn primary" id="save">Save beat</button></div>
+    ${cur ? '<div style="margin-top:14px"><button class="btn danger block" id="rm">Remove beat</button></div>' : ''}`, root => {
+    const grid = $('#grid', root);
+    const cols = n => n <= 9 ? n : n === 10 ? 5 : n === 12 ? 6 : 8;
+    const voices = () => [{ layer: 'edit', pattern: B.pattern.join(''), k: l.k }, ...(withOthers ? others.map(b => ({ layer: b.layer, pattern: b.pattern, k: LAYER[b.layer].k })) : [])];
+    const paintPrev = () => { $('#prev', root).innerHTML = Beat.on ? ICON.stop + '<span>Stop</span>' : ICON.play + '<span>Preview</span>'; };
+    const restart = () => { Beat.start(voices(), bpmOf(S.track), paintPrev); paintPrev(); };
+    const draw = () => {
+      grid.style.gridTemplateColumns = `repeat(${cols(B.pattern.length)}, 1fr)`;
+      grid.innerHTML = B.pattern.map((c, i) => `<button data-i="${i}" class="${c === '-' ? 'R' : c}">${c === '-' ? '·' : c}</button>`).join('');
+      root.querySelectorAll('#lens .sug').forEach(b => b.classList.toggle('on', +b.dataset.n === B.pattern.length));
+      if (Beat.on) Beat.retune(voices());
+    };
+    grid.onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const i = +b.dataset.i;
+      B.pattern[i] = { '-': 'D', D: 'T', T: '-' }[B.pattern[i]];
+      draw();
+    };
+    root.querySelectorAll('#presets .sug').forEach(b => b.onclick = () => {
+      const p = PRESETS.find(x => x.name === b.dataset.p);
+      B.pattern = (p ? p.pattern : '-'.repeat(B.pattern.length)).split('');
+      if (p) $('#bname', root).value = p.name;
+      draw();
+    });
+    root.querySelectorAll('#lens .sug').forEach(b => b.onclick = () => {
+      const n = +b.dataset.n;
+      B.pattern = Array.from({ length: n }, (_, i) => B.pattern[i] || '-');
+      draw();
+    });
+    const wo = $('#withOthers', root);
+    if (wo) wo.onclick = () => { withOthers = !withOthers; wo.classList.toggle('on', withOthers); if (Beat.on) Beat.retune(voices()); };
+    $('#prev', root).onclick = () => { if (Beat.on) { Beat.stop(); paintPrev(); } else restart(); };
+    $('#save', root).onclick = async () => {
+      const pattern = B.pattern.join('');
+      if (!/[DT]/.test(pattern)) return toast('Tap a few cells first, or remove the beat');
+      try { S.track = await api(`/tracks/${S.track.id}/beats/${layerKey}`, { method: 'PUT', body: { name: $('#bname', root).value, pattern } }); closeSheet(); renderTrack(); }
+      catch (e) { toast(e.message); }
+    };
+    if (cur) confirmBtn($('#rm', root), 'Tap again to remove', async () => {
+      try { S.track = await api(`/tracks/${S.track.id}/beats/${layerKey}`, { method: 'PUT', body: { name: '', pattern: '' } }); closeSheet(); renderTrack(); }
+      catch (e) { toast(e.message); }
+    });
+    draw(); paintPrev();
+  });
+  s._onclose = () => { Beat.stop(); updateTransport(); };
+}
+
+/* ---------- beat engine ---------- */
+const Beat = {
+  ctx: null, out: null, noise: null, timer: null, raf: 0, on: false,
+  voices: [], bpm: DEFAULT_BPM, n: 0, next: 0, marks: [], onChange: null,
+  ensure() {
+    if (navigator.audioSession && navigator.audioSession.type === 'auto') { try { navigator.audioSession.type = 'playback'; } catch {} }
+    if (!this.ctx) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new Ctx();
+      const comp = this.ctx.createDynamicsCompressor();
+      comp.connect(this.ctx.destination);
+      this.out = this.ctx.createGain(); this.out.gain.value = 0.8; this.out.connect(comp);
+      const len = Math.floor(this.ctx.sampleRate * 0.2);
+      this.noise = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = this.noise.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    return this.ctx;
+  },
+  start(voices, bpm, onChange) {
+    this.stop();
+    const ctx = this.ensure();
+    this.voices = voices.filter(v => /[DT]/.test(v.pattern));
+    if (!this.voices.length) return;
+    this.bpm = bpm; this.n = 0; this.marks = []; this.on = true; this.onChange = onChange || null;
+    this.next = ctx.currentTime + 0.08;
+    this.timer = setInterval(() => this.pump(), 25);
+    this.pump();
+    const frame = () => { this.paint(); this.raf = requestAnimationFrame(frame); };
+    frame();
+    if (this.onChange) this.onChange();
+  },
+  retune(voices) { if (this.on) this.voices = voices.filter(v => /[DT]/.test(v.pattern)); },
+  pump() {
+    const ctx = this.ctx;
+    while (this.next < ctx.currentTime + 0.15) {
+      for (const v of this.voices) {
+        const c = v.pattern[this.n % v.pattern.length];
+        if (c === 'D') this.dum(this.next, v.k); else if (c === 'T') this.tak(this.next, v.k);
+      }
+      this.marks.push([this.next, this.n]);
+      if (this.marks.length > 64) this.marks.splice(0, 32);
+      this.n++;
+      this.next += 30 / this.bpm;
+    }
+  },
+  paint() {
+    const now = this.ctx.currentTime;
+    let step = -1;
+    for (const [t, n] of this.marks) if (t <= now) step = n;
+    document.querySelectorAll('.now').forEach(e => e.classList.remove('now'));
+    if (step < 0) return;
+    for (const v of this.voices) {
+      const i = step % v.pattern.length;
+      const cells = v.layer === 'edit' ? document.querySelectorAll('#grid button') : document.querySelectorAll(`[data-cells="${v.layer}"] i`);
+      if (cells[i]) cells[i].classList.add('now');
+    }
+  },
+  dum(t, k) {
+    const ctx = this.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(130 * k, t);
+    o.frequency.exponentialRampToValueAtTime(52 * k, t + 0.16);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.9, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+    o.connect(g).connect(this.out);
+    o.start(t); o.stop(t + 0.36);
+  },
+  tak(t, k) {
+    const ctx = this.ctx, src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = this.noise;
+    f.type = 'bandpass'; f.frequency.value = 2600 * k; f.Q.value = 1.4;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.7, t + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    src.connect(f).connect(g).connect(this.out);
+    src.start(t); src.stop(t + 0.08);
+  },
+  stop() {
+    clearInterval(this.timer); cancelAnimationFrame(this.raf);
+    this.timer = null; this.voices = [];
+    const was = this.on; this.on = false;
+    document.querySelectorAll('.now').forEach(e => e.classList.remove('now'));
+    if (was && this.onChange) this.onChange();
+  },
+};
+
+function trackVoices(exceptLayer) {
+  return (S.track.beats || []).filter(b => b.layer !== exceptLayer).map(b => ({ layer: b.layer, pattern: b.pattern, k: LAYER[b.layer].k }));
+}
+function toggleBeats() {
+  if (Beat.on) Beat.stop();
+  else Beat.start(trackVoices(), bpmOf(S.track), updateTransport);
+  updateTransport();
+}
+
+/* ---------- notes & links ---------- */
 function openNote(layerKey) {
   const l = LAYER[layerKey];
   sheet(`<h3 style="color:${l.c}">Note · ${l.name}</h3><textarea id="txt" placeholder="e.g. half-time feel in the B part, leave space after the 3rd bar"></textarea>
@@ -614,21 +883,30 @@ function openRecorder(layerKey) {
   const l = LAYER[layerKey];
   const mime = pickMime();
   if (mime === null) return toast('This browser can’t record audio');
-  const stackable = stackIdeas().filter(i => i.layer !== layerKey).length;
-  let alongOn = store.get('along', false) && stackable > 0;
+  Beat.stop(); stopAll();
+  const otherBeats = trackVoices(layerKey);
+  const otherRecs = stackIdeas().filter(i => i.layer !== layerKey);
+  const canAlong = otherBeats.length + otherRecs.length > 0;
+  let alongOn = store.get('along', false) && canAlong;
   const R = { chunks: [], blob: null, secs: 0 };
-  if (stackable) prefetchStack();
+  if (otherRecs.length) prefetchStack();
+  const alongDesc = [otherBeats.length && `${otherBeats.length} beat${otherBeats.length > 1 ? 's' : ''}`, otherRecs.length && `${otherRecs.length} recording${otherRecs.length > 1 ? 's' : ''}`].filter(Boolean).join(' + ');
 
-  const s = sheet(`<h3 style="color:${l.c}">Record · ${l.name}</h3><p class="muted small" id="hint">Tap to start. Hum it, play it, beatbox it.</p>
+  const s = sheet(`<h3 style="color:${l.c}">Record · ${l.name}</h3><p class="lede" id="hint">Tap to start. Hum it, play it, beatbox it.</p>
     <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0:00</div></div>
-    ${stackable ? `<button class="toggle${alongOn ? ' on' : ''}" id="along"><span class="sw"></span><span><b>Play the tree while I record</b><br><span class="small muted">Hear the other layers (${stackable}) as you record. Use headphones.</span></span></button>` : ''}
-    <div id="review" class="hidden"><div class="player" data-local="1" style="--c:${l.c}"><button class="play" id="pv">${ICON.play}</button><div class="bar"><i></i></div><span class="time" id="pvTime"></span></div>
+    ${canAlong ? `<button class="toggle${alongOn ? ' on' : ''}" id="along"><span class="sw"></span><span><b>Play the other layers while I record</b><br><span class="small muted">${alongDesc}. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}
+    <div id="review" class="hidden"><div class="player" style="--c:${l.c}"><button class="play" id="pv">${ICON.play}</button><div class="bar"><i></i></div><span class="time" id="pvTime"></span></div>
       <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. idea for the intro, slow">
       <div class="actions"><button class="btn" id="again">Redo</button><button class="btn primary" id="save">Post</button></div></div>`, root => {
     const along = $('#along', root);
     if (along) along.onclick = () => { alongOn = !alongOn; along.classList.toggle('on', alongOn); store.set('along', alongOn); };
     $('#recBtn', root).onclick = () => (R.rec && R.rec.state === 'recording' ? stop() : start());
-    $('#again', root).onclick = () => { stopPreview(); R.blob = null; $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); if (along) along.classList.remove('hidden'); $('#recTime', root).textContent = '0:00'; $('#hint', root).textContent = 'Tap to start.'; };
+    $('#again', root).onclick = () => {
+      stopPreview(); R.blob = null;
+      $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden');
+      if (along) along.classList.remove('hidden');
+      $('#recTime', root).textContent = '0:00'; $('#hint', root).textContent = 'Tap to start.';
+    };
     $('#pv', root).onclick = () => togglePreview();
     $('#save', root).onclick = save;
   });
@@ -637,6 +915,8 @@ function openRecorder(layerKey) {
   async function start() {
     const els = alongOn ? stackEls(layerKey) : [];
     unlockEls(els);
+    if (alongOn && otherBeats.length) Beat.ensure();
+    if (navigator.audioSession) { try { navigator.audioSession.type = 'play-and-record'; } catch {} }
     try {
       R.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
     } catch (e) { return toast('Microphone blocked. Allow it in your browser settings.'); }
@@ -669,6 +949,7 @@ function openRecorder(layerKey) {
       tick();
     } catch {}
     if (els.length) startEls(els);
+    if (alongOn && otherBeats.length) Beat.start(otherBeats, bpmOf(S.track));
     R.rec.start(1000);
     R.t0 = performance.now();
     $('#recBtn', s).classList.add('on');
@@ -682,7 +963,7 @@ function openRecorder(layerKey) {
   function stop() {
     R.secs = (performance.now() - R.t0) / 1000;
     clearInterval(R.timer);
-    stopAll();
+    stopAll(); Beat.stop();
     if (R.rec && R.rec.state !== 'inactive') R.rec.stop();
   }
   function cleanup() {
@@ -692,7 +973,8 @@ function openRecorder(layerKey) {
     if (R.stream) R.stream.getTracks().forEach(t => t.stop());
     if (R.ctx) R.ctx.close().catch(() => {});
     R.stream = null; R.ctx = null;
-    stopAll();
+    stopAll(); Beat.stop();
+    if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch {} }
   }
   let pvAudio = null;
   function togglePreview() {
@@ -718,9 +1000,9 @@ function openRecorder(layerKey) {
 
 /* ---------- playback ---------- */
 const audioCache = new Map();
+const inflight = new Map();
 const playing = new Map();
 
-const inflight = new Map();
 function audioUrl(idea) {
   const id = idea.audio_id;
   if (audioCache.get(id)) return Promise.resolve(audioCache.get(id));
@@ -741,7 +1023,7 @@ function paint(id, state) {
 }
 
 async function togglePlay(id) {
-  if (playing.has(id)) { const a = playing.get(id); a.pause(); playing.delete(id); paint(id, 'pause'); return; }
+  if (playing.has(id)) { const a = playing.get(id); a.pause(); playing.delete(id); paint(id, 'pause'); updateTransport(); return; }
   stopAll();
   const idea = S.track.ideas.find(i => i.id === id);
   let url = audioCache.get(idea.audio_id);
@@ -762,12 +1044,12 @@ function wireProgress(id, a, fallbackDur) {
     $('.bar i', el).style.width = Math.min(100, 100 * a.currentTime / d) + '%';
     $('.time', el).textContent = fmtTime(a.currentTime);
   };
-  a.onended = () => { playing.delete(id); paint(id, 'stop'); const el = playerEl(id); if (el) $('.time', el).textContent = fmtTime(fallbackDur); updateTreeBtn(); };
+  a.onended = () => { playing.delete(id); paint(id, 'stop'); const el = playerEl(id); if (el) $('.time', el).textContent = fmtTime(fallbackDur); updateTransport(); };
 }
 function stopAll() {
   for (const [id, a] of playing) { a.pause(); paint(id, 'stop'); }
   playing.clear();
-  updateTreeBtn();
+  updateTransport();
 }
 
 function stackIdeas() {
@@ -777,7 +1059,6 @@ function stackIdeas() {
     return audio.find(i => i.starred) || audio.sort((a, b) => b.created_at - a.created_at)[0];
   }).filter(Boolean);
 }
-
 function prefetchStack() {
   return Promise.all(stackIdeas().map(i => audioUrl(i).catch(() => null)));
 }
@@ -794,23 +1075,19 @@ function startEls(els) {
   stopAll();
   for (const [i, a] of els) { wireProgress(i.id, a, i.duration); playing.set(i.id, a); paint(i.id, 'play'); }
   for (const [, a] of els) { a._go = true; a.muted = false; a.currentTime = 0; a.play().catch(() => {}); }
-  updateTreeBtn();
+  updateTransport();
 }
 async function toggleTree() {
   if (playing.size) return stopAll();
-  if (stackEls().length < stackIdeas().length) { toast('Loading the tree…'); await prefetchStack(); }
+  if (stackEls().length < stackIdeas().length) { toast('Loading recordings…'); await prefetchStack(); }
   startEls(stackEls());
-}
-function updateTreeBtn() {
-  const b = $('#treeBtn'); if (!b) return;
-  $('span', b).textContent = playing.size > 1 ? 'Stop the tree' : `Hear the tree (${stackIdeas().length} layers)`;
 }
 
 /* ---------- band ---------- */
 function viewBand() {
   const render = () => {
     $('#app').innerHTML = topBar('The band', S.me ? backBtn('') : '') + `<div class="wrap">
-      <p class="muted small">Tap a name to switch who you are on this phone. Instruments are just suggestions for the layer picker; anyone can play anything.</p>
+      <p class="muted small">Tap “this is me” to switch who you are on this phone. Instruments are just suggestions for the layer picker; anyone can play anything.</p>
       ${S.members.map(m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b>${m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}</div>
         <input type="text" data-inst="${esc(m.id)}" value="${esc(m.instruments)}" placeholder="instruments, comma separated" style="margin-top:8px"></div>`).join('')}
       <label class="field">Add someone (guest, 5th member…)</label>
@@ -843,10 +1120,10 @@ function shareTrack() {
 let pollTimer = null;
 function poll(fn) {
   clearInterval(pollTimer);
-  pollTimer = setInterval(() => { if (document.visibilityState === 'visible') fn().catch(() => {}); }, 20000);
+  pollTimer = setInterval(() => { if (document.visibilityState === 'visible' && !Beat.on) fn().catch(() => {}); }, 20000);
 }
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && S.key && !$('.scrim') && !playing.size) route();
+  if (document.visibilityState === 'visible' && S.key && !$('.scrim') && !playing.size && !Beat.on) route();
 });
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
