@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS tracks (
   maqam TEXT NOT NULL DEFAULT '',
   tonic TEXT NOT NULL DEFAULT '',
   tempo INTEGER,
+  genre TEXT NOT NULL DEFAULT '',
   notes TEXT NOT NULL DEFAULT '',
   created_by TEXT,
   created_at INTEGER NOT NULL,
@@ -24,6 +25,11 @@ CREATE TABLE IF NOT EXISTS sections (
   position REAL NOT NULL DEFAULT 0,
   meter_n INTEGER NOT NULL DEFAULT 4,
   meter_sub INTEGER NOT NULL DEFAULT 1,
+  maqam TEXT,
+  tonic TEXT,
+  tempo INTEGER,
+  energy INTEGER,
+  moves TEXT NOT NULL DEFAULT '',
   notes TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL
 );

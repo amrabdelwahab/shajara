@@ -92,9 +92,9 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .person .small { font-family: var(--serif); font-style: italic; }
 
 /* home */
-.hello { margin: 8px 0 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.hello { margin: 8px 0 20px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .hello h2 { font: 800 26px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 0; }
-.hello .ar { font-size: 26px; color: var(--muted); line-height: 1; }
+.hello .ar { font-size: 28px; color: var(--muted); line-height: 1.2; }
 .track-row { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 14px 12px; margin-bottom: 12px; position: relative; }
 .track-row .t { font: 800 18px/1.15 var(--display); font-stretch: 125%; text-transform: uppercase; padding-right: 22px; }
 .track-row .meta { font: italic 14px/1.3 var(--serif); color: var(--muted); margin: 4px 0 8px; }
@@ -119,14 +119,14 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .legend p { margin: 10px 0 0; color: var(--muted); font: 15px/1.45 var(--serif); }
 
 /* track */
-.hero { padding: 2px 0 14px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero { padding: 4px 0 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; font: 16px/1.2 var(--serif); display: inline-flex; align-items: baseline; gap: 7px; }
 .chip .k { color: var(--muted); font: 700 9px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .06em; }
 .chip.ghost { color: var(--faint); border-style: dashed; background: transparent; font-style: italic; }
-.notes { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 12px; white-space: pre-wrap; font: 16px/1.45 var(--serif); color: color-mix(in srgb, var(--text) 88%, var(--muted)); }
+.notes { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 10px; white-space: pre-wrap; font: 16px/1.45 var(--serif); color: color-mix(in srgb, var(--text) 88%, var(--muted)); }
 
-.form { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding: 4px 16px 12px; margin: 0 -16px 6px; scrollbar-width: none; }
+.form { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding: 2px 16px 4px; margin: 0 -16px 16px; scrollbar-width: none; }
 .form::-webkit-scrollbar { display: none; }
 .sec-pill { flex: none; padding: 10px 15px 9px; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--line); font: 800 13px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .sec-pill .dots { display: flex; gap: 3px; }
@@ -139,14 +139,14 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .tr-pill b { font: 800 10px/1 var(--display); }
 .add-pill { flex: none; padding: 11px 14px; border-radius: 14px; border: 1.5px dashed var(--line); color: var(--muted); font: 700 11px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 
-.sec-head { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; }
+.sec-head { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
 .sec-head h2 { font: 800 24px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 0; }
 .sec-head .meter { font: 800 13px/1 var(--display); padding: 7px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text); }
 .sec-head .sp { flex: 1; }
 
 .tree { position: relative; }
-.layer { position: relative; border-radius: var(--radius); margin-bottom: 14px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--c) 28%, var(--line)); }
-.layer + .layer::before { content: ""; position: absolute; left: 33px; top: -15px; width: 2px; height: 14px; background: linear-gradient(var(--pc), var(--c)); opacity: .8; }
+.layer { position: relative; border-radius: var(--radius); margin-bottom: 16px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--c) 28%, var(--line)); }
+.layer + .layer::before { content: ""; position: absolute; left: 33px; top: -17px; width: 2px; height: 16px; background: linear-gradient(var(--pc), var(--c)); opacity: .8; }
 .layer-head { padding: 14px 14px 8px; display: flex; gap: 12px; align-items: center; }
 .layer-glyph { width: 40px; height: 40px; position: relative; flex: none; display: grid; place-items: center; color: #000; }
 .layer-glyph > svg.star { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--c); }
@@ -205,18 +205,18 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 
 /* transport */
 .transport { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, #000 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
-.transport-in { max-width: 640px; margin: 0 auto; padding: 0 12px; display: flex; gap: 6px; align-items: stretch; }
+.transport-in { max-width: 640px; margin: 0 auto; padding: 0 16px; display: flex; gap: 8px; align-items: stretch; }
 .tp-play { flex: 1; min-width: 0; padding: 0 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; background: var(--primary); color: var(--primary-ink); font: 800 12px/1 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .02em; min-height: 50px; }
 .tp-play svg { width: 16px; height: 16px; flex: none; }
 .tp-play span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tp-play.on { background: var(--brand-yellow); }
-.mix { flex: none; width: 50px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--faint); }
-.mix svg { width: 17px; height: 17px; }
-.mix span { font: 700 8px/1 var(--display); font-stretch: 112%; letter-spacing: .05em; text-transform: uppercase; }
-.mix.on { color: var(--text); border-color: var(--text); }
+.mixgroup { flex: none; display: flex; gap: 2px; padding: 3px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.mix { width: 38px; border-radius: 12px; display: grid; place-items: center; color: var(--faint); }
+.mix svg { width: 18px; height: 18px; }
+.mix.on { color: #000; background: var(--text); }
 .tempo { display: flex; align-items: center; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); flex: none; }
-.tempo button { width: 28px; height: 50px; font-size: 20px; color: var(--muted); }
-.tempo .v { min-width: 40px; text-align: center; line-height: 1; cursor: pointer; }
+.tempo button { width: 26px; height: 50px; font-size: 19px; color: var(--muted); }
+.tempo .v { min-width: 36px; text-align: center; line-height: 1; cursor: pointer; }
 .tempo .v b { display: block; font: 800 16px/1 var(--display); font-variant-numeric: tabular-nums; }
 .tempo .v span { font: 700 8px/1 var(--display); color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
 .tempo .v.unset b { color: var(--faint); }
@@ -279,7 +279,7 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .member-row .nm b { font: 800 14px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; }
 .me-tag { font: 800 10px/1 var(--display); color: var(--brand-yellow); letter-spacing: .06em; text-transform: uppercase; }
 
-.lineup { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; text-align: left; margin: 0 0 14px; padding: 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.lineup { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; text-align: left; margin: 0 0 16px; padding: 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
 .lineup .lbl { width: 100%; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
 .lineup .lbl b { font: 800 10px/1 var(--display); font-stretch: 125%; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .lineup .lbl .ar { font-size: 18px; color: var(--muted); }
@@ -297,6 +297,28 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .lu-row .sugs { margin-top: 10px; }
 .lu-row .sugs.lay .sug { font: 700 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; }
 .lu-row.prod { border-style: dashed; background: transparent; }
+.energy { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; vertical-align: -1px; }
+.energy i { width: 3px; border-radius: 1px; background: currentColor; opacity: .22; }
+.energy i.on { opacity: 1; background: var(--brand-yellow); }
+.energy.lg { height: 16px; } .energy.lg i { width: 4px; }
+.sec-pill .nm { display: block; }
+.sec-pill .pill-foot { display: flex; align-items: flex-end; gap: 8px; }
+.sec-facts { margin: 0 0 12px; }
+.chip.own { border-color: color-mix(in srgb, var(--text) 55%, var(--line)); }
+.chip .energy { margin-right: 2px; }
+.moves { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.move { font: 15px/1.25 var(--serif); padding: 7px 12px; border-radius: 12px; background: color-mix(in srgb, var(--brand-yellow) 10%, var(--surface)); border: 1px solid color-mix(in srgb, var(--brand-yellow) 35%, var(--line)); text-align: left; }
+.move b { font: 800 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; color: var(--brand-yellow); }
+.move.ghost { background: transparent; border-style: dashed; border-color: var(--line); color: var(--faint); font-style: italic; }
+.mv-row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 6px; }
+.mv-row.on { border-color: color-mix(in srgb, var(--brand-yellow) 55%, var(--line)); }
+.mv-toggle { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; }
+.mv-toggle b { font: 800 11px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; }
+.mv-toggle .small { font: italic 14px/1.3 var(--serif); }
+.mv-row .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; flex: none; }
+.mv-row.on .check { background: var(--brand-yellow); border-color: var(--brand-yellow); color: #000; }
+.mv-row input { margin-top: 10px; padding: 9px 12px; font-size: 16px; }
+.fl-sec { display: inline-flex; align-items: flex-end; gap: 5px; }
 .help { margin-top: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; font: 15px/1.4 var(--serif); color: var(--muted); }
 .help summary { cursor: pointer; color: var(--text); font: 800 11px/1.3 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 .help ol { margin: 8px 0 0; padding-left: 18px; }
@@ -341,6 +363,19 @@ const LAYER_FIT = {
 const instrumentsOf = id => ((S.members.find(m => m.id === id) || {}).instruments || '').split(',').map(x => x.trim()).filter(Boolean);
 const fitFirst = (list, layer) => layer ? [...list.filter(i => LAYER_FIT[layer].test(i)), ...list.filter(i => !LAYER_FIT[layer].test(i))] : list;
 const SECTION_NAMES = ['Intro', 'A', 'B', 'C', 'Chorus', 'Bridge', 'Taqsim', 'Solo', 'Break', 'Outro'];
+// The band's arrangement vocabulary, from "The underground band sound" in Notion.
+const MOVES = [
+  { k: 'role_swap', label: 'Role swap', hint: 'an instrument takes a job it isn’t expected to have' },
+  { k: 'unison', label: 'Unison', hint: 'all of us on the same line, as a sound in itself' },
+  { k: 'harmony', label: 'Harmonic arrangement', hint: 'harmony under a melody that had none, or taken away' },
+  { k: 'dynamics', label: 'Dynamics', hint: 'where it climbs, where it drops, how far' },
+  { k: 'silence', label: 'Silence', hint: 'what stops playing, and when' },
+  { k: 'texture', label: 'Texture', hint: 'the same part with a different sound' },
+  { k: 'feel', label: 'Rhythmic feel', hint: 'what the groove sits on, and moving it' },
+];
+// The band's genres, from "Our Sound" in Notion.
+const GENRES = ['The underground band sound', 'Ambient + jazz', 'Motseklat rock', 'Electrosha3by', 'Techno / House', 'West African', 'Cinematic', 'Classical sha3by'];
+const ENERGY = ['', 'whisper', 'low', 'medium', 'high', 'peak'];
 
 // D = dum / kick, T = tak / snare, K = ka / hi-hat or light stroke. One string per bar.
 const GROOVES = [
@@ -446,6 +481,17 @@ const beatOf = (sid, layer) => S.track.beats.find(b => b.section_id === sid && b
 const ideasOf = (sid, layer) => S.track.ideas.filter(i => i.section_id === sid && i.layer === layer);
 const meterLabel = sec => `${sec.meter_n}/${(METER_SUBS.find(m => m.v === sec.meter_sub) || METER_SUBS[0]).d}`;
 const secBarPulses = sec => sec.meter_n / sec.meter_sub;
+const pulseOf = sec => (sec && sec.tempo) || bpmOf(S.track);
+const curPulse = () => pulseOf(curView().sec);
+const secOfIdea = i => sections().find(s => s.id === i.section_id);
+const maqamOf = sec => {
+  const m = sec.maqam || S.track.maqam, t = sec.tonic || S.track.tonic;
+  return m ? m + (t ? ' on ' + t : '') : '';
+};
+const movesOf = sec => { try { return JSON.parse(sec.moves || '{}') || {}; } catch { return {}; } };
+function energyBars(e, cls) {
+  return `<span class="energy ${cls || ''}" title="${ENERGY[e] || 'energy not set'}">${[1, 2, 3, 4, 5].map(i => `<i class="${e && i <= e ? 'on' : ''}" style="height:${3 + i * 2.2}px"></i>`).join('')}</span>`;
+}
 const subOf = b => b.sub || 2;
 const barOf = b => b.bar || b.pattern.length;
 const barPulses = b => barOf(b) / subOf(b);
@@ -530,8 +576,8 @@ function viewHome() {
     const me = S.members.find(m => m.id === S.me);
     const list = S.tracks.map(t => {
       const unseen = (S.seen[t.id] || 0) < t.updated_at;
-      const meta = [t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.tempo && t.tempo + ' bpm', t.ideas && t.ideas + ' idea' + (t.ideas > 1 ? 's' : '')].filter(Boolean).map(esc).join(' · ');
-      const form = t.sections.length > 1 ? `<div class="form-line">${t.sections.map(s => esc(s.name)).join('<span class="arr">→</span>')}</div>` : '';
+      const meta = [t.genre, t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.tempo && t.tempo + ' bpm', t.ideas && t.ideas + ' idea' + (t.ideas > 1 ? 's' : '')].filter(Boolean).map(esc).join(' · ');
+      const form = t.sections.length > 1 || t.sections.some(s => s.energy) ? `<div class="form-line">${t.sections.map(s => `<span class="fl-sec">${esc(s.name)}${s.energy ? energyBars(s.energy) : ''}</span>`).join('<span class="arr">→</span>')}</div>` : '';
       const mini = LAYERS.map(l => {
         const names = [...new Set(t.holders.filter(h => h.layer === l.key).map(h => memberName(h.member_id)))];
         const beats = [...new Set(t.beats.filter(b => b.layer === l.key).map(b => b.name || 'beat'))];
@@ -624,12 +670,13 @@ function renderTrack() {
 
   const maqam = t.maqam ? t.maqam + (t.tonic ? ' on ' + t.tonic : '') : '';
   const chips = `<button class="chip${maqam ? '' : ' ghost'}" onclick="editTrack()">${maqam ? `<span class="k">Maqam</span>${esc(maqam)}` : '+ maqam'}</button>` +
-    `<button class="chip${t.tempo ? '' : ' ghost'}" onclick="editTrack()">${t.tempo ? `<span class="k">Pulse</span>${t.tempo} bpm` : '+ pulse'}</button>`;
+    `<button class="chip${t.tempo ? '' : ' ghost'}" onclick="editTrack()">${t.tempo ? `<span class="k">Pulse</span>${t.tempo} bpm` : '+ pulse'}</button>` +
+    `<button class="chip${t.genre ? '' : ' ghost'}" onclick="editTrack()">${t.genre ? `<span class="k">Genre</span>${esc(t.genre)}` : '+ genre'}</button>`;
   const trackNotes = t.notes ? `<button class="notes" onclick="editTrack('f-notes')">${esc(t.notes)}</button>` : '';
 
   const form = sections().map((s, i) => {
     const dots = LAYERS.map(l => `<i style="--c:${l.c}" class="${holdersOf(s.id, l.key).length || beatOf(s.id, l.key) || ideasOf(s.id, l.key).length ? 'on' : ''}"></i>`).join('');
-    const pill = `<button class="sec-pill${s.id === sec.id && !transition ? ' sel' : ''}" onclick="selectView('${s.id}')">${esc(s.name)}<span class="dots">${dots}</span></button>`;
+    const pill = `<button class="sec-pill${s.id === sec.id && !transition ? ' sel' : ''}" onclick="selectView('${s.id}')"><span class="nm">${esc(s.name)}</span><span class="pill-foot"><span class="dots">${dots}</span>${energyBars(s.energy)}</span></button>`;
     if (i === sections().length - 1) return pill;
     const n = ideasOf(s.id, 'transition').length;
     return pill + `<button class="tr-pill${n ? ' has' : ''}${s.id === sec.id && transition ? ' sel' : ''}" aria-label="Transition" onclick="selectView('${s.id}', true)">→${n ? `<b>${n}</b>` : ''}</button>`;
@@ -663,7 +710,19 @@ function renderTrack() {
         ${ideasHtml(sec.id, l.key, prevSeen)}
         ${composeHtml(l.key)}</section>`;
     }).join('');
-    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><button class="meter" onclick="editSection()">${meterLabel(sec)}</button><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button></div>
+    const mv = movesOf(sec);
+    const own = (v, label) => `<button class="chip${v ? ' own' : ''}" onclick="editSection()"><span class="k">${label}</span>`;
+    const facts = [
+      own(true, 'Time') + meterLabel(sec) + '</button>',
+      sec.maqam || sec.tonic ? own(true, 'Maqam') + esc(maqamOf(sec)) + '</button>' : '',
+      sec.tempo ? own(true, 'Pulse') + sec.tempo + '</button>' : '',
+      `<button class="chip${sec.energy ? '' : ' ghost'}" onclick="editSection()">${sec.energy ? `<span class="k">Energy</span>${energyBars(sec.energy, 'lg')} ${ENERGY[sec.energy]}` : '+ energy'}</button>`,
+    ].join('');
+    const movesHtml = MOVES.filter(m => mv[m.k] != null).map(m => `<button class="move" onclick="editSection()"><b>${m.label}</b>${mv[m.k] ? ' · ' + esc(mv[m.k]) : ''}</button>`)
+      .concat(Object.keys(mv).filter(k => k.startsWith('x:')).map(k => `<button class="move" onclick="editSection()"><b>${esc(k.slice(2))}</b>${mv[k] ? ' · ' + esc(mv[k]) : ''}</button>`)).join('');
+    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button></div>
+      <div class="chips sec-facts">${facts}</div>
+      <div class="moves">${movesHtml || `<button class="move ghost" onclick="editSection()">+ moves · role swap, unison, silence…</button>`}</div>
       ${sec.notes ? `<button class="notes" style="margin:0 0 14px" onclick="editSection('s-notes')">${esc(sec.notes)}</button>` : ''}
       ${lineupStrip(sec)}
       <div class="tree">${layers}</div>`;
@@ -679,10 +738,12 @@ function renderTrack() {
     </div>
     <div class="transport"><div class="transport-in">
       <button class="tp-play" id="tpPlay" onclick="togglePlayer()"></button>
-      <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" onclick="toggleMix('beats')">${ICON.rhythm}<span>Rhythm</span></button>
-      <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" onclick="toggleMix('recs')">${ICON.wave}<span>Parts</span></button>
-      <button class="mix${S.mix.click ? ' on' : ''}" data-mix="click" onclick="toggleMix('click')">${ICON.metro}<span>Click</span></button>
-      <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${t.tempo ? '' : ' unset'}" onclick="editTrack()"><b id="bpm">${bpmOf(t)}</b><span>pulse</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
+      <div class="mixgroup">
+        <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" aria-label="Rhythms in playback" title="Rhythms" onclick="toggleMix('beats')">${ICON.rhythm}</button>
+        <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" aria-label="Parts in playback" title="Parts" onclick="toggleMix('recs')">${ICON.wave}</button>
+        <button class="mix${S.mix.click ? ' on' : ''}" data-mix="click" aria-label="Click in playback" title="Click" onclick="toggleMix('click')">${ICON.metro}</button>
+      </div>
+      <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${curView().sec.tempo || t.tempo ? '' : ' unset'}" onclick="${curView().sec.tempo ? 'editSection()' : 'editTrack()'}"><b id="bpm">${curPulse()}</b><span>${curView().sec.tempo ? 'section' : 'pulse'}</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
     </div></div>`;
   updateTransport();
 }
@@ -691,10 +752,12 @@ function updateTransport() {
   const b = $('#tpPlay');
   if (!b || !S.track) return;
   b.classList.toggle('on', Player.on);
-  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>Play ${esc(curView().sec.name)}</span>`;
+  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>${esc(curView().sec.name)}</span>`;
+  b.setAttribute('aria-label', Player.on ? 'Stop' : 'Play ' + curView().sec.name);
 }
 function toggleMix(k) {
   S.mix[k] = !S.mix[k]; store.set('mix', S.mix);
+  toast(`${{ beats: 'Rhythms', recs: 'Parts', click: 'Click' }[k]} ${S.mix[k] ? 'on' : 'off'} in playback`);
   document.querySelectorAll(`[data-mix="${k}"]`).forEach(b => b.classList.toggle('on', S.mix[k]));
   if (Player.on) togglePlayer().then(togglePlayer);
 }
@@ -707,13 +770,14 @@ async function togglePlayer() {
 
 let tempoSave = null;
 function nudgeTempo(d) {
-  const t = S.track;
-  t.tempo = Math.max(30, Math.min(300, bpmOf(t) + d));
-  $('#bpm').textContent = t.tempo;
+  const { sec } = curView(), own = sec.tempo ? sec : S.track;
+  own.tempo = Math.max(30, Math.min(300, curPulse() + d));
+  $('#bpm').textContent = own.tempo;
   $('#bpm').parentElement.classList.remove('unset');
-  Beat.setBpm(t.tempo);
+  Beat.setBpm(own.tempo);
   clearTimeout(tempoSave);
-  tempoSave = setTimeout(() => api('/tracks/' + t.id, { method: 'PATCH', body: { tempo: t.tempo } }).then(x => { S.track.updated_at = x.updated_at; }).catch(e => toast(e.message)), 900);
+  const path = own === sec ? '/sections/' + sec.id : '/tracks/' + S.track.id;
+  tempoSave = setTimeout(() => api(path, { method: 'PATCH', body: { tempo: own.tempo } }).then(x => { S.track.updated_at = x.updated_at; }).catch(e => toast(e.message)), 900);
 }
 
 function ideaHtml(i, prevSeen) {
@@ -722,7 +786,7 @@ function ideaHtml(i, prevSeen) {
   if (i.kind === 'audio') body = `<div class="player" data-audio="${esc(i.id)}"><button class="play" aria-label="Play" onclick="togglePlay('${esc(i.id)}')">${ICON.play}</button><div class="bar"><i></i></div><span class="time">${fmtTime(i.duration)}</span></div>${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
   else if (i.kind === 'midi') {
     const take = parseTake(i);
-    body = `<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${take.notes.length} notes · ${fmtTime(take.len * 60 / bpmOf(S.track))} · MIDI</span></div>${rollSvg(take, i.id)}${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
+    body = `<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${take.notes.length} notes · ${fmtTime(take.len * 60 / pulseOf(secOfIdea(i)))} · MIDI</span></div>${rollSvg(take, i.id)}${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
   }
   else if (i.kind === 'link') body = `<div class="idea-body"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(prettyUrl(i.url))}</a>${i.body ? '\n' + esc(i.body) : ''}</div>`;
   else body = `<div class="idea-body">${esc(i.body)}</div>`;
@@ -796,16 +860,18 @@ const chipsHtml = (id, items, c) => `<div class="sugs" id="${id}"${c ? ` style="
 function trackForm(t) {
   t = t || {};
   return `<label class="field">Title</label><input id="f-title" type="text" value="${esc(t.title)}" placeholder="Working title is fine">
-    <div class="row2"><div><label class="field">Maqam</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
+    <div class="row2"><div><label class="field">Maqam / scale</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
     <div><label class="field">On (tonic)</label><input id="f-tonic" type="text" value="${esc(t.tonic)}" placeholder="e.g. D"></div></div>
-    <label class="field">Pulse (bpm, quarter note), shared by every section and layer</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
+    <label class="field">Genre</label><div class="sugs" id="f-genre">${GENRES.map(g => `<button type="button" class="sug${t.genre === g ? ' on' : ''}">${esc(g)}</button>`).join('')}</div>
+    <label class="field">Pulse (bpm, quarter note) · sections can override it</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn" id="tap" type="button">Tap</button></div>
     <label class="field">Notes on the whole track</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>`;
 }
 function readTrackForm(root) {
   return { title: $('#f-title', root).value, maqam: $('#f-maqam', root).value, tonic: $('#f-tonic', root).value,
-    tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value };
+    tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value, genre: ($('#f-genre .sug.on', root) || {}).textContent || '' };
 }
 function wireTap(root) {
+  root.querySelectorAll('#f-genre .sug').forEach(b => b.onclick = () => { const was = b.classList.contains('on'); root.querySelectorAll('#f-genre .sug').forEach(x => x.classList.remove('on')); if (!was) b.classList.add('on'); });
   let taps = [];
   $('#tap', root).onclick = () => {
     const n = performance.now();
@@ -860,7 +926,7 @@ function meterPicker(root, M) {
   root.querySelectorAll('#md .sug').forEach(b => b.onclick = () => { M.sub = +b.dataset.v; draw(); });
   draw();
 }
-const meterHtml = () => `<label class="field">Time signature (drives the click and count-in)</label>
+const meterHtml = () => `<label class="field">Time signature</label>
   <div class="meter-preview" id="mprev"></div>
   ${chipsHtml('mn', [2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 15].map(n => `<button class="sug" data-n="${n}">${n}</button>`).join(''))}
   ${chipsHtml('md', METER_SUBS.map(m => `<button class="sug" data-v="${m.v}">/ ${m.d}</button>`).join(''))}`;
@@ -890,12 +956,27 @@ function newSection() {
 
 function editSection(focusId) {
   const { sec } = curView();
+  const t = S.track;
   const idx = sections().indexOf(sec);
   const M = { n: sec.meter_n, sub: sec.meter_sub };
+  const mv = movesOf(sec);
+  let energy = sec.energy || 0;
+  const customs = Object.keys(mv).filter(k => k.startsWith('x:'));
+  const moveRow = (k, label, hint, val) => `<div class="mv-row${val != null ? ' on' : ''}" data-k="${esc(k)}"><button type="button" class="mv-toggle"><span class="check">${val != null ? '✓' : ''}</span><span><b>${esc(label)}</b>${hint ? `<span class="small muted"> · ${esc(hint)}</span>` : ''}</span></button>
+    <input type="text" class="${val != null ? '' : 'hidden'}" placeholder="how, e.g. ${k === 'role_swap' ? 'maqsum on the kit, heavy bass under it' : k === 'silence' ? 'bass drops out for bars 5–8' : k === 'unison' ? 'oud, guitar and ney on the main line' : 'a few words'}" value="${esc(val || '')}"></div>`;
   sheet(`<h3>Section · ${esc(sec.name)}</h3>
+    <p class="lede">Anything left empty follows the track (${esc([t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), bpmOf(t) + ' bpm'].filter(Boolean).join(', '))}).</p>
     <label class="field">Name</label><input id="s-name" type="text" value="${esc(sec.name)}">
+    <div class="row2"><div><label class="field">Maqam / scale</label><input id="s-maqam" type="text" list="maqamat" value="${esc(sec.maqam || '')}" placeholder="${esc(t.maqam || 'same as track')}"></div>
+    <div><label class="field">Root</label><input id="s-tonic" type="text" value="${esc(sec.tonic || '')}" placeholder="${esc(t.tonic || '—')}"></div></div>
+    <label class="field">Pulse for this section</label><input id="s-tempo" type="number" inputmode="numeric" value="${sec.tempo || ''}" placeholder="${bpmOf(t)} (track)">
     ${meterHtml()}
-    <label class="field">Notes on this section</label><textarea id="s-notes" placeholder="Feel, dynamics, how many times round, cues…">${esc(sec.notes)}</textarea>
+    <label class="field">Energy · where it climbs and drops</label>
+    <div class="sugs" id="energy">${[1, 2, 3, 4, 5].map(e => `<button class="sug" data-e="${e}">${energyBars(e)} ${ENERGY[e]}</button>`).join('')}</div>
+    <label class="field">Moves · the choices we make here</label>
+    <div id="mvs">${MOVES.map(m => moveRow(m.k, m.label, m.hint, mv[m.k])).join('')}${customs.map(k => moveRow(k, k.slice(2), '', mv[k])).join('')}</div>
+    <div class="tempo-row" style="margin-top:8px"><input id="newMove" type="text" placeholder="Name a new move"><button class="btn" id="addMove" type="button">Add</button></div>
+    <label class="field">Notes on this section</label><textarea id="s-notes" placeholder="How many times round, cues, who leads…">${esc(sec.notes)}</textarea>
     <div class="sugs" style="margin-top:14px">
       <button class="sug" id="mvL" ${idx === 0 ? 'disabled style="opacity:.4"' : ''}>← Move earlier</button>
       <button class="sug" id="mvR" ${idx === sections().length - 1 ? 'disabled style="opacity:.4"' : ''}>Move later →</button>
@@ -904,6 +985,16 @@ function editSection(focusId) {
     ${sections().length > 1 ? '<div style="margin-top:22px"><button class="btn danger block" id="del">Delete section</button></div>' : ''}`, root => {
     meterPicker(root, M);
     if (focusId) setTimeout(() => $('#' + focusId, root).focus(), 50);
+    const drawEnergy = () => root.querySelectorAll('#energy .sug').forEach(b => b.classList.toggle('on', +b.dataset.e === energy));
+    root.querySelectorAll('#energy .sug').forEach(b => b.onclick = () => { energy = energy === +b.dataset.e ? 0 : +b.dataset.e; drawEnergy(); });
+    drawEnergy();
+    const wireRow = r => { $('.mv-toggle', r).onclick = () => { const on = r.classList.toggle('on'); $('.check', r).textContent = on ? '✓' : ''; $('input', r).classList.toggle('hidden', !on); if (on) $('input', r).focus(); }; };
+    root.querySelectorAll('.mv-row').forEach(wireRow);
+    $('#addMove', root).onclick = () => {
+      const name = $('#newMove', root).value.trim(); if (!name) return;
+      $('#mvs', root).insertAdjacentHTML('beforeend', moveRow('x:' + name, name, '', ''));
+      const r = $('#mvs', root).lastElementChild; wireRow(r); $('.mv-toggle', r).click(); $('#newMove', root).value = '';
+    };
     const move = async d => {
       const other = sections()[idx + d];
       try {
@@ -915,7 +1006,11 @@ function editSection(focusId) {
     if (idx > 0) $('#mvL', root).onclick = () => move(-1);
     if (idx < sections().length - 1) $('#mvR', root).onclick = () => move(1);
     $('#save', root).onclick = async () => {
-      try { S.track = await api('/sections/' + sec.id, { method: 'PATCH', body: { name: $('#s-name', root).value, notes: $('#s-notes', root).value, meter_n: M.n, meter_sub: M.sub } }); closeSheet(); renderTrack(); }
+      const moves = {};
+      root.querySelectorAll('.mv-row.on').forEach(r => { moves[r.dataset.k] = $('input', r).value.trim(); });
+      const body = { name: $('#s-name', root).value, notes: $('#s-notes', root).value, meter_n: M.n, meter_sub: M.sub,
+        maqam: $('#s-maqam', root).value, tonic: $('#s-tonic', root).value, tempo: $('#s-tempo', root).value, energy: energy || '', moves };
+      try { S.track = await api('/sections/' + sec.id, { method: 'PATCH', body }); closeSheet(); renderTrack(); }
       catch (e) { toast(e.message); }
     };
     const del = $('#del', root);
@@ -1048,7 +1143,7 @@ function editBeat(layerKey) {
       grid.innerHTML = B.bars.map((bar, bi) => `${B.bars.length > 1 ? `<div class="bar-label">Bar ${bi + 1}</div>` : ''}<div class="grid" style="grid-template-columns:repeat(${cols(B.bar)}, 1fr)">${bar.map((c, i) => `<button data-b="${bi}" data-i="${i}" class="${c === '-' ? 'R' : c}">${c === '-' ? '·' : c}</button>`).join('')}</div>`).join('');
       on('#subs', 's', B.sub); on('#lens', 'n', B.bar); on('#nbars', 'b', B.bars.length);
       const pulses = B.bar / B.sub, secP = secBarPulses(sec);
-      $('#phint', root).textContent = `One bar = ${+pulses.toFixed(2)} pulse${pulses === 1 ? '' : 's'}` +
+      $('#phint', root).textContent = `One bar = ${+pulses.toFixed(2)} pulse${pulses === 1 ? '' : 's'} at ${pulseOf(sec)} bpm` +
         (Math.abs(pulses - secP) > 1e-6 ? ` · the section’s ${meterLabel(sec)} bar is ${+secP.toFixed(2)}, so this one drifts against it.` : ` · matches the section’s ${meterLabel(sec)}.`);
       if (Beat.on) Beat.retune(voices());
     };
@@ -1078,7 +1173,7 @@ function editBeat(layerKey) {
     });
     const wo = $('#withOthers', root);
     if (wo) wo.onclick = () => { withOthers = !withOthers; wo.classList.toggle('on', withOthers); if (Beat.on) Beat.retune(voices()); };
-    $('#prev', root).onclick = () => { if (Beat.on) Beat.stop(); else Beat.start(voices(), bpmOf(S.track), { onChange: paintPrev }); paintPrev(); };
+    $('#prev', root).onclick = () => { if (Beat.on) Beat.stop(); else Beat.start(voices(), pulseOf(sec), { onChange: paintPrev }); paintPrev(); };
     $('#save', root).onclick = async () => {
       if (!/[DTK]/.test(pattern())) return toast('Tap a few cells first, or remove the rhythm');
       try { S.track = await api(`/sections/${sec.id}/beats/${layerKey}`, { method: 'PUT', body: { name: $('#bname', root).value, pattern: pattern(), sub: B.sub, bar: B.bar } }); closeSheet(); renderTrack(); }
@@ -1229,7 +1324,7 @@ const Player = {
   async start(o) {
     this.stop();
     const ctx = Beat.ensure();
-    const sec = o.sec, bpm = bpmOf(S.track), countIn = o.countIn || 0;
+    const sec = o.sec, bpm = pulseOf(o.sec), countIn = o.countIn || 0;
     const voices = [];
     if (o.beats) voices.push(...sectionVoices(sec.id, o.exceptLayer));
     if (o.click || countIn) voices.push(metroVoice(sec, o.click ? null : 0));
@@ -1318,7 +1413,7 @@ function backingHtml(lane) {
   const hasRest = sectionVoices(sec.id, lane).length + stackIdeas(sec.id, lane).length + midiStack(sec.id, lane).length > 0;
   const B = { countIn: store.get('countIn', true), click: store.get('clickRec', true), rest: hasRest && store.get('along', true), hasRest };
   const html = `
-    <button class="toggle${B.countIn ? ' on' : ''}" data-bk="countIn"><span class="sw"></span><span><b>Count in one bar</b><br><span class="small muted">${meterLabel(sec)} at ${bpmOf(S.track)} bpm, then you’re on.</span></span></button>
+    <button class="toggle${B.countIn ? ' on' : ''}" data-bk="countIn"><span class="sw"></span><span><b>Count in one bar</b><br><span class="small muted">${meterLabel(sec)} at ${pulseOf(sec)} bpm, then you’re on.</span></span></button>
     <button class="toggle${B.click ? ' on' : ''}" data-bk="click"><span class="sw"></span><span><b>Click while recording</b><br><span class="small muted">Metronome on the pulse, accent on each bar.</span></span></button>
     ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ parts and rhythms. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
   const wire = root => root.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
@@ -1513,7 +1608,7 @@ const Takes = {
   active: new Map(),
   play(idea, startAt) {
     const take = parseTake(idea), ctx = Beat.ensure();
-    const spp = 60 / bpmOf(S.track);
+    const spp = 60 / pulseOf(secOfIdea(idea) || curView().sec);
     const t0 = startAt != null ? startAt : ctx.currentTime + 0.08;
     const releases = take.notes.map(n => Synth.note(n.n, n.v, t0 + n.t * spp, Math.max(0.05, n.d * spp)));
     const total = Math.max(0.1, take.len * spp);
@@ -1591,14 +1686,14 @@ function openMidi(lane) {
     $('#again', root).onclick = () => { Takes.stopAll(); M.notes = []; $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); $('#bk', root).classList.remove('hidden'); $('#recTime', root).textContent = '0 notes'; $('#count', root).textContent = ''; };
     $('#pv', root).onclick = () => { const idea = draftIdea(); if (Takes.active.has(idea.id)) Takes.stop(idea.id); else Takes.play(idea); };
     $('#save', root).onclick = async () => {
-      const take = { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes, ...(M.chan != null ? { ch: M.chan + 1 } : {}) };
+      const take = { bpm: pulseOf(bk.sec), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes, ...(M.chan != null ? { ch: M.chan + 1 } : {}) };
       await postIdea({ layer: lane, kind: 'midi', data: JSON.stringify(take), duration: Math.round(M.len * 60 / take.bpm * 10) / 10, body: $('#cap', root).value }, root);
     };
   });
   s._onclose = () => { if (M.rec || M.armed) stop(); Takes.stopAll(); Player.stop(); for (const n of [...Synth.voices.keys()]) Synth.off(n); if (M.input) M.input.onmidimessage = null; };
 
   const status = (text, cls) => { const el = $('#mstat', s); el.className = 'midi-status ' + (cls || ''); $('span', el).textContent = text; };
-  const draftIdea = () => ({ id: 'draft', data: '', _take: { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes } });
+  const draftIdea = () => ({ id: 'draft', data: '', _take: { bpm: pulseOf(bk.sec), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes } });
 
   const listen = input => {
     if (M.input) M.input.onmidimessage = null;
@@ -1626,7 +1721,7 @@ function openMidi(lane) {
     box.querySelectorAll('.sug').forEach(b => b.onclick = () => { M.chan = b.dataset.ch === '' ? null : +b.dataset.ch; drawChans(); });
   };
   const livePulse = ms => {
-    const per = M.tickMs || 60000 / bpmOf(S.track) / 24;
+    const per = M.tickMs || 60000 / pulseOf(bk.sec) / 24;
     return M.ticks ? (M.ticks - 1 + (ms - M.lastTick) / per) / 24 : (ms - M.clockAt) / per / 24;
   };
   const perfToPulse = ms => {
@@ -1712,10 +1807,13 @@ function openMidi(lane) {
     $('#rollWrap', s).innerHTML = rollSvg(draftIdea()._take, 'draft');
     $('#hint', s).textContent = `${M.notes.length} notes. Have a listen, then post it to the band.`;
     const liveBpm = sync && M.tickMs ? Math.round(60000 / (M.tickMs * 24)) : 0;
-    if (liveBpm && Math.abs(liveBpm - bpmOf(S.track)) >= 1) {
-      $('#liveOffer', s).innerHTML = `Live was at ${liveBpm} bpm, the track pulse is ${bpmOf(S.track)}. <button class="sug" id="useLive">Use ${liveBpm}</button>`;
+    if (liveBpm && Math.abs(liveBpm - pulseOf(bk.sec)) >= 1) {
+      $('#liveOffer', s).innerHTML = `Live was at ${liveBpm} bpm, ${esc(bk.sec.name)}’s pulse is ${pulseOf(bk.sec)}. <button class="sug" id="useLive">Use ${liveBpm}</button>`;
       $('#useLive', s).onclick = async () => {
-        try { S.track = await api('/tracks/' + S.track.id, { method: 'PATCH', body: { tempo: liveBpm } }); $('#liveOffer', s).textContent = `Track pulse set to ${liveBpm} bpm.`; } catch (e) { toast(e.message); }
+        try {
+          S.track = bk.sec.tempo ? await api('/sections/' + bk.sec.id, { method: 'PATCH', body: { tempo: liveBpm } }) : await api('/tracks/' + S.track.id, { method: 'PATCH', body: { tempo: liveBpm } });
+          $('#liveOffer', s).textContent = `Pulse set to ${liveBpm} bpm.`;
+        } catch (e) { toast(e.message); }
       };
     }
   }

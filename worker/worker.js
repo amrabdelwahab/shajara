@@ -54,8 +54,9 @@ async function addSection(env, trackId, name, copyFrom) {
   const src = copyFrom ? await env.DB.prepare('SELECT * FROM sections WHERE id = ? AND track_id = ?').bind(copyFrom, trackId).first() : null;
   const sid = uid();
   const stmts = [
-    env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-      .bind(sid, trackId, name, (last && last.p != null ? last.p : -1) + 1, src ? src.meter_n : 4, src ? src.meter_sub : 1, '', now()),
+    env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, maqam, tonic, tempo, energy, moves, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .bind(sid, trackId, name, (last && last.p != null ? last.p : -1) + 1, src ? src.meter_n : 4, src ? src.meter_sub : 1,
+        src ? src.maqam : null, src ? src.tonic : null, src ? src.tempo : null, src ? src.energy : null, src ? src.moves : '', '', now()),
   ];
   if (src) {
     stmts.push(
@@ -81,8 +82,8 @@ async function route(req, env, url, member) {
   if (a === 'state' && m === 'GET') {
     const [members, tracks, sections, holders, beats, counts] = await Promise.all([
       env.DB.prepare('SELECT * FROM members ORDER BY created_at').all(),
-      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
-      env.DB.prepare('SELECT id, track_id, name, position, meter_n, meter_sub FROM sections ORDER BY position, created_at').all(),
+      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
+      env.DB.prepare('SELECT id, track_id, name, position, meter_n, meter_sub, energy FROM sections ORDER BY position, created_at').all(),
       env.DB.prepare('SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id').all(),
       env.DB.prepare('SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id').all(),
       env.DB.prepare('SELECT track_id, COUNT(*) AS n FROM ideas GROUP BY track_id').all(),
@@ -129,8 +130,8 @@ async function route(req, env, url, member) {
       const t = now();
       const tid = uid();
       await env.DB.prepare(
-        'INSERT INTO tracks (id, title, maqam, tonic, tempo, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.notes, 4000), member, t, t).run();
+        'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.notes, 4000), member, t, t).run();
       await addSection(env, tid, str(b.section, 60) || 'Main');
       return json(await loadTrack(env, tid), 201);
     }
@@ -145,8 +146,8 @@ async function route(req, env, url, member) {
       if (!cur) return json({ error: 'not found' }, 404);
       const pick = (k, max) => (k in b ? str(b[k], max) : cur[k]);
       const tempo = 'tempo' in b ? intIn(b.tempo, 20, 400, null) : cur.tempo;
-      await env.DB.prepare('UPDATE tracks SET title = ?, maqam = ?, tonic = ?, tempo = ?, notes = ?, updated_at = ? WHERE id = ?')
-        .bind(pick('title', 120) || cur.title, pick('maqam', 60), pick('tonic', 20), tempo, pick('notes', 4000), now(), id).run();
+      await env.DB.prepare('UPDATE tracks SET title = ?, maqam = ?, tonic = ?, tempo = ?, genre = ?, notes = ?, updated_at = ? WHERE id = ?')
+        .bind(pick('title', 120) || cur.title, pick('maqam', 60), pick('tonic', 20), tempo, pick('genre', 60), pick('notes', 4000), now(), id).run();
       return json(await loadTrack(env, id));
     }
     if (m === 'DELETE' && !sub) {
@@ -176,12 +177,23 @@ async function route(req, env, url, member) {
     if (m === 'PATCH' && !sub) {
       const b = await body(req);
       const cur = await env.DB.prepare('SELECT * FROM sections WHERE id = ?').bind(id).first();
-      await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ? WHERE id = ?').bind(
+      const opt = (k, max) => (k in b ? (str(b[k], max) || null) : cur[k]);
+      let moves = cur.moves;
+      if ('moves' in b) {
+        moves = typeof b.moves === 'string' ? b.moves : JSON.stringify(b.moves || {});
+        try { JSON.parse(moves || '{}'); } catch { return json({ error: 'bad moves' }, 400); }
+        if (moves.length > 4000) return json({ error: 'moves too long' }, 400);
+      }
+      await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ?, maqam = ?, tonic = ?, tempo = ?, energy = ?, moves = ? WHERE id = ?').bind(
         str(b.name, 60) || cur.name,
         'notes' in b ? str(b.notes, 4000) : cur.notes,
         intIn(b.meter_n, 1, 32, cur.meter_n),
         [1, 2, 4].includes(Number(b.meter_sub)) ? Number(b.meter_sub) : cur.meter_sub,
         Number.isFinite(Number(b.position)) && 'position' in b ? Number(b.position) : cur.position,
+        opt('maqam', 60), opt('tonic', 20),
+        'tempo' in b ? intIn(b.tempo, 20, 400, null) : cur.tempo,
+        'energy' in b ? intIn(b.energy, 1, 5, null) : cur.energy,
+        moves,
         id,
       ).run();
       await touch(env, trackId);
