@@ -164,8 +164,31 @@ label.field { display: block; margin: 16px 0 6px; font-size: 13px; color: var(--
 .kebab { color: var(--faint); padding: 4px 6px; font-size: 18px; line-height: 1; }
 .more { display: block; width: 100%; padding: 8px 0 10px; color: var(--muted); font-size: 13px; text-align: left; border-top: 1px solid var(--line); }
 .compose { display: flex; gap: 6px; padding: 6px 14px 14px; }
-.compose button { flex: 1; min-width: 0; padding: 10px 4px; border-radius: 11px; background: color-mix(in srgb, var(--bg) 45%, var(--surface-2)); font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.compose button svg { width: 16px; height: 16px; flex: none; }
+.compose button { flex: 1; min-width: 0; padding: 8px 2px 7px; border-radius: 11px; background: color-mix(in srgb, var(--bg) 45%, var(--surface-2)); font-size: 11px; font-weight: 600; letter-spacing: .02em; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: color-mix(in srgb, var(--text) 85%, var(--muted)); }
+.compose button svg { width: 18px; height: 18px; flex: none; }
+.part-tag { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c, var(--accent)); }
+.lineup { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; text-align: left; margin: 0 0 14px; padding: 10px 12px; border-radius: 14px; background: var(--surface); }
+.lineup .lbl { width: 100%; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.lineup .lbl span { color: var(--accent); letter-spacing: 0; text-transform: none; font-weight: 600; font-size: 12px; }
+.lu { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 22%, transparent); color: color-mix(in srgb, var(--c) 65%, var(--text)); white-space: nowrap; }
+.lu.out { --c: var(--faint); color: var(--faint); background: transparent; border: 1px dashed var(--line); }
+.lu.prod { border: 1px dashed color-mix(in srgb, var(--c) 60%, transparent); background: transparent; }
+.lu-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 4px; }
+.lu-sum div { border-radius: 10px; padding: 7px 10px; font-size: 12px; background: color-mix(in srgb, var(--c) 12%, transparent); min-height: 44px; }
+.lu-sum b { display: block; color: var(--c); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.lu-sum .empty-l { color: var(--faint); }
+.lu-row { background: var(--surface); border-radius: 12px; padding: 12px 14px; margin-top: 8px; }
+.lu-row .top-l { display: flex; align-items: center; gap: 10px; }
+.lu-row .top-l b { font-size: 16px; min-width: 64px; }
+.lu-row .top-l input { flex: 1; padding: 8px 10px; font-size: 14px; }
+.lu-row .sugs { margin-top: 10px; }
+.lu-row .sug.on { background: var(--c); }
+.lu-row.prod { border: 1px dashed var(--line); background: transparent; }
+.holder.empty { color: var(--faint); background: transparent; border: 1px dashed var(--line); }
+.help { margin-top: 10px; background: var(--surface); border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--muted); }
+.help summary { cursor: pointer; color: var(--text); font-weight: 600; }
+.help ol { margin: 8px 0 0; padding-left: 18px; }
+.help li { margin: 4px 0; }
 .compose .rec { color: #ffd9d3; background: color-mix(in srgb, var(--danger) 26%, var(--surface-2)); }
 .transition-card { border-radius: var(--radius); background: linear-gradient(160deg, color-mix(in srgb, var(--transition) 10%, var(--surface)) 0%, var(--surface) 60%); border: 1px dashed color-mix(in srgb, var(--transition) 40%, transparent); padding-top: 4px; }
 .transition-card .lede { padding: 10px 14px 6px; color: var(--muted); font-size: 14px; margin: 0; }
@@ -341,6 +364,7 @@ const ICON = {
   stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
   drum: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v8c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
+  rhythm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="4" height="8" rx="1.2" fill="currentColor"/><rect x="10" y="8" width="4" height="8" rx="1.2"/><rect x="17" y="8" width="4" height="8" rx="1.2" fill="currentColor" fill-opacity=".45"/></svg>',
   metro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 18H5L9 3Z"/><path d="M12 17l5-9"/><path d="M8 13h8"/></svg>',
 };
 
@@ -363,7 +387,8 @@ const S = {
 
 const $ = (sel, root) => (root || document).querySelector(sel);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const memberName = id => (S.members.find(m => m.id === id) || {}).name || 'Someone';
+const PRODUCTION = 'production';
+const memberName = id => id === PRODUCTION ? 'Production' : (S.members.find(m => m.id === id) || {}).name || 'Someone';
 const fmtTime = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const bpmOf = t => (t && t.tempo) || DEFAULT_BPM;
 const parseData = i => { if (i._d === undefined) { try { i._d = i.data ? JSON.parse(i.data) : {}; } catch { i._d = {}; } } return i._d; };
@@ -507,7 +532,7 @@ function legend() {
   return `<div class="legend"><h4>How a track grows</h4>
     <p style="margin:0 0 10px">A track is a run of sections (Intro, A, B…) with transitions between them. Each section is a tree, from the top down:</p>
     ${LAYERS.map(l => `<div class="l" style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
-    <p>Anyone can hold any layer, on any instrument. One pulse runs through the whole track, but every layer carries its own rhythm, so the Substrate can hold a maqsum while the Ground plays something else on top.</p></div>`;
+    <p>Anyone can hold any layer, on any instrument. One pulse runs through the whole track; each layer brings its own part on top of it, whether that’s a groove, a bass line, chords or a melody.</p></div>`;
 }
 
 function treeMark(size) {
@@ -554,6 +579,7 @@ function composeHtml(lane) {
   return `<div class="compose">
     <button class="rec" onclick="openRecorder('${lane}')">${ICON.mic}Record</button>
     ${HAS_MIDI ? `<button onclick="openMidi('${lane}')">${ICON.keys}MIDI</button>` : ''}
+    ${lane !== 'transition' ? `<button onclick="editBeat('${lane}')">${ICON.rhythm}Rhythm</button>` : ''}
     <button onclick="openNote('${lane}')">${ICON.note}Note</button>
     <button onclick="openLink('${lane}')">${ICON.link}Link</button>
   </div>`;
@@ -605,19 +631,20 @@ function renderTrack() {
       const beat = beatOf(sec.id, l.key);
       const pc = li ? LAYERS[li - 1].c : l.c;
       const beatHtml = beat
-        ? `<button class="beat" onclick="editBeat('${l.key}')"><div class="beat-top"><span class="k">Beat</span><span class="nm">${esc(beat.name || 'Untitled')}</span><span class="ln">${beatMeta(beat)}</span></div>${cellsHtml(beat, l.key, mp)}</button>`
-        : `<button class="beat ghost" onclick="editBeat('${l.key}')"><b>+ beat</b> · give this layer its own rhythm</button>`;
+        ? `<button class="beat" onclick="editBeat('${l.key}')"><div class="beat-top"><span class="k">Rhythm</span><span class="nm">${esc(beat.name || 'Untitled')}</span><span class="ln">${beatMeta(beat)}</span></div>${cellsHtml(beat, l.key, mp)}</button>`
+        : '';
       return `<section class="layer" style="--c:${l.c};--pc:${pc}" id="L-${l.key}">
         <div class="layer-head"><div class="layer-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
           <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div></div>
-        <div class="holders">${hs.map(h => `<button class="holder" onclick="pickHolders('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')}
-          <button class="holder add" onclick="pickHolders('${l.key}')">${hs.length ? 'swap' : '+ who holds this?'}</button></div>
+        <div class="holders">${hs.length ? hs.map(h => `<button class="holder" onclick="editLineup('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')
+          : `<button class="holder empty" onclick="editLineup('${l.key}')">empty · open for one of you, or production</button>`}</div>
         ${beatHtml}
         ${ideasHtml(sec.id, l.key, prevSeen)}
         ${composeHtml(l.key)}</section>`;
     }).join('');
     panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><button class="meter" onclick="editSection()">${meterLabel(sec)}</button><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button></div>
       ${sec.notes ? `<button class="notes" style="margin:0 0 14px" onclick="editSection('s-notes')">${esc(sec.notes)}</button>` : ''}
+      ${lineupStrip(sec)}
       <div class="tree">${layers}</div>`;
   }
 
@@ -627,12 +654,12 @@ function renderTrack() {
       <div class="hero"><div class="chips">${chips}${t.notes ? '' : `<button class="chip ghost" onclick="editTrack('f-notes')">+ track note</button>`}</div>${trackNotes}</div>
       <div class="form">${form}</div>
       ${panel}
-      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ marks a layer’s keeper; Play uses keepers (or the latest take). Beat cells are drawn to scale against the pulse.</p>
+      <p class="small faint">Started ${ago(t.created_at)}${t.created_by ? ' by ' + esc(memberName(t.created_by)) : ''}. ★ makes an idea the layer’s part: a recording, MIDI, rhythm, note, anything. Play uses each layer’s part (or its latest take) and rhythm.</p>
     </div>
     <div class="transport"><div class="transport-in">
       <button class="tp-play" id="tpPlay" onclick="togglePlayer()"></button>
-      <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" onclick="toggleMix('beats')">${ICON.drum}<span>Beats</span></button>
-      <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" onclick="toggleMix('recs')">${ICON.wave}<span>Takes</span></button>
+      <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" onclick="toggleMix('beats')">${ICON.rhythm}<span>Rhythm</span></button>
+      <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" onclick="toggleMix('recs')">${ICON.wave}<span>Parts</span></button>
       <button class="mix${S.mix.click ? ' on' : ''}" data-mix="click" onclick="toggleMix('click')">${ICON.metro}<span>Click</span></button>
       <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${t.tempo ? '' : ' unset'}" onclick="editTrack()"><b id="bpm">${bpmOf(t)}</b><span>pulse</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
     </div></div>`;
@@ -653,7 +680,7 @@ function toggleMix(k) {
 async function togglePlayer() {
   if (Player.on) { Player.stop(); return; }
   const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, onStop: updateTransport });
-  if (!r) toast(S.mix.click ? 'Nothing to play' : 'Nothing to play yet. Add a beat or a take, or switch on the click.');
+  if (!r) toast(S.mix.click ? 'Nothing to play' : 'Nothing to play yet. Record a part or a rhythm, or switch on the click.');
   updateTransport();
 }
 
@@ -679,7 +706,8 @@ function ideaHtml(i, prevSeen) {
   else if (i.kind === 'link') body = `<div class="idea-body"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(prettyUrl(i.url))}</a>${i.body ? '\n' + esc(i.body) : ''}</div>`;
   else body = `<div class="idea-body">${esc(i.body)}</div>`;
   return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span><span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
-    <button class="star${i.starred ? ' on' : ''}" aria-label="Keeper" onclick="toggleStar('${esc(i.id)}')">${i.starred ? '★' : '☆'}</button>
+    ${i.starred && i.layer !== 'transition' ? '<span class="part-tag">the part</span>' : ''}
+    <button class="star${i.starred ? ' on' : ''}" aria-label="Make this the part" onclick="toggleStar('${esc(i.id)}')">${i.starred ? '★' : '☆'}</button>
     <button class="kebab" aria-label="More" onclick="ideaMenu('${esc(i.id)}')">⋯</button></div>${body}</div>`;
 }
 function prettyUrl(u) { try { const x = new URL(u); return x.hostname.replace(/^www\./, '') + (x.pathname.length > 1 ? x.pathname.slice(0, 28) + (x.pathname.length > 28 ? '…' : '') : ''); } catch { return u; } }
@@ -876,34 +904,75 @@ function editSection(focusId) {
   });
 }
 
-function pickHolders(layerKey) {
-  const l = LAYER[layerKey];
+/* ---------- line-up ---------- */
+// People are the fixed resource: each of you is in one layer per section, or out. Production can fill any number of layers.
+function lineupOf(sid) {
+  const hs = S.track.holders.filter(h => h.section_id === sid);
+  const people = S.members.map(m => {
+    const h = hs.find(x => x.member_id === m.id);
+    return { id: m.id, name: m.name, layer: h ? h.layer : null, instrument: h ? h.instrument : '' };
+  });
+  const prod = hs.filter(h => h.member_id === PRODUCTION);
+  return { people, prod };
+}
+function lineupStrip(sec) {
+  const { people, prod } = lineupOf(sec.id);
+  const inCount = people.filter(p => p.layer).length;
+  const chips = LAYERS.flatMap(l => people.filter(p => p.layer === l.key).map(p => `<span class="lu" style="--c:${l.c}">${esc(p.name)}${p.instrument ? ' · ' + esc(p.instrument) : ''}</span>`))
+    .concat(prod.map(h => `<span class="lu prod" style="--c:${LAYER[h.layer].c}">Production · ${esc(LAYER[h.layer].short)}${h.instrument ? ' · ' + esc(h.instrument) : ''}</span>`))
+    .concat(people.filter(p => !p.layer).map(p => `<span class="lu out">${esc(p.name)} · out</span>`));
+  return `<button class="lineup" onclick="editLineup()"><div class="lbl">Line-up · ${inCount} of ${people.length} playing<span>edit</span></div>${chips.join('')}</button>`;
+}
+
+function editLineup(focusLayer) {
   const { sec } = curView();
-  const cur = Object.fromEntries(holdersOf(sec.id, layerKey).map(h => [h.member_id, h.instrument]));
-  const rows = S.members.map(m => {
-    const on = m.id in cur;
-    const mine = m.instruments.split(',').map(s => s.trim()).filter(Boolean);
-    const sugs = [...new Set([...mine, ...INSTRUMENTS])].slice(0, 10);
-    return `<div class="pick-row${on ? ' on' : ''}" data-id="${esc(m.id)}" style="--c:${l.c}">
-      <div class="nm"><span>${esc(m.name)}</span><span class="check">${on ? '✓' : ''}</span></div>
-      <div class="${on ? '' : 'hidden'} inst"><input type="text" placeholder="on which instrument?" value="${esc(cur[m.id] || '')}">
-      <div class="sugs">${sugs.map(s => `<button class="sug" type="button">${esc(s)}</button>`).join('')}</div></div></div>`;
-  }).join('');
-  sheet(`<h3 style="color:${l.c}">${l.name} · ${esc(sec.name)}</h3><p class="lede">Who holds the ${l.role} in this section, and on what?</p><div class="pick">${rows}</div>
-    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>`, root => {
-    root.querySelectorAll('.pick-row').forEach(r => {
-      $('.nm', r).onclick = () => {
-        const on = r.classList.toggle('on');
-        $('.check', r).textContent = on ? '✓' : '';
-        $('.inst', r).classList.toggle('hidden', !on);
-        if (on && !$('input', r).value) { const m = S.members.find(x => x.id === r.dataset.id); const first = m.instruments.split(',')[0].trim(); if (first) $('input', r).value = first; }
-      };
-      r.querySelectorAll('.sug').forEach(s => s.onclick = () => { $('input', r).value = s.textContent; });
-    });
-    $('#save', root).onclick = async () => {
-      const holders = [...root.querySelectorAll('.pick-row.on')].map(r => ({ member_id: r.dataset.id, instrument: $('input', r).value }));
-      try { S.track = await api(`/sections/${sec.id}/layers/${layerKey}`, { method: 'PUT', body: { holders } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+  const { people, prod } = lineupOf(sec.id);
+  const P = people.map(p => ({ ...p }));
+  const prodOn = Object.fromEntries(LAYERS.map(l => [l.key, prod.some(h => h.layer === l.key)]));
+  let prodWhat = (prod[0] && prod[0].instrument) || '';
+  const choice = (layer, cur) => [...LAYERS.map(l => `<button class="sug${cur === l.key ? ' on' : ''}" data-l="${l.key}" style="--c:${l.c}">${l.short}</button>`),
+    `<button class="sug${!cur ? ' on' : ''}" data-l="" style="--c:var(--faint)">Out</button>`].join('');
+
+  sheet(`<h3>Line-up · ${esc(sec.name)}</h3>
+    <p class="lede">There are ${P.length} of you. Each of you is in one layer in this section, or out. Layers can stay empty, and production can fill the gaps.</p>
+    <div class="lu-sum" id="sum"></div>
+    ${P.map((p, i) => `<div class="lu-row" data-i="${i}"><div class="top-l"><b>${esc(p.name)}</b><input type="text" placeholder="on what?" value="${esc(p.instrument)}"></div>
+      <div class="sugs">${choice(i, p.layer)}</div></div>`).join('')}
+    <div class="lu-row prod"><div class="top-l"><b>Production</b><input type="text" id="prodWhat" placeholder="e.g. Live pad, backing track" value="${esc(prodWhat)}"></div>
+      <div class="sugs" id="prodL">${LAYERS.map(l => `<button class="sug${prodOn[l.key] ? ' on' : ''}" data-l="${l.key}" style="--c:${l.c}">${l.short}</button>`).join('')}</div>
+      <div class="small faint" style="margin-top:8px">Can cover as many layers as needed.</div></div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save line-up</button></div>`, root => {
+    const sum = () => {
+      $('#sum', root).innerHTML = LAYERS.map(l => {
+        const names = P.filter(p => p.layer === l.key).map(p => esc(p.name));
+        if (prodOn[l.key]) names.push('<i>production</i>');
+        return `<div style="--c:${l.c}"><b>${l.short}</b>${names.length ? names.join(', ') : '<span class="empty-l">empty</span>'}</div>`;
+      }).join('');
     };
+    root.querySelectorAll('.lu-row[data-i]').forEach(r => {
+      const p = P[+r.dataset.i];
+      r.querySelectorAll('.sug').forEach(b => b.onclick = () => {
+        p.layer = b.dataset.l || null;
+        r.querySelectorAll('.sug').forEach(x => x.classList.toggle('on', x === b));
+        if (p.layer && !p.instrument) {
+          const first = (S.members.find(m => m.id === p.id).instruments.split(',')[0] || '').trim();
+          if (first) { p.instrument = first; $('input', r).value = first; }
+        }
+        sum();
+      });
+      $('input', r).oninput = e => { p.instrument = e.target.value; };
+    });
+    root.querySelectorAll('#prodL .sug').forEach(b => b.onclick = () => { prodOn[b.dataset.l] = !prodOn[b.dataset.l]; b.classList.toggle('on', prodOn[b.dataset.l]); sum(); });
+    $('#save', root).onclick = async () => {
+      prodWhat = $('#prodWhat', root).value;
+      const holders = [
+        ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument })),
+        ...LAYERS.filter(l => prodOn[l.key]).map(l => ({ member_id: PRODUCTION, layer: l.key, instrument: prodWhat })),
+      ];
+      try { S.track = await api(`/sections/${sec.id}/lineup`, { method: 'PUT', body: { holders } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+    };
+    sum();
+    if (focusLayer) { const el = root.querySelector('.lu-sum [style*="' + LAYER[focusLayer].c + '"]'); if (el) el.style.outline = '2px solid ' + LAYER[focusLayer].c; }
   });
 }
 
@@ -922,8 +991,8 @@ function editBeat(layerKey) {
   stopEverything();
 
   const lengths = [...new Set([...LENGTHS, B.bar])].sort((a, b) => a - b);
-  const s = sheet(`<h3 style="color:${l.c}">${l.name} · beat</h3>
-    <p class="lede">${esc(sec.name)} is in ${meterLabel(sec)}. Same pulse as the rest of the track, its own rhythm on top.</p>
+  const s = sheet(`<h3 style="color:${l.c}">${l.name} · rhythm</h3>
+    <p class="lede">A rhythmic figure for this layer: a groove, a riff’s accents, a strum pattern. ${esc(sec.name)} is in ${meterLabel(sec)}; same pulse as the rest of the track.</p>
     <label class="field">Name</label><input id="bname" type="text" value="${esc(cur ? cur.name : '')}" placeholder="e.g. Maqsum, or anything">
     <label class="field">Start from a groove</label>
     ${GROOVES.map(g => `<div class="sug-group">${g.group}</div>` + chipsHtml('', g.items.map(p => `<button class="sug" data-p="${esc(p.name)}">${esc(p.name)}</button>`).join(''), l.c)).join('')}
@@ -934,9 +1003,9 @@ function editBeat(layerKey) {
     <div class="pulse-hint" id="phint"></div>
     <div id="grid" style="--c:${l.c}"></div>
     <div class="grid-key"><span><i style="background:${l.c}"></i>D · dum / kick</span><span><i style="background:color-mix(in srgb, ${l.c} 48%, transparent)"></i>T · tak / snare</span><span><i style="background:color-mix(in srgb, ${l.c} 18%, transparent)"></i>K · ka / hat</span><span>Tap a cell to cycle</span></div>
-    ${others.length ? `<button class="toggle${withOthers ? ' on' : ''}" id="withOthers"><span class="sw"></span><span><b>Hear it with the other layers</b><br><span class="small muted">${others.map(b => esc(LAYER[b.layer].short) + ': ' + esc(b.name || 'beat')).join(' · ')}</span></span></button>` : ''}
-    <div class="actions"><button class="btn" id="prev"></button><button class="btn primary" id="save">Save beat</button></div>
-    ${cur ? '<div style="margin-top:14px"><button class="btn danger block" id="rm">Remove beat</button></div>' : ''}`, root => {
+    ${others.length ? `<button class="toggle${withOthers ? ' on' : ''}" id="withOthers"><span class="sw"></span><span><b>Hear it with the other layers’ rhythms</b><br><span class="small muted">${others.map(b => esc(LAYER[b.layer].short) + ': ' + esc(b.name || 'beat')).join(' · ')}</span></span></button>` : ''}
+    <div class="actions"><button class="btn" id="prev"></button><button class="btn primary" id="save">Save rhythm</button></div>
+    ${cur ? '<div style="margin-top:14px"><button class="btn danger block" id="rm">Remove rhythm</button></div>' : ''}`, root => {
     const grid = $('#grid', root);
     const cols = n => n <= 9 ? n : n === 10 ? 5 : n === 12 ? 6 : n === 15 ? 5 : 8;
     const pattern = () => B.bars.map(b => b.join('')).join('');
@@ -979,7 +1048,7 @@ function editBeat(layerKey) {
     if (wo) wo.onclick = () => { withOthers = !withOthers; wo.classList.toggle('on', withOthers); if (Beat.on) Beat.retune(voices()); };
     $('#prev', root).onclick = () => { if (Beat.on) Beat.stop(); else Beat.start(voices(), bpmOf(S.track), { onChange: paintPrev }); paintPrev(); };
     $('#save', root).onclick = async () => {
-      if (!/[DTK]/.test(pattern())) return toast('Tap a few cells first, or remove the beat');
+      if (!/[DTK]/.test(pattern())) return toast('Tap a few cells first, or remove the rhythm');
       try { S.track = await api(`/sections/${sec.id}/beats/${layerKey}`, { method: 'PUT', body: { name: $('#bname', root).value, pattern: pattern(), sub: B.sub, bar: B.bar } }); closeSheet(); renderTrack(); }
       catch (e) { toast(e.message); }
     };
@@ -1219,7 +1288,7 @@ function backingHtml(lane) {
   const html = `
     <button class="toggle${B.countIn ? ' on' : ''}" data-bk="countIn"><span class="sw"></span><span><b>Count in one bar</b><br><span class="small muted">${meterLabel(sec)} at ${bpmOf(S.track)} bpm, then you’re on.</span></span></button>
     <button class="toggle${B.click ? ' on' : ''}" data-bk="click"><span class="sw"></span><span><b>Click while recording</b><br><span class="small muted">Metronome on the pulse, accent on each bar.</span></span></button>
-    ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ beats and takes. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
+    ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ parts and rhythms. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
   const wire = root => root.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
     const k = b.dataset.bk; B[k] = !B[k]; b.classList.toggle('on', B[k]);
     store.set({ countIn: 'countIn', click: 'clickRec', rest: 'along' }[k], B[k]);
@@ -1461,28 +1530,40 @@ function openMidi(lane) {
   stopEverything();
   const bk = backingHtml(lane);
   let monitor = store.get('midiMonitor', true);
-  const M = { access: null, input: null, notes: [], open: new Map(), pedal: false, held: new Set(), rec: false, len: 0, gridded: false };
+  let sync = store.get('midiSync', false);
+  const M = { access: null, input: null, notes: [], open: new Map(), pedal: false, held: new Set(), rec: false, armed: false, len: 0, gridded: false,
+    chan: null, seen: new Set(), ticks: 0, lastTick: 0, tickMs: 0, clockAt: 0, firstTick: 0, span: 0 };
 
   const s = sheet(`<h3 style="color:${l.c}">MIDI · ${laneTitle(lane)}</h3><p class="lede" id="hint">Plug in a keyboard, then tap record and play.</p>
     <div class="midi-status" id="mstat"><i></i><span>Looking for MIDI devices…</span></div>
     <div class="sugs hidden" id="inputs" style="--c:${l.c}"></div>
+    <div class="hidden" id="chanBox"><label class="field">Channel</label><div class="sugs" id="chans" style="--c:${l.c}"></div></div>
     <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0 notes</div><div class="count" id="count"></div></div>
-    <div id="bk">${bk.html}
-    <button class="toggle${monitor ? ' on' : ''}" id="mon"><span class="sw"></span><span><b>Play the notes through this device</b><br><span class="small muted">For keyboards without their own speakers.</span></span></button></div>
-    <div id="review" class="hidden" style="--c:${l.c}"><div id="rollWrap"></div>
+    <div id="bk">
+    <button class="toggle${sync ? ' on' : ''}" id="sync"><span class="sw"></span><span><b>Follow Ableton Live’s play button</b><br><span class="small muted">Arm here, press play in Live: the take starts on Live’s downbeat and stops with Live, timed by Live’s MIDI clock.</span></span></button>
+    <div id="bkOwn" class="${sync ? 'hidden' : ''}">${bk.html}</div>
+    <button class="toggle${monitor ? ' on' : ''}" id="mon"><span class="sw"></span><span><b>Play the notes through this device</b><br><span class="small muted">For keyboards without their own speakers. Leave off when Live makes the sound.</span></span></button>
+    <details class="help"><summary>Connect Ableton Live</summary><ol>
+      <li>Mac, once: open <b>Audio MIDI Setup</b> → Window → Show MIDI Studio → double-click <b>IAC Driver</b> → tick “Device is online”.</li>
+      <li>In Live, set the MIDI track’s <b>MIDI To</b> to <b>IAC Driver (Bus 1)</b> and pick a channel (e.g. piano on 1).</li>
+      <li>To follow Live’s play button: Settings → Link, Tempo &amp; MIDI → on the <b>IAC Driver</b> output row, switch <b>Sync</b> on.</li>
+      <li>Here, pick <b>IAC Driver Bus 1</b> above and the channel you want. Chrome only; phones can’t reach Live.</li>
+    </ol></details></div>
+    <div id="review" class="hidden" style="--c:${l.c}"><div class="count" id="liveOffer" style="margin-bottom:8px"></div><div id="rollWrap"></div>
       <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. left hand for the B part">
       <div class="actions"><button class="btn" id="again">Redo</button><button class="btn" id="pv">${ICON.play}<span>Play</span></button><button class="btn primary" id="save">Post</button></div></div>`, root => {
     bk.wire(root);
     $('#mon', root).onclick = () => { monitor = !monitor; $('#mon', root).classList.toggle('on', monitor); store.set('midiMonitor', monitor); };
-    $('#recBtn', root).onclick = () => (M.rec ? stop() : start());
+    $('#sync', root).onclick = () => { sync = !sync; $('#sync', root).classList.toggle('on', sync); $('#bkOwn', root).classList.toggle('hidden', sync); store.set('midiSync', sync); };
+    $('#recBtn', root).onclick = () => (M.rec || M.armed ? stop() : start());
     $('#again', root).onclick = () => { Takes.stopAll(); M.notes = []; $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); $('#bk', root).classList.remove('hidden'); $('#recTime', root).textContent = '0 notes'; $('#count', root).textContent = ''; };
     $('#pv', root).onclick = () => { const idea = draftIdea(); if (Takes.active.has(idea.id)) Takes.stop(idea.id); else Takes.play(idea); };
     $('#save', root).onclick = async () => {
-      const take = { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes };
+      const take = { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes, ...(M.chan != null ? { ch: M.chan + 1 } : {}) };
       await postIdea({ layer: lane, kind: 'midi', data: JSON.stringify(take), duration: Math.round(M.len * 60 / take.bpm * 10) / 10, body: $('#cap', root).value }, root);
     };
   });
-  s._onclose = () => { if (M.rec) stop(); Takes.stopAll(); Player.stop(); for (const n of [...Synth.voices.keys()]) Synth.off(n); if (M.input) M.input.onmidimessage = null; };
+  s._onclose = () => { if (M.rec || M.armed) stop(); Takes.stopAll(); Player.stop(); for (const n of [...Synth.voices.keys()]) Synth.off(n); if (M.input) M.input.onmidimessage = null; };
 
   const status = (text, cls) => { const el = $('#mstat', s); el.className = 'midi-status ' + (cls || ''); $('span', el).textContent = text; };
   const draftIdea = () => ({ id: 'draft', data: '', _take: { bpm: bpmOf(S.track), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes } });
@@ -1506,7 +1587,18 @@ function openMidi(lane) {
   navigator.requestMIDIAccess().then(a => { M.access = a; a.onstatechange = refresh; refresh(); })
     .catch(() => status('MIDI access was blocked. Allow it in Chrome’s site settings.'));
 
+  const drawChans = () => {
+    const box = $('#chans', s);
+    $('#chanBox', s).classList.toggle('hidden', M.seen.size < 2 && M.chan == null);
+    box.innerHTML = [`<button class="sug${M.chan == null ? ' on' : ''}" data-ch="">All</button>`, ...[...M.seen].sort((a, b) => a - b).map(c => `<button class="sug${M.chan === c ? ' on' : ''}" data-ch="${c}">${c + 1}</button>`)].join('');
+    box.querySelectorAll('.sug').forEach(b => b.onclick = () => { M.chan = b.dataset.ch === '' ? null : +b.dataset.ch; drawChans(); });
+  };
+  const livePulse = ms => {
+    const per = M.tickMs || 60000 / bpmOf(S.track) / 24;
+    return M.ticks ? (M.ticks - 1 + (ms - M.lastTick) / per) / 24 : (ms - M.clockAt) / per / 24;
+  };
   const perfToPulse = ms => {
+    if (sync && (M.rec || M.armed)) return livePulse(ms);
     const ctx = Beat.ctx, ts = ctx.getOutputTimestamp ? ctx.getOutputTimestamp() : null;
     const t = ts && ts.performanceTime ? ts.contextTime + (ms - ts.performanceTime) / 1000 : ctx.currentTime - (performance.now() - ms) / 1000;
     return Beat.pulseAt(t);
@@ -1521,6 +1613,23 @@ function openMidi(lane) {
   };
   function onMsg(e) {
     const [st, a, b] = e.data, cmd = st & 0xf0, ms = e.timeStamp || performance.now();
+    if (st === 0xf8) {
+      if (!M.firstTick) M.firstTick = ms;
+      M.lastTick = ms; M.ticks++; M.span++;
+      if (M.span > 1) M.tickMs = (ms - M.firstTick) / (M.span - 1);
+      if (M.rec && sync && M.ticks % 24 === 1) $('#count', s).textContent = `Live · bar ${Math.floor((M.ticks - 1) / 24 / secBarPulses(bk.sec)) + 1} · ${Math.round(60000 / (M.tickMs * 24))} bpm`;
+      return;
+    }
+    if (st === 0xfa || st === 0xfb) {
+      M.ticks = 0; M.lastTick = 0; M.clockAt = ms; M.firstTick = 0; M.span = 0;
+      if (M.armed) { M.armed = false; M.rec = true; M.gridded = true; M.notes = []; M.open.clear(); $('#hint', s).textContent = 'Recording with Live… stop Live (or tap) to finish.'; }
+      return;
+    }
+    if (st === 0xfc) { if (M.rec && sync) stop(); return; }
+    if (st >= 0xf0) return;
+    const ch = st & 0x0f;
+    if (!M.seen.has(ch)) { M.seen.add(ch); drawChans(); }
+    if (M.chan != null && ch !== M.chan) return;
     const el = $('#mstat', s); el.classList.add('hit'); clearTimeout(M.hit); M.hit = setTimeout(() => el.classList.remove('hit'), 90);
     if (cmd === 0x90 && b > 0) {
       if (monitor) Synth.on(a, b);
@@ -1540,6 +1649,13 @@ function openMidi(lane) {
     if (!M.input) return toast('No MIDI device yet');
     Beat.ensure();
     M.notes = []; M.open.clear();
+    if (sync) {
+      M.armed = true;
+      $('#recBtn', s).classList.add('on');
+      $('#hint', s).textContent = 'Armed. Press play in Ableton Live.';
+      $('#count', s).textContent = M.tickMs ? `Live is at ${Math.round(60000 / (M.tickMs * 24))} bpm` : '';
+      return;
+    }
     M.gridded = bk.grid();
     await bk.start();
     M.rec = true;
@@ -1549,9 +1665,10 @@ function openMidi(lane) {
   }
   function stop() {
     const ms = performance.now();
+    if (M.armed && !M.rec) { M.armed = false; $('#recBtn', s).classList.remove('on'); $('#hint', s).textContent = 'Disarmed.'; return; }
     for (const n of [...M.open.keys()]) endNote(n, ms);
     const endP = perfToPulse(ms);
-    M.rec = false; Player.stop();
+    M.rec = false; M.armed = false; Player.stop();
     $('#recBtn', s).classList.remove('on');
     if (!M.notes.length) { $('#hint', s).textContent = 'No notes came in. Check the device, then try again.'; return; }
     M.notes.sort((x, y) => x.t - y.t);
@@ -1562,6 +1679,13 @@ function openMidi(lane) {
     $('#review', s).classList.remove('hidden');
     $('#rollWrap', s).innerHTML = rollSvg(draftIdea()._take, 'draft');
     $('#hint', s).textContent = `${M.notes.length} notes. Have a listen, then post it to the band.`;
+    const liveBpm = sync && M.tickMs ? Math.round(60000 / (M.tickMs * 24)) : 0;
+    if (liveBpm && Math.abs(liveBpm - bpmOf(S.track)) >= 1) {
+      $('#liveOffer', s).innerHTML = `Live was at ${liveBpm} bpm, the track pulse is ${bpmOf(S.track)}. <button class="sug" id="useLive">Use ${liveBpm}</button>`;
+      $('#useLive', s).onclick = async () => {
+        try { S.track = await api('/tracks/' + S.track.id, { method: 'PATCH', body: { tempo: liveBpm } }); $('#liveOffer', s).textContent = `Track pulse set to ${liveBpm} bpm.`; } catch (e) { toast(e.message); }
+      };
+    }
   }
 }
 

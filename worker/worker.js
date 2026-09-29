@@ -212,6 +212,21 @@ async function route(req, env, url, member) {
       await touch(env, trackId);
       return json(await loadTrack(env, trackId));
     }
+    if (sub === 'lineup' && m === 'PUT') {
+      const b = await body(req);
+      const seen = new Set();
+      const list = (Array.isArray(b.holders) ? b.holders : [])
+        .filter(h => h && typeof h.member_id === 'string' && LAYERS.includes(h.layer))
+        .filter(h => h.member_id === 'production' || (!seen.has(h.member_id) && seen.add(h.member_id)))
+        .slice(0, 24);
+      await env.DB.batch([
+        env.DB.prepare('DELETE FROM holders WHERE section_id = ?').bind(id),
+        ...list.map(h => env.DB.prepare('INSERT OR REPLACE INTO holders (section_id, layer, member_id, instrument) VALUES (?, ?, ?, ?)')
+          .bind(id, h.layer, str(h.member_id, 40), str(h.instrument, 60))),
+      ]);
+      await touch(env, trackId);
+      return json(await loadTrack(env, trackId));
+    }
     if (sub === 'beats' && m === 'PUT' && LAYERS.includes(subId)) {
       const b = await body(req);
       const pattern = typeof b.pattern === 'string' ? b.pattern.toUpperCase() : '';

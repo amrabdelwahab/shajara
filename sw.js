@@ -1,4 +1,4 @@
-const CACHE = 'shajara-v2';
+const CACHE = 'shajara-v3';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
