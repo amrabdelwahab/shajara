@@ -209,6 +209,27 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .compose button { flex: 1; min-width: 0; padding: 9px 2px 8px; border-radius: 12px; background: #000; border: 1px solid var(--line); font: 700 9px/1 var(--display); font-stretch: 112%; letter-spacing: .05em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: var(--text); }
 .compose button svg { width: 18px; height: 18px; flex: none; }
 .compose .rec { color: #fff; background: color-mix(in srgb, var(--danger) 22%, #000); border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
+.tp-mix { flex: none; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text); font: 800 11px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
+.tp-mix svg { width: 17px; height: 17px; }
+.tp-mix b { min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--text); color: #000; display: grid; place-items: center; font-size: 11px; }
+.tp-mix.custom { border-color: var(--brand-yellow); }
+.tp-mix.custom b { background: var(--brand-yellow); }
+.mx-lane { margin-top: 14px; }
+.mx-h { font: 800 10px/1 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .07em; color: var(--c, var(--muted)); margin-bottom: 6px; }
+.mx-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 11px 12px; margin-top: 6px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.mx-row .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; flex: none; }
+.mx-row.on { border-color: color-mix(in srgb, var(--c, var(--text)) 60%, var(--line)); }
+.mx-row.on .check { background: var(--c, var(--text)); border-color: var(--c, var(--text)); color: #000; }
+.mx-row.off { opacity: .45; }
+.mx-txt { min-width: 0; font: 16px/1.3 var(--serif); }
+.mx-txt b { font: 800 11px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; }
+.mx-txt .small { display: block; font-style: italic; margin-top: 2px; }
+.bar-now { font: 800 11px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .05em; color: var(--brand-yellow); }
+.loop-tag { cursor: pointer; border: 0; font-size: 11px !important; padding: 6px 11px !important; margin-top: 8px !important; }
+.loop-tag .edit-dot { margin-left: 7px; opacity: .7; font-size: 12px; }
+.loop-tag.once { background: transparent; border: 1px solid color-mix(in srgb, var(--c, var(--text)) 40%, var(--line)); }
+.loop-tag { display: inline-block; margin-top: 6px; padding: 3px 8px; border-radius: 999px; background: color-mix(in srgb, var(--c, var(--text)) 18%, transparent); color: color-mix(in srgb, var(--c, var(--text)) 70%, var(--text)); font: 800 9px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .05em; }
+.len-hint { margin: 6px 0 4px; font-style: italic; }
 .pick { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font: 700 9px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 .pick svg { width: 13px; height: 13px; }
 .pick.on { background: var(--text); border-color: var(--text); color: #000; }
@@ -242,10 +263,6 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .tp-play svg { width: 16px; height: 16px; flex: none; }
 .tp-play span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tp-play.on { background: var(--brand-yellow); }
-.mixgroup { flex: none; display: flex; gap: 2px; padding: 3px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
-.mix { width: 33px; border-radius: 12px; display: grid; place-items: center; color: var(--faint); }
-.mix svg { width: 18px; height: 18px; }
-.mix.on { color: #000; background: var(--text); }
 .tempo { display: flex; align-items: center; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); flex: none; }
 .tempo button { width: 22px; height: 50px; font-size: 18px; color: var(--muted); }
 .tempo .v { min-width: 34px; text-align: center; line-height: 1; cursor: pointer; }
@@ -364,6 +381,36 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .ch { font: 600 17px/1.1 var(--serif); padding: 3px 5px; border-radius: 6px; white-space: nowrap; }
 .ch.unk { color: var(--faint); font-style: italic; font-weight: 400; font-size: 14px; white-space: normal; text-align: center; }
 .ch.now { background: var(--bark); color: #000; }
+.wz-dots { display: flex; align-items: center; gap: 5px; margin: 0 0 14px; }
+.wz-dots i { width: 18px; height: 4px; border-radius: 2px; background: var(--line); }
+.wz-dots i.done { background: var(--muted); }
+.wz-dots i.on { background: var(--brand-yellow); width: 28px; }
+.wz-dots span { margin-left: 8px; font: 700 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.menu-item.sel { border-color: var(--text); background: var(--surface-2); }
+.menu-item.seed { padding: 11px 14px; }
+.menu-item.seed .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; flex: none; }
+.menu-item.seed.sel .check { background: var(--brand-yellow); border-color: var(--brand-yellow); color: #000; }
+.wz-lbl { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.vary { flex: none; margin-bottom: 6px; padding: 5px 10px; border-radius: 999px; border: 1px dashed var(--line); color: var(--muted); font: italic 13px/1.1 var(--serif); }
+.vary.on { border-style: solid; border-color: var(--brand-yellow); color: var(--brand-yellow); }
+.wz-per { margin: 0; font-style: italic; }
+.wz-card { border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.wz-card .wz-en { border-bottom: 0; padding-bottom: 6px; }
+.wz-f { margin-top: 6px; }
+.wz-f input, .wz-f select { padding: 9px 11px; font-size: 16px; }
+.wz-f select { width: 100%; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; font-family: var(--serif); }
+.fl-own { font: italic 12px/1 var(--serif); text-transform: none; letter-spacing: 0; color: var(--muted); margin-left: 4px; }
+.wz-sec { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.wz-sec .num { width: 22px; font: 800 12px/1 var(--display); color: var(--faint); text-align: right; }
+.wz-sec input { flex: 1; padding: 10px 12px; }
+.wz-en { display: grid; grid-template-columns: 1fr auto 64px; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.wz-en b { font: 800 12px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.wz-en .lvls { display: flex; align-items: flex-end; gap: 5px; }
+.lvl { width: 22px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line); }
+.lvl.on { background: var(--brand-yellow); border-color: var(--brand-yellow); }
+.wz-form { margin: 16px 0 8px; font: 700 12px/1.6 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
+.wz-form .arr { color: var(--brand-yellow); padding: 0 6px; }
+.wz-skip { background: transparent; color: var(--muted); font-style: italic; }
 .help { margin-top: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; font: 15px/1.4 var(--serif); color: var(--muted); }
 .help summary { cursor: pointer; color: var(--text); font: 800 11px/1.3 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 .help ol { margin: 8px 0 0; padding-left: 18px; }
@@ -789,7 +836,7 @@ function legend() {
 
 /* ---------- track ---------- */
 async function viewTrack(id) {
-  if (S.pickedTrack !== id) { S.picked = new Set(); S.pickedTrack = id; }
+  if (S.pickedTrack !== id) { S.picked = new Set(); S.pickExplicit = false; S.pickedTrack = id; }
   const cached = S.track && S.track.id === id ? S.track : null;
   if (cached) renderTrack();
   else $('#app').innerHTML = topBar('', backBtn('')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
@@ -849,8 +896,9 @@ function renderTrack() {
   const { sec, transition } = curView();
 
   const maqam = t.maqam ? t.maqam + (t.tonic ? ' on ' + t.tonic : '') : '';
-  const chips = `<button class="chip${maqam ? '' : ' ghost'}" onclick="editTrack()">${maqam ? `<span class="k">Maqam</span>${esc(maqam)}` : '+ maqam'}</button>` +
-    `<button class="chip${t.tempo ? '' : ' ghost'}" onclick="editTrack()">${t.tempo ? `<span class="k">Pulse</span>${t.tempo} bpm` : '+ pulse'}</button>` +
+  const secMaqam = !maqam && t.sections.some(x => x.maqam || x.tonic), secPulse = !t.tempo && t.sections.some(x => x.tempo);
+  const chips = `<button class="chip${maqam || secMaqam ? '' : ' ghost'}" onclick="editTrack()">${maqam ? `<span class="k">Maqam</span>${esc(maqam)}` : secMaqam ? '<span class="k">Maqam</span>per section' : '+ maqam'}</button>` +
+    `<button class="chip${t.tempo || secPulse ? '' : ' ghost'}" onclick="editTrack()">${t.tempo ? `<span class="k">Pulse</span>${t.tempo} bpm` : secPulse ? '<span class="k">Pulse</span>per section' : '+ pulse'}</button>` +
     `<button class="chip${t.genre ? '' : ' ghost'}" onclick="editTrack()">${t.genre ? `<span class="k">Genre</span>${esc(t.genre)}` : '+ genre'}</button>`;
   const trackNotes = t.notes ? `<button class="notes" onclick="editTrack('f-notes')">${esc(t.notes)}</button>` : '';
 
@@ -894,13 +942,14 @@ function renderTrack() {
     const own = (v, label) => `<button class="chip${v ? ' own' : ''}" onclick="editSection()"><span class="k">${label}</span>`;
     const facts = [
       own(true, 'Time') + meterLabel(sec) + '</button>',
+      `<button class="chip${sec.bars ? '' : ' ghost'}" onclick="editSection()">${sec.bars ? `<span class="k">Length</span>${sec.bars} bars` : '+ length'}</button>`,
       sec.maqam || sec.tonic ? own(true, 'Maqam') + esc(maqamOf(sec)) + '</button>' : '',
       sec.tempo ? own(true, 'Pulse') + sec.tempo + '</button>' : '',
       `<button class="chip${sec.energy ? '' : ' ghost'}" onclick="editSection()">${sec.energy ? `<span class="k">Energy</span>${energyBars(sec.energy, 'lg')} ${ENERGY[sec.energy]}` : '+ energy'}</button>`,
     ].join('');
     const movesHtml = MOVES.filter(m => mv[m.k] != null).map(m => `<button class="move" onclick="editSection()"><b>${m.label}</b>${mv[m.k] ? ' · ' + esc(mv[m.k]) : ''}</button>`)
       .concat(Object.keys(mv).filter(k => k.startsWith('x:')).map(k => `<button class="move" onclick="editSection()"><b>${esc(k.slice(2))}</b>${mv[k] ? ' · ' + esc(mv[k]) : ''}</button>`)).join('');
-    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button><button class="icon-btn sm" aria-label="Section options" onclick="sectionMenu()">${ICON.more}</button></div>
+    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="bar-now" id="secBar"></span><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button><button class="icon-btn sm" aria-label="Section options" onclick="sectionMenu()">${ICON.more}</button></div>
       <div class="chips sec-facts">${facts}</div>
       <div class="moves">${movesHtml || `<button class="move ghost" onclick="editSection()">+ moves · role swap, unison, silence…</button>`}</div>
       ${progBlock(sec)}
@@ -911,7 +960,7 @@ function renderTrack() {
 
   $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
     `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Track options" onclick="trackMenu()">${ICON.more}</button>`) +
-    `<div class="wrap${S.picked.size ? ' with-picks' : ''}">
+    `<div class="wrap${S.pickExplicit ? ' with-picks' : ''}">
       <div class="hero"><div class="chips">${chips}${t.notes ? '' : `<button class="chip ghost" onclick="editTrack('f-notes')">+ track note</button>`}</div>${trackNotes}</div>
       <div class="form">${form}</div>
       ${panel}
@@ -920,12 +969,7 @@ function renderTrack() {
     ${pickBar()}
     <div class="transport"><div class="transport-in">
       <button class="tp-play" id="tpPlay" onclick="togglePlayer()"></button>
-      <div class="mixgroup">
-        <button class="mix${S.mix.beats ? ' on' : ''}" data-mix="beats" aria-label="Rhythms in playback" title="Rhythms" onclick="toggleMix('beats')">${ICON.rhythm}</button>
-        <button class="mix${S.mix.recs ? ' on' : ''}" data-mix="recs" aria-label="Parts in playback" title="Parts" onclick="toggleMix('recs')">${ICON.wave}</button>
-        <button class="mix${S.mix.chords !== false ? ' on' : ''}" data-mix="chords" aria-label="Chords in playback" title="Chords" onclick="toggleMix('chords')">${ICON.chords}</button>
-        <button class="mix${S.mix.click ? ' on' : ''}" data-mix="click" aria-label="Click in playback" title="Click" onclick="toggleMix('click')">${ICON.metro}</button>
-      </div>
+      <button class="tp-mix" id="tpMix" onclick="openMixer()"></button>
       <div class="tempo"><button aria-label="Slower" onclick="nudgeTempo(-2)">−</button><div class="v${curView().sec.tempo || t.tempo ? '' : ' unset'}" onclick="${curView().sec.tempo ? 'editSection()' : 'editTrack()'}"><b id="bpm">${curPulse()}</b><span>${curView().sec.tempo ? 'section' : 'pulse'}</span></div><button aria-label="Faster" onclick="nudgeTempo(2)">+</button></div>
     </div></div>`;
   updateTransport();
@@ -935,37 +979,90 @@ function updateTransport() {
   const b = $('#tpPlay');
   if (!b || !S.track) return;
   b.classList.toggle('on', Player.on);
-  const n = S.picked.size;
-  const what = n ? `${n} stacked take${n > 1 ? 's' : ''}` : curView().sec.name;
-  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + `<span>${n ? 'Stack' : 'Play'}</span>`;
-  b.setAttribute('aria-label', Player.on ? 'Stop' : 'Play ' + what);
+  b.innerHTML = Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + '<span>Play</span>';
+  b.setAttribute('aria-label', Player.on ? 'Stop' : 'Play ' + curView().sec.name);
+  const m = $('#tpMix');
+  if (m) { const n = mixTakes().length; m.innerHTML = `${ICON.stack}<span>Mix</span><b>${n}</b>`; m.classList.toggle('custom', S.pickExplicit); m.setAttribute('aria-label', `Choose what plays, ${n} takes`); }
 }
-function toggleMix(k) {
-  S.mix[k] = k === 'chords' ? S.mix.chords === false : !S.mix[k]; store.set('mix', S.mix);
-  toast(`${{ beats: 'Rhythms', recs: 'Parts', click: 'Click', chords: 'Chords' }[k]} ${S.mix[k] ? 'on' : 'off'} in playback`);
-  document.querySelectorAll(`[data-mix="${k}"]`).forEach(b => b.classList.toggle('on', S.mix[k]));
-  if (Player.on) togglePlayer().then(togglePlayer);
+
+/* ---------- the mix: exactly what Play plays ---------- */
+// Until someone changes it, the mix is each layer's part (✦, or the latest take). Once changed, it's the ticked set.
+const defaultTakes = sec => [...stackIdeas(sec.id), ...midiStack(sec.id)];
+// How a take sits in its section: looping (takes recorded to a length) or once, from a start bar.
+function loopBarsOf(i) {
+  if (i.kind === 'audio') { const lp = parseData(i).loop; return lp ? lp.bars : 0; }
+  if (i.kind === 'midi') return parseTake(i).loop || 0;
+  return 0;
+}
+function placeOf(i) {
+  const pl = (i.kind === 'midi' ? parseTake(i).place : parseData(i).place) || {};
+  const canLoop = loopBarsOf(i) > 0;
+  return { mode: canLoop && pl.mode !== 'once' ? 'loop' : 'once', bar: pl.bar || 1, canLoop };
 }
 function pickedIdeas() { return S.track ? S.track.ideas.filter(i => S.picked.has(i.id)) : []; }
+function mixTakes() { return S.pickExplicit ? pickedIdeas() : defaultTakes(curView().sec); }
+const inMix = id => mixTakes().some(i => i.id === id);
 function togglePick(id) {
+  if (!S.pickExplicit) { S.picked = new Set(defaultTakes(curView().sec).map(i => i.id)); S.pickExplicit = true; }
   if (S.picked.has(id)) S.picked.delete(id); else S.picked.add(id);
   const i = S.track.ideas.find(x => x.id === id);
   if (i && i.kind === 'audio' && S.picked.has(id)) audioBuffer(i).catch(() => {});
   if (Player.on) Player.stop();
-  renderTrack();
+  refreshMix();
 }
-function clearPicks() { S.picked.clear(); if (Player.on) Player.stop(); renderTrack(); }
+function clearPicks() { S.picked.clear(); S.pickExplicit = false; if (Player.on) Player.stop(); refreshMix(); }
+function refreshMix() { const open = $('.scrim .mixer'); renderTrack(); if (open) openMixer(); }
+function toggleMix(k) {
+  S.mix[k] = k === 'chords' ? S.mix.chords === false : !S.mix[k]; store.set('mix', S.mix);
+  if (Player.on) Player.stop();
+  refreshMix();
+}
 function pickBar() {
-  const list = pickedIdeas();
-  if (!list.length) return '';
-  const who = list.map(i => `${esc(memberName(i.author_id))} · ${esc(laneOf(i.layer).short)}${sections().length > 1 ? ' · ' + esc((secOfIdea(i) || {}).name || '') : ''}`).join(', ');
-  return `<div class="pickbar"><div class="pb-in">${ICON.stack}<span class="pb-txt"><b>${list.length} take${list.length > 1 ? 's' : ''} stacked</b><span>${who}</span></span><button class="btn" onclick="clearPicks()">Clear</button></div></div>`;
+  if (!S.pickExplicit) return '';
+  const n = pickedIdeas().length;
+  return `<div class="pickbar"><div class="pb-in">${ICON.stack}<span class="pb-txt"><b>Your mix · ${n} take${n === 1 ? '' : 's'}</b><span>Play plays only these</span></span><button class="btn" onclick="openMixer()">Edit</button><button class="btn" onclick="clearPicks()">Reset</button></div></div>`;
+}
+function openMixer() {
+  const { sec } = curView();
+  const mine = S.track.ideas.filter(i => (i.kind === 'audio' || i.kind === 'midi'));
+  const here = mine.filter(i => i.section_id === sec.id), elsewhere = mine.filter(i => i.section_id !== sec.id && inMix(i.id));
+  const nx = nextSection(sec);
+  const lanes = [...LAYERS, ...(nx ? [{ ...TRANSITION, name: `Into ${nx.name}` }] : [])];
+  const row = i => {
+    const on = inMix(i.id), take = i.kind === 'midi' ? parseTake(i) : null;
+    const len = i.kind === 'midi' ? `${take.notes.length} notes` : fmtTime(i.duration);
+    return `<button class="mx-row${on ? ' on' : ''}" data-id="${esc(i.id)}"><span class="check">${on ? '✓' : ''}</span>
+      <span class="mx-txt"><b>${esc(memberName(i.author_id))}</b>${i.body ? ` · ${esc(i.body)}` : ''}<span class="small muted">${i.kind === 'midi' ? 'MIDI · ' : ''}${len} · ${ago(i.created_at)}${i.starred ? ' · ✦ the part' : ''}</span></span></button>`;
+  };
+  const groups = lanes.map(l => {
+    const list = here.filter(i => i.layer === l.key).sort((a, b) => b.starred - a.starred || b.created_at - a.created_at);
+    return list.length ? `<div class="mx-lane" style="--c:${l.c}"><div class="mx-h">${esc(l.name)}</div>${list.map(row).join('')}</div>` : '';
+  }).join('');
+  const extras = [
+    ['beats', 'Rhythms', `${sectionVoices(sec.id).length} layer rhythm${sectionVoices(sec.id).length === 1 ? '' : 's'}`, S.mix.beats, sectionVoices(sec.id).length],
+    ['chords', 'Chords', progOf(sec) ? 'the progression, on keys' : 'no progression yet', S.mix.chords !== false, !!progOf(sec)],
+    ['click', 'Click', `metronome in ${meterLabel(sec)}`, S.mix.click, true],
+  ].map(([k, label, hint, on, has]) => `<button class="mx-row${on && has ? ' on' : ''}${has ? '' : ' off'}" data-x="${k}"><span class="check">${on && has ? '✓' : ''}</span><span class="mx-txt"><b>${label}</b><span class="small muted">${hint}</span></span></button>`).join('');
+  const html = `<div class="mixer"><h3>What plays · ${esc(sec.name)}</h3>
+    <p class="lede">${S.pickExplicit ? 'Your own mix. Play plays exactly what’s ticked.' : 'Right now each layer’s part (✦, or its latest take). Tick or untick to make your own mix.'}</p>
+    ${groups || '<p class="small faint" style="font-style:italic">No recordings or MIDI in this section yet.</p>'}
+    ${elsewhere.length ? `<div class="mx-lane"><div class="mx-h">From other sections</div>${elsewhere.map(row).join('')}</div>` : ''}
+    <div class="mx-lane"><div class="mx-h">Also</div>${extras}</div>
+    <div class="actions"><button class="btn" id="mxReset" ${S.pickExplicit ? '' : 'disabled'}>Back to each layer’s part</button><button class="btn primary" id="mxPlay">${Player.on ? ICON.stop + '<span>Stop</span>' : ICON.play + '<span>Play</span>'}</button></div></div>`;
+  const open = $('.scrim .mixer');
+  if (open) { const sh = open.parentElement, top = sh.scrollTop; open.outerHTML = html; sh.scrollTop = top; wireMixer($('.scrim')); }
+  else sheet(html, wireMixer);
+}
+function wireMixer(root) {
+  root.querySelectorAll('.mx-row[data-id]').forEach(b => b.onclick = () => togglePick(b.dataset.id));
+  root.querySelectorAll('.mx-row[data-x]').forEach(b => b.onclick = () => { if (!b.classList.contains('off')) toggleMix(b.dataset.x); });
+  $('#mxReset', root).onclick = clearPicks;
+  $('#mxPlay', root).onclick = async () => { await togglePlayer(); openMixer(); };
 }
 async function togglePlayer() {
   if (Player.on) { Player.stop(); return; }
-  const picked = pickedIdeas();
-  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: S.mix.recs, click: S.mix.click, chords: S.mix.chords !== false, ideas: picked.length ? picked : null, onStop: updateTransport });
-  if (!r) toast(S.mix.click ? 'Nothing to play' : 'Nothing to play yet. Record a part or a rhythm, or switch on the click.');
+  const r = await Player.start({ sec: curView().sec, beats: S.mix.beats, recs: true, click: S.mix.click, chords: S.mix.chords !== false, ideas: S.pickExplicit ? pickedIdeas() : null, onStop: () => { updateTransport(); if ($('.scrim .mixer')) openMixer(); } });
+  if (!r) toast('Nothing ticked to play. Open Mix to choose.');
   updateTransport();
 }
 
@@ -984,16 +1081,22 @@ function nudgeTempo(d) {
 function ideaHtml(i, prevSeen) {
   const isNew = i.created_at > prevSeen && i.author_id !== S.me;
   let body = '';
-  if (i.kind === 'audio') body = `<div class="player" data-audio="${esc(i.id)}"><button class="play" aria-label="Play" onclick="togglePlay('${esc(i.id)}')">${ICON.play}</button><div class="bar"><i></i></div><span class="time">${fmtTime(i.duration)}</span></div>${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
+  let loopTag = '';
+  if (i.kind === 'audio' || i.kind === 'midi') {
+    const pl = placeOf(i), lb = loopBarsOf(i);
+    const label = pl.mode === 'loop' ? `↻ ${lb} bar${lb > 1 ? 's' : ''}${pl.bar > 1 ? ` · from bar ${pl.bar}` : ''}` : lb ? `▶ once · bar ${pl.bar}` : `▶ bar ${pl.bar}`;
+    loopTag = `<button class="loop-tag${pl.mode === 'loop' ? '' : ' once'}" onclick="placeMenu('${esc(i.id)}')" aria-label="How it plays, and its start bar">${label}<span class="edit-dot">✎</span></button>`;
+  }
+  if (i.kind === 'audio') body = `${loopTag}<div class="player" data-audio="${esc(i.id)}"><button class="play" aria-label="Play" onclick="togglePlay('${esc(i.id)}')">${ICON.play}</button><div class="bar"><i></i></div><span class="time">${fmtTime(i.duration)}</span></div>${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
   else if (i.kind === 'midi') {
     const take = parseTake(i);
-    body = `<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${take.notes.length} notes · ${fmtTime(take.len * 60 / pulseOf(secOfIdea(i)))} · MIDI</span></div>${rollSvg(take, i.id)}${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
+    body = `${loopTag}<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${take.notes.length} notes · ${fmtTime(take.len * 60 / pulseOf(secOfIdea(i)))} · MIDI</span></div>${rollSvg(take, i.id)}${i.body ? `<div class="idea-body">${esc(i.body)}</div>` : ''}`;
   }
   else if (i.kind === 'link') body = `<div class="idea-body"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(prettyUrl(i.url))}</a>${i.body ? '\n' + esc(i.body) : ''}</div>`;
   else body = `<div class="idea-body">${esc(i.body)}</div>`;
   return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span><span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
     ${i.starred && i.layer !== 'transition' ? '<span class="part-tag">the part</span>' : ''}
-    ${i.kind === 'audio' || i.kind === 'midi' ? `<button class="pick${S.picked.has(i.id) ? ' on' : ''}" aria-label="Play together with other picked takes" onclick="togglePick('${esc(i.id)}')">${ICON.stack}<span>${S.picked.has(i.id) ? 'in stack' : 'stack'}</span></button>` : ''}
+    ${i.kind === 'audio' || i.kind === 'midi' ? `<button class="pick${inMix(i.id) ? ' on' : ''}" aria-label="${inMix(i.id) ? 'Take out of the mix' : 'Add to the mix'}" onclick="togglePick('${esc(i.id)}')">${ICON.stack}<span>${inMix(i.id) ? 'in mix' : 'mix'}</span></button>` : ''}
     <button class="star${i.starred ? ' on' : ''}" aria-label="Make this the part" onclick="toggleStar('${esc(i.id)}')">${i.starred ? '✦' : '✧'}</button>
     <button class="kebab" aria-label="More" onclick="ideaMenu('${esc(i.id)}')">⋯</button></div>${body}</div>`;
 }
@@ -1005,14 +1108,42 @@ async function toggleStar(id) {
   try { await api('/ideas/' + id, { method: 'PATCH', body: { starred: !!i.starred } }); } catch (e) { toast(e.message); }
 }
 
+function placeHtml(i) {
+  const pl = placeOf(i), sec = secOfIdea(i) || curView().sec;
+  const n = Math.max(sec.bars || 8, pl.bar);
+  return `<label class="field">Loop or once</label>
+    <div class="sugs" id="pl-mode">${pl.canLoop ? `<button class="sug${pl.mode === 'loop' ? ' on' : ''}" data-m="loop">↻ Loop (${loopBarsOf(i)} bar${loopBarsOf(i) > 1 ? 's' : ''})</button>` : ''}<button class="sug${pl.mode === 'once' ? ' on' : ''}" data-m="once">▶ Once</button></div>
+    <label class="field">Starts at bar · for loops and one-offs alike</label>
+    <div class="sugs" id="pl-bar">${Array.from({ length: n }, (_, k) => `<button class="sug${pl.bar === k + 1 ? ' on' : ''}" data-b="${k + 1}">${k + 1}</button>`).join('')}</div>
+    <p class="small faint" style="font-style:italic;margin:6px 0 0">${sec.bars ? `${esc(sec.name)} is ${sec.bars} bars long.` : `Set ${esc(sec.name)}’s length in the section editor to loop the whole section.`}${pl.canLoop ? '' : ' Record with a length to make a take loop.'}</p>`;
+}
+function wirePlace(root, i) {
+  const save = async place => {
+    try {
+      const r = await api('/ideas/' + i.id, { method: 'PATCH', body: { place } });
+      i.data = r.data; delete i._d; delete i._take;
+      if (Player.on) Player.stop();
+      closeSheet(); renderTrack(); toast(place.mode === 'loop' ? `Loops${place.bar > 1 ? ' from bar ' + place.bar : ''}` : `Plays once from bar ${place.bar}`);
+    } catch (e) { toast(e.message); }
+  };
+  root.querySelectorAll('#pl-mode .sug').forEach(b => b.onclick = () => save({ mode: b.dataset.m, bar: placeOf(i).bar }));
+  root.querySelectorAll('#pl-bar .sug').forEach(b => b.onclick = () => save({ mode: placeOf(i).mode, bar: +b.dataset.b }));
+}
+function placeMenu(id) {
+  const i = S.track.ideas.find(x => x.id === id);
+  sheet(`<h3>How it plays</h3><p class="lede">${esc(laneOf(i.layer).name)} · by ${esc(memberName(i.author_id))}${i.body ? ' · ' + esc(i.body) : ''}</p>${placeHtml(i)}
+    <div class="actions"><button class="btn block" onclick="closeSheet()">Done</button></div>`, root => wirePlace(root, i));
+}
 function ideaMenu(id) {
   const i = S.track.ideas.find(x => x.id === id);
   const lanes = [...LAYERS, ...(nextSection(sections().find(s => s.id === i.section_id)) ? [TRANSITION] : [])].filter(l => l.key !== i.layer);
   sheet(`<h3>This idea</h3><p class="lede">${esc(laneOf(i.layer).name)} · by ${esc(memberName(i.author_id))} · ${ago(i.created_at)}</p>
+    ${i.kind === 'audio' || i.kind === 'midi' ? placeHtml(i) : ''}
     <label class="field">Move to</label>
     <div class="sugs">${lanes.map(l => `<button class="sug" style="color:${l.c}" data-move="${l.key}">${l.name}</button>`).join('')}</div>
     <label class="field">${i.kind === 'text' ? 'Note' : 'Caption'}</label><textarea id="cap" rows="2">${esc(i.body)}</textarea>
     <div class="actions"><button class="btn danger" id="del">Delete</button><button class="btn primary" id="save">Save</button></div>`, root => {
+    wirePlace(root, i);
     root.querySelectorAll('[data-move]').forEach(b => b.onclick = async () => {
       closeSheet();
       try { await api('/ideas/' + id, { method: 'PATCH', body: { layer: b.dataset.move } }); i.layer = b.dataset.move; renderTrack(); } catch (e) { toast(e.message); }
@@ -1155,19 +1286,173 @@ function tapTempo(btn, input) {
   };
 }
 
+// New track as a short conversation: the idea first (as How We Work asks), then the frame, then the shape.
+const SEEDS = [
+  { v: 'a chord progression', label: 'A chord progression', hint: 'a harmony we build on' },
+  { v: 'a rhythm', label: 'A rhythm', hint: 'an iqa‘, a groove, a beat' },
+  { v: 'a melody', label: 'A melody', hint: 'a line on a maqam, a tune someone hums' },
+  { v: 'a riff', label: 'A riff', hint: 'a short hook that repeats' },
+  { v: 'a genre we want to celebrate', label: 'A genre we want to celebrate', hint: 'sha3by, West African, techno…' },
+  { v: 'a sound or texture', label: 'A sound or texture', hint: 'a pad, a drone, a space' },
+  { v: 'a poem, story or feeling', label: 'A poem, story or feeling', hint: 'words or a moment to carry' },
+  { v: 'a reference track', label: 'A reference track', hint: 'something we want to answer' },
+];
+const METERS = [[4, 1, '4/4'], [3, 1, '3/4'], [2, 1, '2/4'], [6, 2, '6/8'], [7, 2, '7/8'], [9, 2, '9/8'], [10, 2, '10/8'], [12, 2, '12/8'], [5, 1, '5/4']];
+const SHAPES = [
+  { k: 'one', label: 'One idea', hint: 'a single section to grow from', names: ['Main'] },
+  { k: 'ab', label: 'Two parts', hint: 'A and B', names: ['A', 'B'] },
+  { k: 'song', label: 'Song', hint: 'intro, verse-like A, B, back to A, outro', names: ['Intro', 'A', 'B', 'A', 'Outro'] },
+  { k: 'taqsim', label: 'Taqsim into groove', hint: 'free opening, then the band', names: ['Taqsim', 'A', 'B', 'A'] },
+  { k: 'build', label: 'Slow build', hint: 'grows to a peak and lets go', names: ['Intro', 'A', 'Build', 'Peak', 'Outro'] },
+];
+const CURVES = [
+  { k: 'build', label: 'Builds', f: (i, n) => Math.min(5, 1 + Math.round(4 * i / Math.max(1, n - 1))) },
+  { k: 'arc', label: 'Rises and falls', f: (i, n) => n < 3 ? 3 : Math.max(1, 5 - Math.round(4 * Math.abs(i - (n - 1) / 2) / ((n - 1) / 2))) },
+  { k: 'steady', label: 'Steady', f: () => 3 },
+  { k: 'waves', label: 'Waves', f: i => i % 2 ? 4 : 2 },
+];
+
 function newTrack() {
-  sheet(`<h3>New track</h3><p class="lede">Only the title is needed. Sections, layers and beats grow later.</p>${trackForm()}
-    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Plant it</button></div>`, root => {
-    wireTap(root);
-    setTimeout(() => $('#f-title', root).focus(), 50);
-    $('#save', root).onclick = async () => {
-      const f = readTrackForm(root);
-      if (!f.title.trim()) return toast('Give it a name, even a working one');
-      $('#save', root).disabled = true;
-      try { const t = await api('/tracks', { method: 'POST', body: f }); S.track = t; closeSheet(); go('t/' + t.id); }
-      catch (e) { toast(e.message); $('#save', root).disabled = false; }
+  const W = { step: 0, vary: { maqam: false, pulse: false, meter: false }, title: '', idea: '', seeds: [], seedText: '', by: S.me ? [S.me] : [], genre: '', maqam: '', tonic: '', tempo: '', meter: [4, 1],
+    shape: 'song', secs: SHAPES[2].names.map(n => ({ name: n, energy: 0 })), curve: '' };
+  const STEPS = ['The idea', 'What it’s built on', 'Where it lives', 'Its shape', 'Each section', 'Plant it'];
+  const varyBtn = k => `<button class="vary${W.vary[k] ? ' on' : ''}" data-vary="${k}" type="button">${W.vary[k] ? '✓ ' : ''}Changes per section</button>`;
+  const meterLbl = m => (METERS.find(([a, b]) => a === m[0] && b === m[1]) || [0, 0, m[0] + '/' + ({ 1: 4, 2: 8, 4: 16 }[m[1]] || 4)])[2];
+  const perSec = k => `<p class="small faint wz-per">Set for each section in step 5.</p>`;
+  const s = sheet('<div id="wz"></div>');
+  const root = s;
+  const chipRow = (id, items, on, attr) => `<div class="sugs" id="${id}">${items.map(([v, label]) => `<button class="sug${on(v) ? ' on' : ''}" data-${attr}="${esc(v)}">${esc(label)}</button>`).join('')}</div>`;
+  const stepHtml = () => {
+    const n = W.secs.length;
+    switch (W.step) {
+      case 0: return `<h3>A new track</h3><p class="lede">Start with the idea, before anyone picks up an instrument. Every step can be skipped.</p>
+        <label class="field">Working title</label><input id="w-title" type="text" value="${esc(W.title)}" placeholder="Anything, it can change">
+        <label class="field">What is it about? What should it feel like?</label>
+        <textarea id="w-idea" rows="4" placeholder="e.g. Yemeni groove pushed somewhere strange; grief that never finishes; a wedding in a basement">${esc(W.idea)}</textarea>`;
+      case 1: return `<h3>What it’s built on</h3><p class="lede">Where does it start? One thing, several, or none yet.</p>
+        <div class="menu" id="w-seeds">${SEEDS.map(x => `<button class="menu-item seed${W.seeds.includes(x.v) ? ' sel' : ''}" data-v="${esc(x.v)}"><span class="check">${W.seeds.includes(x.v) ? '✓' : ''}</span><span><b>${esc(x.label)}</b><span class="small muted">${esc(x.hint)}</span></span></button>`).join('')}</div>
+        <label class="field">In your words</label>
+        <textarea id="w-seedtext" rows="3" placeholder="e.g. Sherif’s progression under a maqsum, oud answering the guitar">${esc(W.seedText)}</textarea>
+        <label class="field">Who brings it</label>
+        ${chipRow('w-by', S.members.map(m => [m.id, m.name]), v => W.by.includes(v), 'v')}
+        <label class="field">Genre</label>
+        ${chipRow('w-genre', [['', 'Unclear yet'], ...GENRES.map(g => [g, g])], v => W.genre === v, 'v')}`;
+      case 2: return `<h3>Where it lives</h3><p class="lede">The frame for the whole track. Leave blank if you don’t know yet, or say it changes per section.</p>
+        <div class="wz-lbl"><label class="field">Maqam / scale · root</label>${varyBtn('maqam')}</div>
+        ${W.vary.maqam ? perSec() : `<div class="row2"><input id="w-maqam" type="text" list="maqamat" value="${esc(W.maqam)}" placeholder="e.g. Bayati"><input id="w-tonic" type="text" value="${esc(W.tonic)}" placeholder="root, e.g. D"></div>`}
+        <div class="wz-lbl"><label class="field">Pulse · tap along</label>${varyBtn('pulse')}</div>
+        ${W.vary.pulse ? perSec() : `<div class="tempo-row"><input id="w-tempo" type="number" inputmode="numeric" value="${esc(W.tempo)}" placeholder="e.g. 96"><button class="btn tap" id="w-tap" type="button">Tap</button></div>`}
+        <div class="wz-lbl"><label class="field">Time signature</label>${varyBtn('meter')}</div>
+        ${W.vary.meter ? perSec() : chipRow('w-meter', METERS.map(([a, b, l]) => [a + '/' + b, l]), v => v === W.meter.join('/'), 'v')}`;
+      case 3: return `<h3>Its shape</h3><p class="lede">How many sections, and what they’re called. Transitions between them come for free.</p>
+        <div class="menu" id="w-shapes">${SHAPES.map(x => `<button class="menu-item${W.shape === x.k ? ' sel' : ''}" data-v="${x.k}"><span><b>${esc(x.label)}</b><span class="small muted">${esc(x.names.join(' → '))}</span></span></button>`).join('')}</div>
+        <label class="field">Sections (${n})</label>
+        <div id="w-secs">${W.secs.map((x, i) => `<div class="wz-sec"><span class="num">${i + 1}</span><input type="text" data-i="${i}" value="${esc(x.name)}"><button class="icon-btn sm" data-rm="${i}" aria-label="Remove" ${n < 2 ? 'disabled' : ''}>${ICON.trash}</button></div>`).join('')}</div>
+        <div class="sugs" style="margin-top:8px"><button class="sug" id="w-add">+ Add a section</button></div>`;
+      case 4: {
+        const vs = [W.vary.maqam && 'maqam', W.vary.pulse && 'pulse', W.vary.meter && 'time signature'].filter(Boolean);
+        return `<h3>Each section</h3><p class="lede">How the energy moves${vs.length ? `, and each section’s ${vs.join(', ')}` : ''}. Skip anything you don’t know yet.</p>
+        <label class="field">Energy shape</label>
+        ${chipRow('w-curve', CURVES.map(c => [c.k, c.label]), v => W.curve === v, 'v')}
+        <div id="w-energy" style="margin-top:8px">${W.secs.map((x, i) => `<div class="wz-card">
+          <div class="wz-en"><b>${esc(x.name)}</b><span class="lvls">${[1, 2, 3, 4, 5].map(e => `<button class="lvl${x.energy >= e ? ' on' : ''}" data-i="${i}" data-e="${e}" style="height:${10 + e * 5}px" aria-label="${ENERGY[e]}"></button>`).join('')}</span><span class="small muted">${ENERGY[x.energy] || '—'}</span></div>
+          ${W.vary.maqam ? `<div class="row2 wz-f"><input type="text" list="maqamat" data-f="maqam" data-i="${i}" value="${esc(x.maqam || '')}" placeholder="maqam / scale"><input type="text" data-f="tonic" data-i="${i}" value="${esc(x.tonic || '')}" placeholder="root"></div>` : ''}
+          ${W.vary.pulse || W.vary.meter ? `<div class="row2 wz-f">
+            ${W.vary.pulse ? `<input type="number" inputmode="numeric" data-f="tempo" data-i="${i}" value="${esc(x.tempo || '')}" placeholder="pulse (bpm)">` : '<span></span>'}
+            ${W.vary.meter ? `<select data-f="meter" data-i="${i}"><option value="">time signature</option>${METERS.map(([a, b, l]) => `<option value="${a}/${b}"${x.meter && x.meter.join('/') === a + '/' + b ? ' selected' : ''}>${l}</option>`).join('')}</select>` : ''}
+          </div>` : ''}
+        </div>`).join('')}</div>`;
+      }
+      default: {
+        const who = W.by.map(id => memberName(id)).join(', ');
+        const facts = [W.genre,
+          W.vary.maqam ? 'maqam per section' : W.maqam && (W.maqam + (W.tonic ? ' on ' + W.tonic : '')),
+          W.vary.pulse ? 'pulse per section' : W.tempo && W.tempo + ' bpm',
+          W.vary.meter ? 'time per section' : meterLbl(W.meter)].filter(Boolean);
+        return `<h3>${esc(W.title || 'Untitled')}</h3>
+          ${W.idea ? `<p class="lede" style="white-space:pre-wrap">${esc(W.idea)}</p>` : ''}
+          <div class="chips" style="margin:12px 0">${facts.map(f => `<span class="chip">${esc(f)}</span>`).join('')}</div>
+          ${W.seeds.length ? `<p class="small muted serif" style="font-style:italic">Built on ${esc(W.seeds.join(', '))}${who ? ` · brought by ${esc(who)}` : ''}</p>` : who ? `<p class="small muted serif" style="font-style:italic">Brought by ${esc(who)}</p>` : ''}
+          ${W.seedText.trim() ? `<p class="small muted serif" style="white-space:pre-wrap">${esc(W.seedText.trim())}</p>` : ''}
+          <div class="form-line wz-form">${W.secs.map(x => {
+            const own = [W.vary.maqam && [x.maqam, x.tonic].filter(Boolean).join(' '), W.vary.meter && x.meter && meterLbl(x.meter), W.vary.pulse && x.tempo && x.tempo + ' bpm'].filter(Boolean);
+            return `<span class="fl-sec">${esc(x.name)}${x.energy ? energyBars(x.energy) : ''}${own.length ? `<span class="fl-own">${esc(own.join(' · '))}</span>` : ''}</span>`;
+          }).join('<span class="arr">→</span>')}</div>
+          <p class="small faint" style="font-style:italic">Layers, line-ups, rhythms and chords are filled in per section afterwards.</p>`;
+      }
+    }
+  };
+  const read = () => {
+    const v = id => { const el = $('#' + id, root); return el ? el.value : null; };
+    if (W.step === 0) { W.title = v('w-title'); W.idea = v('w-idea'); }
+    if (W.step === 1) W.seedText = v('w-seedtext');
+    if (W.step === 2) {
+      if (!W.vary.maqam) { W.maqam = v('w-maqam'); W.tonic = v('w-tonic'); }
+      if (!W.vary.pulse) W.tempo = v('w-tempo');
+    }
+    if (W.step === 4) root.querySelectorAll('#w-energy [data-f]').forEach(el => {
+      const x = W.secs[+el.dataset.i], f = el.dataset.f;
+      if (f === 'meter') x.meter = el.value ? el.value.split('/').map(Number) : null; else x[f] = el.value.trim();
+    });
+    if (W.step === 3) root.querySelectorAll('#w-secs input').forEach(el => { W.secs[+el.dataset.i].name = el.value.trim() || W.secs[+el.dataset.i].name; });
+  };
+  const render = () => {
+    $('#wz', root).innerHTML = `<div class="wz-dots">${STEPS.map((x, i) => `<i class="${i < W.step ? 'done' : i === W.step ? 'on' : ''}"></i>`).join('')}<span>${STEPS[W.step]}</span></div>
+      ${stepHtml()}
+      <div class="actions">${W.step ? '<button class="btn" id="w-back">Back</button>' : '<button class="btn" id="w-cancel">Cancel</button>'}
+      <button class="btn primary" id="w-next">${W.step === STEPS.length - 1 ? 'Plant it' : 'Next'}</button></div>
+      ${W.step < STEPS.length - 1 ? '<div class="sugs" style="justify-content:center;margin-top:10px"><button class="sug wz-skip" id="w-skip">Skip the rest, plant it</button></div>' : ''}`;
+    wire();
+    const first = $('#wz input[type=text]', root);
+    if (W.step === 0 && first && !W.title) setTimeout(() => first.focus(), 60);
+    $('.sheet', root).scrollTop = 0;
+  };
+  const wire = () => {
+    const tog = (sel, fn) => root.querySelectorAll(sel).forEach(b => b.onclick = () => { read(); fn(b.dataset.v, b); render(); });
+    tog('#w-seeds .menu-item', v => { W.seeds = W.seeds.includes(v) ? W.seeds.filter(x => x !== v) : [...W.seeds, v]; });
+    tog('#w-by .sug', v => { W.by = W.by.includes(v) ? W.by.filter(x => x !== v) : [...W.by, v]; });
+    tog('#w-genre .sug', v => { W.genre = v; });
+    tog('#w-meter .sug', v => { W.meter = v.split('/').map(Number); });
+    tog('#w-shapes .menu-item', v => { W.shape = v; W.secs = SHAPES.find(x => x.k === v).names.map(n => ({ name: n, energy: 0 })); W.curve = ''; });
+    tog('#w-curve .sug', v => { W.curve = v; const c = CURVES.find(x => x.k === v); W.secs.forEach((x, i) => { x.energy = c.f(i, W.secs.length); }); });
+    root.querySelectorAll('[data-vary]').forEach(b => b.onclick = () => { read(); W.vary[b.dataset.vary] = !W.vary[b.dataset.vary]; render(); });
+    root.querySelectorAll('#w-energy .lvl').forEach(b => b.onclick = () => { read(); const x = W.secs[+b.dataset.i], e = +b.dataset.e; x.energy = x.energy === e ? 0 : e; W.curve = ''; render(); });
+    root.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { read(); W.secs.splice(+b.dataset.rm, 1); W.shape = ''; render(); });
+    const add = $('#w-add', root); if (add) add.onclick = () => {
+      read(); const used = W.secs.map(x => x.name);
+      W.secs.push({ name: SECTION_NAMES.find(n => !used.includes(n)) || 'Section ' + (W.secs.length + 1), energy: 0 }); W.shape = ''; render();
+      const ins = root.querySelectorAll('#w-secs input'); ins[ins.length - 1].select();
     };
-  });
+    const tap = $('#w-tap', root); if (tap) tapTempo(tap, $('#w-tempo', root));
+    const back = $('#w-back', root); if (back) back.onclick = () => { read(); W.step--; render(); };
+    const cancel = $('#w-cancel', root); if (cancel) cancel.onclick = closeSheet;
+    const skip = $('#w-skip', root); if (skip) skip.onclick = () => { read(); W.step = STEPS.length - 1; render(); };
+    $('#w-next', root).onclick = () => {
+      read();
+      if (W.step < STEPS.length - 1) { W.step++; return render(); }
+      plant();
+    };
+  };
+  const plant = async () => {
+    const btn = $('#w-next', root); btn.disabled = true; btn.textContent = 'Planting…';
+    const lines = [W.idea.trim(),
+      W.seeds.length || W.seedText.trim() ? 'Built on: ' + [W.seeds.join(', '), W.seedText.trim()].filter(Boolean).join('. ') + (/[.!?]$/.test(W.seedText.trim()) ? '' : '.') : '',
+      W.by.length ? 'Brought by ' + W.by.map(id => memberName(id)).join(', ') + '.' : ''].filter(Boolean);
+    try {
+      const t = await api('/tracks', { method: 'POST', body: {
+        title: W.title.trim() || 'Untitled', notes: lines.join('\n\n'), genre: W.genre,
+        maqam: W.vary.maqam ? '' : W.maqam, tonic: W.vary.maqam ? '' : W.tonic, tempo: W.vary.pulse ? '' : W.tempo,
+        meter_n: W.meter[0], meter_sub: W.meter[1],
+        sections: W.secs.map(x => ({ name: x.name, energy: x.energy || '',
+          ...(W.vary.maqam ? { maqam: x.maqam || '', tonic: x.tonic || '' } : {}),
+          ...(W.vary.pulse ? { tempo: x.tempo || '' } : {}),
+          ...(W.vary.meter && x.meter ? { meter_n: x.meter[0], meter_sub: x.meter[1] } : {}) })),
+      } });
+      S.track = t; closeSheet(); go('t/' + t.id);
+      toast(`${t.sections.length} section${t.sections.length > 1 ? 's' : ''} planted`);
+    } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Plant it'; }
+  };
+  render();
 }
 
 function editTrack(focusId) {
@@ -1298,6 +1583,8 @@ function editSection(focusId) {
     <div><label class="field">Root</label><input id="s-tonic" type="text" value="${esc(sec.tonic || '')}" placeholder="${esc(t.tonic || '—')}"></div></div>
     <label class="field">Pulse for this section</label><div class="tempo-row"><input id="s-tempo" type="number" inputmode="numeric" value="${sec.tempo || ''}" placeholder="${bpmOf(t)} (track)"><button class="btn tap" id="s-tap" type="button">Tap</button></div>
     ${meterHtml()}
+    <label class="field">Length · the section loops on this when played</label>
+    <div class="sugs" id="s-bars">${[0, 1, 2, 4, 8, 12, 16, 24, 32].map(n => `<button class="sug${(sec.bars || 0) === n ? ' on' : ''}" data-n="${n}">${n ? n + ' bars' : 'Not set'}</button>`).join('')}</div>
     <label class="field">Energy · where it climbs and drops</label>
     <div class="sugs" id="energy">${[1, 2, 3, 4, 5].map(e => `<button class="sug" data-e="${e}">${energyBars(e)} ${ENERGY[e]}</button>`).join('')}</div>
     <label class="field">Moves · the choices we make here</label>
@@ -1311,6 +1598,8 @@ function editSection(focusId) {
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save</button></div>
     ${sections().length > 1 ? '<div style="margin-top:22px"><button class="btn danger block" id="del">Delete section</button></div>' : ''}`, root => {
     meterPicker(root, M);
+    let bars = sec.bars || 0;
+    root.querySelectorAll('#s-bars .sug').forEach(b => b.onclick = () => { bars = +b.dataset.n; root.querySelectorAll('#s-bars .sug').forEach(x => x.classList.toggle('on', x === b)); });
     tapTempo($('#s-tap', root), $('#s-tempo', root));
     if (focusId) setTimeout(() => $('#' + focusId, root).focus(), 50);
     const drawEnergy = () => root.querySelectorAll('#energy .sug').forEach(b => b.classList.toggle('on', +b.dataset.e === energy));
@@ -1337,7 +1626,7 @@ function editSection(focusId) {
       const moves = {};
       root.querySelectorAll('.mv-row.on').forEach(r => { moves[r.dataset.k] = $('input', r).value.trim(); });
       const body = { name: $('#s-name', root).value, notes: $('#s-notes', root).value, meter_n: M.n, meter_sub: M.sub,
-        maqam: $('#s-maqam', root).value, tonic: $('#s-tonic', root).value, tempo: $('#s-tempo', root).value, energy: energy || '', moves };
+        maqam: $('#s-maqam', root).value, tonic: $('#s-tonic', root).value, tempo: $('#s-tempo', root).value, energy: energy || '', moves, bars: bars || '' };
       try { S.track = await api('/sections/' + sec.id, { method: 'PATCH', body }); closeSheet(); renderTrack(); }
       catch (e) { toast(e.message); }
     };
@@ -1708,53 +1997,105 @@ function audioBuffer(idea) {
   return bufCache.get(idea.audio_id);
 }
 const Player = {
-  on: false, sources: [], endTimer: null, t0: 0, vis: [], raf: 0,
+  on: false, sources: [], endTimer: null, t0: 0, vis: [], raf: 0, releases: [], loopTimer: null, cycleSec: 0,
   async start(o) {
     this.stop();
     const ctx = Beat.ensure();
-    const sec = o.sec, bpm = pulseOf(o.sec), countIn = o.countIn || 0;
+    const sec = o.sec, bpm = pulseOf(o.sec), spp = 60 / bpm, countIn = o.countIn || 0;
     const voices = [];
     if (o.beats) voices.push(...sectionVoices(sec.id, o.exceptLayer));
     if (o.chords && o.exceptLayer !== 'bark') { const cv = chordVoice(sec); if (cv) voices.push(cv); }
     if (o.click || countIn) voices.push(metroVoice(sec, o.click ? null : 0));
-    const audio = o.ideas ? o.ideas.filter(i => i.kind === 'audio') : o.recs ? stackIdeas(sec.id, o.exceptLayer) : [];
-    const takes = o.ideas ? o.ideas.filter(i => i.kind === 'midi') : o.recs ? midiStack(sec.id, o.exceptLayer) : [];
+    const audio = Array.isArray(o.ideas) ? o.ideas.filter(i => i.kind === 'audio') : o.recs ? stackIdeas(sec.id, o.exceptLayer) : [];
+    const takes = Array.isArray(o.ideas) ? o.ideas.filter(i => i.kind === 'midi') : o.recs ? midiStack(sec.id, o.exceptLayer) : [];
     if (!voices.length && !audio.length && !takes.length && !o.clock) return false;
     let bufs = [];
     if (audio.length) bufs = (await Promise.all(audio.map(i => audioBuffer(i).then(b => [i, b]).catch(() => null)))).filter(Boolean);
-    const T0 = ctx.currentTime + 0.12 + countIn * 60 / bpm;
+    const T0 = ctx.currentTime + 0.12 + countIn * spp;
     this.t0 = T0; this.on = true; this.onStop = o.onStop || null;
     Beat.start(voices, bpm, { t0: T0 });
-    let longest = 0;
-    for (const [i, b] of bufs) {
-      const src = ctx.createBufferSource();
-      src.buffer = b; src.connect(Beat.out);
-      const off = Math.min(parseData(i).offset || 0, b.duration);
-      src.start(T0, off);
-      this.sources.push(src);
-      this.vis.push({ id: i.id, off, dur: b.duration });
-      longest = Math.max(longest, b.duration - off);
+
+    // Every take becomes a "part": audio or MIDI, looped (fixed pulses) or free.
+    const parts = [
+      ...bufs.map(([i, b]) => { const d = parseData(i), lp = d.loop && d.loop.pulses && d.loop.bpm ? d.loop : null, pl = placeOf(i);
+        return { id: i.id, kind: 'audio', buf: b, off: Math.min(d.offset || 0, b.duration), lenP: lp ? lp.pulses : 0, loopP: lp && pl.mode === 'loop' ? lp.pulses : 0, rate: lp ? bpm / lp.bpm : 1, startP: (pl.bar - 1) * secBarPulses(sec) }; }),
+      ...takes.map(i => { const tk = parseTake(i), pl = placeOf(i); return { id: i.id, kind: 'midi', tk, lenP: tk.loop ? tk.len : 0, loopP: tk.loop && pl.mode === 'loop' ? tk.len : 0, startP: (pl.bar - 1) * secBarPulses(sec) }; }),
+    ];
+    // The section's cycle: its set length, else its longest loop. With a cycle, the whole section repeats and every part restarts on its downbeat.
+    const cycleP = o.recording ? 0 : sec.bars ? sec.bars * secBarPulses(sec) : Math.max(0, ...parts.map(x => x.loopP));
+    this.cycleSec = cycleP * spp;
+    const playPart = (x, at, maxSec) => {
+      if (x.kind === 'audio') {
+        const src = ctx.createBufferSource();
+        src.buffer = x.buf; src.connect(Beat.out); src.playbackRate.value = x.rate;
+        const bufLeft = x.buf.duration - x.off, want = x.lenP ? Math.min(x.lenP * spp, maxSec) : Math.min(bufLeft / x.rate, maxSec);
+        if (want <= 0.01) return;
+        src.start(at, x.off, want * x.rate);
+        this.sources.push(src);
+        src.onended = () => { const k = this.sources.indexOf(src); if (k >= 0) this.sources.splice(k, 1); };
+      } else {
+        const limitP = maxSec / spp;
+        for (const n of x.tk.notes) if (n.t < limitP) this.releases.push(Synth.note(n.n, n.v, at + n.t * spp, Math.max(0.05, Math.min(n.d, limitP - n.t) * spp)));
+      }
+    };
+    for (const x of parts) if (x.kind === 'audio') this.vis.push({ id: x.id, off: x.off, dur: x.buf.duration, loopReal: x.loopP ? x.loopP * spp : 0, rate: x.rate, startSec: x.startP * spp, lenSec: x.lenP ? x.lenP * spp : 0 });
+
+    if (cycleP) {
+      let c = 0;
+      const pump = () => {
+        while (T0 + c * this.cycleSec < ctx.currentTime + 0.8) {
+          const C = T0 + c * this.cycleSec, end = C + this.cycleSec;
+          for (const x of parts) {
+            const s0 = C + x.startP * spp;
+            if (s0 >= end - 1e-6) continue;
+            if (x.loopP) for (let k = 0; x.startP + k * x.loopP < cycleP - 1e-6; k++) { const at = s0 + k * x.loopP * spp; playPart(x, at, end - at); }
+            else playPart(x, s0, end - s0);
+          }
+          c++;
+        }
+        if (this.releases.length > 600) this.releases.splice(0, 300);
+      };
+      pump(); this.loopTimer = setInterval(pump, 150);
+    } else {
+      let longest = 0;
+      for (const x of parts) {
+        const at = T0 + x.startP * spp;
+        if (x.kind === 'audio') { playPart(x, at, 1e6); longest = Math.max(longest, x.startP * spp + (x.buf.duration - x.off) / x.rate); }
+        else { Takes.play(S.track.ideas.find(i => i.id === x.id), at); longest = Math.max(longest, (x.startP + x.tk.len) * spp); }
+      }
+      if (!voices.some(v => !v.metro || v.until == null) && !o.clock) this.endTimer = setTimeout(() => this.stop(), (T0 - ctx.currentTime + longest + 0.3) * 1000);
     }
+
     const tick = () => {
       const now = ctx.currentTime;
       for (const v of this.vis) {
         const el = playerEl(v.id); if (!el) continue;
-        const pos = Math.max(0, now - T0) + v.off;
-        $('.bar i', el).style.width = Math.min(100, 100 * pos / v.dur) + '%';
-        $('.time', el).textContent = fmtTime(Math.min(pos, v.dur));
-        el.classList.toggle('live', pos < v.dur && now >= T0);
+        const span = v.loopReal || v.lenSec || (v.dur - v.off) / v.rate;
+        let t = Math.max(0, now - T0);
+        if (this.cycleSec) t %= this.cycleSec;
+        t -= v.startSec;
+        if (v.loopReal && t >= 0) t %= v.loopReal;
+        const live = now >= T0 && t >= 0 && t < span;
+        $('.bar i', el).style.width = live ? Math.min(100, 100 * t / span) + '%' : '0';
+        $('.time', el).textContent = fmtTime(live ? t : 0);
+        el.classList.toggle('live', live);
+      }
+      const bar = $('#secBar');
+      if (bar && this.cycleSec) {
+        const t = Math.max(0, now - T0) % this.cycleSec, barSec = secBarPulses(sec) * spp;
+        bar.textContent = now < T0 ? '' : `Bar ${Math.floor(t / barSec) + 1} of ${Math.round(this.cycleSec / barSec)}`;
       }
       this.raf = requestAnimationFrame(tick);
     };
-    if (this.vis.length) tick();
-    for (const i of takes) { Takes.play(i, T0); longest = Math.max(longest, parseTake(i).len * 60 / bpm); }
-    if (!voices.some(v => !v.metro || v.until == null) && !o.clock) {
-      this.endTimer = setTimeout(() => this.stop(), (T0 - ctx.currentTime + longest + 0.3) * 1000);
-    }
+    tick();
     return true;
   },
   stop() {
     clearTimeout(this.endTimer);
+    clearInterval(this.loopTimer);
+    const sb = $('#secBar'); if (sb) sb.textContent = '';
+    if (Beat.ctx) { const now = Beat.ctx.currentTime; this.releases.forEach(r => { try { r(now); } catch {} }); }
+    this.releases = [];
     cancelAnimationFrame(this.raf);
     for (const v of this.vis) {
       const el = playerEl(v.id); if (!el) continue;
@@ -1820,23 +2161,49 @@ async function postIdea(payload, root) {
 function backingHtml(lane) {
   const { sec } = curView();
   const hasRest = sectionVoices(sec.id, lane).length + stackIdeas(sec.id, lane).length + midiStack(sec.id, lane).length + (lane !== 'bark' && chordVoice(sec) ? 1 : 0) > 0;
-  const B = { countIn: store.get('countIn', true), click: store.get('clickRec', true), rest: hasRest && store.get('along', true), hasRest };
+  const B = { countIn: store.get('countIn', true), click: store.get('clickRec', true), rest: hasRest && store.get('along', true), hasRest, bars: store.get('recBars', 0), start: 1 };
+  const nBars = Math.max(sec.bars || 8, 1);
+  const startHint = n => n > 1 ? `${sec.name} plays from bar 1 so you feel it coming; you’re in at bar ${n}.` : 'You’re in from the first bar.';
+  const lenHint = () => B.bars ? `Records exactly ${B.bars} bar${B.bars > 1 ? 's' : ''} of ${meterLabel(sec)}, stops by itself, and loops when played.` : 'Records until you stop. Plays once.';
   const html = `
+    <label class="field">Length</label>
+    <div class="sugs" data-bars>${[[0, 'Free'], [1, '1 bar'], [2, '2 bars'], [4, '4 bars'], [8, '8 bars']].map(([n, l]) => `<button class="sug${B.bars === n ? ' on' : ''}" data-n="${n}">${n ? '↻ ' : ''}${l}</button>`).join('')}</div>
+    <p class="small faint len-hint">${lenHint()}</p>
+    <label class="field">Starts at bar</label>
+    <div class="sugs" data-start>${Array.from({ length: nBars }, (_, k) => `<button class="sug${k === 0 ? ' on' : ''}" data-n="${k + 1}">${k + 1}</button>`).join('')}</div>
+    <p class="small faint start-hint">${startHint(1)}</p>
     <button class="toggle${B.countIn ? ' on' : ''}" data-bk="countIn"><span class="sw"></span><span><b>Count in one bar</b><br><span class="small muted">${meterLabel(sec)} at ${pulseOf(sec)} bpm, then you’re on.</span></span></button>
     <button class="toggle${B.click ? ' on' : ''}" data-bk="click"><span class="sw"></span><span><b>Click while recording</b><br><span class="small muted">Metronome on the pulse, accent on each bar.</span></span></button>
     ${hasRest ? `<button class="toggle${B.rest ? ' on' : ''}" data-bk="rest"><span class="sw"></span><span><b>Play the rest of ${esc(sec.name)}</b><br><span class="small muted">The other layers’ parts, rhythms and the chord progression. Use headphones so they don’t end up in the recording.</span></span></button>` : ''}`;
-  const wire = root => root.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
-    const k = b.dataset.bk; B[k] = !B[k]; b.classList.toggle('on', B[k]);
-    store.set({ countIn: 'countIn', click: 'clickRec', rest: 'along' }[k], B[k]);
-  });
-  const start = () => Player.start({ sec, exceptLayer: lane, beats: B.rest, recs: B.rest, chords: B.rest, click: B.click, countIn: B.countIn ? secBarPulses(sec) : 0, clock: true });
-  const grid = () => B.countIn || B.click || B.rest;
-  return { html, wire, start, B, grid, sec };
+  const wire = root => {
+    root.querySelectorAll('[data-bk]').forEach(b => b.onclick = () => {
+      const k = b.dataset.bk; B[k] = !B[k]; b.classList.toggle('on', B[k]);
+      store.set({ countIn: 'countIn', click: 'clickRec', rest: 'along' }[k], B[k]);
+    });
+    root.querySelectorAll('[data-bars] .sug').forEach(b => b.onclick = () => {
+      B.bars = +b.dataset.n; store.set('recBars', B.bars);
+      root.querySelectorAll('[data-bars] .sug').forEach(x => x.classList.toggle('on', x === b));
+      $('.len-hint', root).textContent = lenHint();
+    });
+    root.querySelectorAll('[data-start] .sug').forEach(b => b.onclick = () => {
+      B.start = +b.dataset.n;
+      root.querySelectorAll('[data-start] .sug').forEach(x => x.classList.toggle('on', x === b));
+      $('.start-hint', root).textContent = startHint(B.start);
+    });
+  };
+  const loopPulses = () => B.bars * secBarPulses(sec);
+  const startPulses = () => (B.start - 1) * secBarPulses(sec);
+  const start = () => Player.start({ sec, exceptLayer: lane, beats: B.rest, recs: B.rest, chords: B.rest, click: B.click, countIn: B.countIn ? secBarPulses(sec) : 0, clock: true, recording: true });
+  const grid = () => B.countIn || B.click || B.rest || B.bars > 0 || B.start > 1;
+  return { html, wire, start, B, grid, sec, loopPulses, startPulses };
 }
-function countdown(el, sec) {
+function countdown(el, sec, startBar) {
+  startBar = startBar || 1;
   Beat.onTick = p => {
-    if (p < 0) el.textContent = `Count-in · ${Math.floor(p + secBarPulses(sec)) + 1} of ${sec.meter_n}`;
-    else el.textContent = `Bar ${Math.floor(p / secBarPulses(sec)) + 1}`;
+    const bar = Math.floor(p / secBarPulses(sec)) + 1;
+    if (p < 0) el.textContent = `Count-in · ${Math.floor(p + secBarPulses(sec)) + 1} of ${sec.meter_n}${startBar > 1 ? ` · you’re in at bar ${startBar}` : ''}`;
+    else if (bar < startBar) el.textContent = `Bar ${bar} · you’re in at bar ${startBar}`;
+    else el.textContent = `Bar ${bar} · recording`;
   };
 }
 
@@ -1908,16 +2275,20 @@ function openRecorder(lane) {
     const backed = bk.grid() ? await bk.start() : false;
     R.rec.start(1000);
     const recAt = ctx.currentTime;
-    R.offset = backed ? Math.max(0, Player.t0 - recAt + (ctx.outputLatency || ctx.baseLatency || 0)) : 0;
-    if (backed) countdown($('#count', s), bk.sec);
+    const startSec = backed ? bk.startPulses() * 60 / pulseOf(bk.sec) : 0;
+    R.startBar = backed ? bk.B.start : 1;
+    R.offset = backed ? Math.max(0, Player.t0 + startSec - recAt + (ctx.outputLatency || ctx.baseLatency || 0)) : 0;
+    if (backed) countdown($('#count', s), bk.sec, R.startBar);
     R.t0 = performance.now();
+    R.loop = backed && bk.B.bars ? { bars: bk.B.bars, pulses: bk.loopPulses(), bpm: pulseOf(bk.sec) } : null;
+    const loopEnd = R.loop ? Player.t0 + startSec + R.loop.pulses * 60 / R.loop.bpm + 0.3 : 0;
     $('#recBtn', s).classList.add('on');
-    $('#hint', s).textContent = 'Recording… tap to stop.';
+    $('#hint', s).textContent = R.loop ? `Recording ${R.loop.bars} bar${R.loop.bars > 1 ? 's' : ''}… it stops by itself.` : 'Recording… tap to stop.';
     R.timer = setInterval(() => {
       R.secs = (performance.now() - R.t0) / 1000;
       $('#recTime', s).textContent = fmtTime(R.secs);
-      if (R.secs >= MAX_REC_SEC) stop();
-    }, 250);
+      if (R.secs >= MAX_REC_SEC || (R.loop && Beat.ctx.currentTime >= loopEnd)) stop();
+    }, 50);
   }
   function stop() {
     R.secs = (performance.now() - R.t0) / 1000;
@@ -1953,7 +2324,8 @@ function openRecorder(lane) {
     try {
       const up = await api('/audio', { method: 'POST', body: R.blob });
       await postIdea({ layer: lane, kind: 'audio', audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10, body: $('#cap', s).value,
-        data: R.offset ? JSON.stringify({ offset: Math.round(R.offset * 1000) / 1000 }) : '' }, s);
+        data: R.offset || R.loop ? JSON.stringify({ offset: Math.round(R.offset * 1000) / 1000, ...(R.loop ? { loop: R.loop } : {}),
+          ...(R.startBar > 1 ? { place: { mode: R.loop ? 'loop' : 'once', bar: R.startBar } } : {}) }) : '' }, s);
     } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Post'; }
   }
 }
@@ -2095,7 +2467,7 @@ function openMidi(lane) {
     $('#again', root).onclick = () => { Takes.stopAll(); M.notes = []; $('#review', root).classList.add('hidden'); $('#recBtn', root).parentElement.classList.remove('hidden'); $('#bk', root).classList.remove('hidden'); $('#recTime', root).textContent = '0 notes'; $('#count', root).textContent = ''; };
     $('#pv', root).onclick = () => { const idea = draftIdea(); if (Takes.active.has(idea.id)) Takes.stop(idea.id); else Takes.play(idea); };
     $('#save', root).onclick = async () => {
-      const take = { bpm: pulseOf(bk.sec), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes, ...(M.chan != null ? { ch: M.chan + 1 } : {}) };
+      const take = { bpm: pulseOf(bk.sec), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes, ...(M.loopP ? { loop: bk.B.bars } : {}), ...(M.startBar > 1 ? { place: { mode: M.loopP ? 'loop' : 'once', bar: M.startBar } } : {}), ...(M.chan != null ? { ch: M.chan + 1 } : {}) };
       await postIdea({ layer: lane, kind: 'midi', data: JSON.stringify(take), duration: Math.round(M.len * 60 / take.bpm * 10) / 10, body: $('#cap', root).value }, root);
     };
   });
@@ -2153,12 +2525,13 @@ function openMidi(lane) {
       if (!M.firstTick) M.firstTick = ms;
       M.lastTick = ms; M.ticks++; M.span++;
       if (M.span > 1) M.tickMs = (ms - M.firstTick) / (M.span - 1);
+      if (M.rec && sync && M.loopP && (M.ticks - 1) / 24 >= M.startP + M.loopP) { stop(); return; }
       if (M.rec && sync && M.ticks % 24 === 1) $('#count', s).textContent = `Live · bar ${Math.floor((M.ticks - 1) / 24 / secBarPulses(bk.sec)) + 1} · ${Math.round(60000 / (M.tickMs * 24))} bpm`;
       return;
     }
     if (st === 0xfa || st === 0xfb) {
       M.ticks = 0; M.lastTick = 0; M.clockAt = ms; M.firstTick = 0; M.span = 0;
-      if (M.armed) { M.armed = false; M.rec = true; M.gridded = true; M.notes = []; M.open.clear(); $('#hint', s).textContent = 'Recording with Live… stop Live (or tap) to finish.'; }
+      if (M.armed) { M.armed = false; M.rec = true; M.gridded = true; M.notes = []; M.open.clear(); M.loopP = bk.B.bars ? bk.loopPulses() : 0; M.startP = bk.startPulses(); M.startBar = bk.B.start; $('#hint', s).textContent = 'Recording with Live… stop Live (or tap) to finish.'; }
       return;
     }
     if (st === 0xfc) { if (M.rec && sync) stop(); return; }
@@ -2193,9 +2566,12 @@ function openMidi(lane) {
       return;
     }
     M.gridded = bk.grid();
+    M.loopP = bk.B.bars ? bk.loopPulses() : 0;
+    M.startP = M.gridded ? bk.startPulses() : 0; M.startBar = M.gridded ? bk.B.start : 1;
     await bk.start();
     M.rec = true;
-    if (M.gridded) countdown($('#count', s), bk.sec);
+    if (M.gridded) countdown($('#count', s), bk.sec, M.startBar);
+    if (M.loopP) M.loopTimer = setInterval(() => { if (M.rec && Beat.on && Beat.pulseAt(Beat.ctx.currentTime) >= M.startP + M.loopP) stop(); }, 20);
     $('#recBtn', s).classList.add('on');
     $('#hint', s).textContent = 'Recording… tap to stop.';
   }
@@ -2204,13 +2580,21 @@ function openMidi(lane) {
     if (M.armed && !M.rec) { M.armed = false; $('#recBtn', s).classList.remove('on'); $('#hint', s).textContent = 'Disarmed.'; return; }
     for (const n of [...M.open.keys()]) endNote(n, ms);
     const endP = perfToPulse(ms);
-    M.rec = false; M.armed = false; Player.stop();
+    M.rec = false; M.armed = false; Player.stop(); clearInterval(M.loopTimer);
     $('#recBtn', s).classList.remove('on');
     if (!M.notes.length) { $('#hint', s).textContent = 'No notes came in. Check the device, then try again.'; return; }
     M.notes.sort((x, y) => x.t - y.t);
+    if (M.gridded && M.startP) {
+      // Keep what was played from the start bar (a hair early counts); times become relative to it.
+      M.notes = M.notes.filter(n => n.t + n.d > M.startP - 0.25 && n.t >= M.startP - 0.25).map(n => ({ ...n, t: Math.max(0, n.t - M.startP) }));
+      if (!M.notes.length) { $('#hint', s).textContent = `Nothing came in from bar ${M.startBar}. Try again.`; return; }
+    }
     if (!M.gridded) { const first = M.notes[0].t; M.notes.forEach(n => { n.t -= first; }); }
     M.notes.forEach(n => { n.t = Math.round(n.t * 1000) / 1000; n.d = Math.round(n.d * 1000) / 1000; });
-    M.len = Math.max(...M.notes.map(n => n.t + n.d), M.gridded ? endP : 0);
+    if (M.loopP) {
+      M.notes = M.notes.filter(n => n.t < M.loopP - 0.02).map(n => ({ ...n, d: Math.min(n.d, M.loopP - n.t) }));
+      M.len = M.loopP;
+    } else M.len = Math.max(...M.notes.map(n => n.t + n.d), M.gridded ? endP - (M.startP || 0) : 0);
     $('#recBtn', s).parentElement.classList.add('hidden'); $('#bk', s).classList.add('hidden');
     $('#review', s).classList.remove('hidden');
     $('#rollWrap', s).innerHTML = rollSvg(draftIdea()._take, 'draft');

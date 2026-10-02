@@ -54,9 +54,9 @@ async function addSection(env, trackId, name, copyFrom) {
   const src = copyFrom ? await env.DB.prepare('SELECT * FROM sections WHERE id = ? AND track_id = ?').bind(copyFrom, trackId).first() : null;
   const sid = uid();
   const stmts = [
-    env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, maqam, tonic, tempo, energy, moves, chords, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, maqam, tonic, tempo, energy, moves, chords, bars, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
       .bind(sid, trackId, name, (last && last.p != null ? last.p : -1) + 1, src ? src.meter_n : 4, src ? src.meter_sub : 1,
-        src ? src.maqam : null, src ? src.tonic : null, src ? src.tempo : null, src ? src.energy : null, src ? src.moves : '', src ? src.chords : null, '', now()),
+        src ? src.maqam : null, src ? src.tonic : null, src ? src.tempo : null, src ? src.energy : null, src ? src.moves : '', src ? src.chords : null, src ? src.bars : null, '', now()),
   ];
   if (src) {
     stmts.push(
@@ -83,7 +83,7 @@ async function route(req, env, url, member) {
     const [members, tracks, sections, holders, beats, counts, grooves] = await Promise.all([
       env.DB.prepare('SELECT * FROM members ORDER BY created_at').all(),
       env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
-      env.DB.prepare('SELECT id, track_id, name, position, meter_n, meter_sub, energy FROM sections ORDER BY position, created_at').all(),
+      env.DB.prepare('SELECT id, track_id, name, position, meter_n, meter_sub, energy, bars FROM sections ORDER BY position, created_at').all(),
       env.DB.prepare('SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id').all(),
       env.DB.prepare('SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id').all(),
       env.DB.prepare('SELECT track_id, COUNT(*) AS n FROM ideas GROUP BY track_id').all(),
@@ -154,7 +154,17 @@ async function route(req, env, url, member) {
       await env.DB.prepare(
         'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, chords, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
       ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.chords, 1000), str(b.notes, 4000), member, t, t).run();
-      await addSection(env, tid, str(b.section, 60) || 'Main');
+      const plan = Array.isArray(b.sections) ? b.sections.filter(x => x && str(x.name, 60)).slice(0, 16) : [];
+      if (!plan.length) plan.push({ name: str(b.section, 60) || 'Main' });
+      for (const p of plan) {
+        const sid = await addSection(env, tid, str(p.name, 60));
+        await env.DB.prepare('UPDATE sections SET energy = ?, meter_n = ?, meter_sub = ?, maqam = ?, tonic = ?, tempo = ?, bars = ?, notes = ? WHERE id = ?').bind(
+          intIn(p.energy, 1, 5, null), intIn(p.meter_n ?? b.meter_n, 1, 32, 4),
+          [1, 2, 4].includes(Number(p.meter_sub ?? b.meter_sub)) ? Number(p.meter_sub ?? b.meter_sub) : 1,
+          str(p.maqam, 60) || null, str(p.tonic, 20) || null, intIn(p.tempo, 20, 400, null), intIn(p.bars, 1, 256, null),
+          str(p.notes, 4000), sid,
+        ).run();
+      }
       return json(await loadTrack(env, tid), 201);
     }
     if (!id) return null;
@@ -206,7 +216,7 @@ async function route(req, env, url, member) {
         try { JSON.parse(moves || '{}'); } catch { return json({ error: 'bad moves' }, 400); }
         if (moves.length > 4000) return json({ error: 'moves too long' }, 400);
       }
-      await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ?, maqam = ?, tonic = ?, tempo = ?, energy = ?, moves = ?, chords = ? WHERE id = ?').bind(
+      await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ?, maqam = ?, tonic = ?, tempo = ?, energy = ?, moves = ?, chords = ?, bars = ? WHERE id = ?').bind(
         str(b.name, 60) || cur.name,
         'notes' in b ? str(b.notes, 4000) : cur.notes,
         intIn(b.meter_n, 1, 32, cur.meter_n),
@@ -217,6 +227,7 @@ async function route(req, env, url, member) {
         'energy' in b ? intIn(b.energy, 1, 5, null) : cur.energy,
         moves,
         opt('chords', 1000),
+        'bars' in b ? intIn(b.bars, 1, 256, null) : cur.bars,
         id,
       ).run();
       await touch(env, trackId);
@@ -311,8 +322,15 @@ async function route(req, env, url, member) {
       const starred = 'starred' in b ? (b.starred ? 1 : 0) : idea.starred;
       const text = 'body' in b ? str(b.body, 4000) : idea.body;
       const layer = IDEA_LANES.includes(b.layer) ? b.layer : idea.layer;
-      await env.DB.prepare('UPDATE ideas SET starred = ?, body = ?, layer = ? WHERE id = ?').bind(starred, text, layer, id).run();
-      return json({ ...idea, starred, body: text, layer });
+      let data = idea.data;
+      if ('place' in b) {
+        let d = {}; try { d = idea.data ? JSON.parse(idea.data) : {}; } catch {}
+        const pl = b.place && typeof b.place === 'object' ? { mode: b.place.mode === 'once' ? 'once' : 'loop', bar: intIn(b.place.bar, 1, 256, 1) } : null;
+        if (pl) d.place = pl; else delete d.place;
+        data = JSON.stringify(d);
+      }
+      await env.DB.prepare('UPDATE ideas SET starred = ?, body = ?, layer = ?, data = ? WHERE id = ?').bind(starred, text, layer, data, id).run();
+      return json({ ...idea, starred, body: text, layer, data });
     }
     if (m === 'DELETE') {
       if (idea.audio_id) await env.AUDIO.delete(idea.audio_id);

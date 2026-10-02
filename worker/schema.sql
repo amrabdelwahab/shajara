@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS sections (
   energy INTEGER,
   moves TEXT NOT NULL DEFAULT '',
   chords TEXT,
+  bars INTEGER,
   notes TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL
 );
