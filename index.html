@@ -219,10 +219,125 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .lp-foot { text-align: center; font: 14px/1.4 var(--serif); color: var(--muted); margin-top: 24px; }
 .lp-foot b { font-family: var(--serif); color: var(--text); }
 .gate-space { justify-content: flex-start; text-align: left; gap: 14px; }
-.gs-logo { height: 44px; width: auto; flex: none; }
-.gs-logo.round { width: 44px; height: 44px; border-radius: 50%; }
-.top .logo.round { width: 36px; height: 36px; border-radius: 50%; }
-.gate .logo-big.round { width: 150px; height: 150px; border-radius: 50%; }
+.gs-logo { flex: none; }
+.gs-logo.tall { height: 44px; width: auto; }
+.gs-logo.round, .gs-logo.fit { width: 44px; height: 44px; border-radius: 50%; object-fit: contain; }
+.gs-logo.fit { border-radius: 10px; }
+.top .logo.round, .top .logo.fit { width: 36px; height: 36px; border-radius: 50%; object-fit: contain; }
+.top .logo.fit { border-radius: 8px; }
+.gate .logo-big.round, .gate .logo-big.fit { width: 150px; height: 150px; border-radius: 50%; object-fit: contain; }
+.gate .logo-big.fit { border-radius: 20px; }
+.coach { position: fixed; inset: 0; z-index: 60; }
+.coach-hole { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(0,0,0,.74); pointer-events: none; }
+.coach-hole::after { content: ""; position: absolute; inset: -4px; border-radius: 20px; border: 2px solid var(--brand-yellow); animation: coachPulse 1.4s ease-out infinite; }
+@keyframes coachPulse { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.12); } }
+.coach-tip { position: fixed; background: var(--brand-yellow); color: #000; border-radius: 16px; padding: 14px 14px 10px; box-shadow: 0 12px 30px rgba(0,0,0,.5); }
+.coach-tip::before { content: ""; position: absolute; left: calc(var(--ax) - 8px); top: -8px; border: 8px solid transparent; border-top: 0; border-bottom-color: var(--brand-yellow); }
+.coach-tip.up::before { top: auto; bottom: -8px; border-bottom: 0; border-top: 8px solid var(--brand-yellow); }
+.coach-tip p { margin: 0 0 10px; font: 700 17px/1.3 var(--serif); }
+.coach-act { display: flex; align-items: center; gap: 10px; }
+.coach-skip { font: 700 11px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: rgba(0,0,0,.6); }
+.coach-n { flex: 1; text-align: center; font: 700 11px/1 var(--display); color: rgba(0,0,0,.55); }
+.coach-next { background: #000 !important; color: var(--brand-yellow) !important; border-color: #000 !important; padding: 10px 16px; }
+.home .hello { margin-bottom: 14px; }
+.people-row { display: flex; gap: 6px; overflow-x: auto; margin: 0 -16px 8px; padding: 4px 16px 10px; scrollbar-width: none; }
+.people-row::-webkit-scrollbar { display: none; }
+.pp { flex: none; width: 66px; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 2px; border-radius: 14px; }
+.pp.on { background: var(--surface-2); }
+.pp-n { font: 800 10px/1.1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .02em; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pp-c { font: italic 11px/1 var(--serif); color: var(--faint); min-height: 11px; }
+.av { width: 44px; height: 44px; border-radius: 50%; display: inline-grid; place-items: center; flex: none; background: var(--surface-2); border: 1.5px solid var(--line); font: 800 14px/1 var(--display); color: var(--text); }
+.av.me { border: 2px solid var(--brand-yellow); color: var(--brand-yellow); }
+.av.guest { border-style: dashed; color: var(--muted); }
+.av.xs { width: 22px; height: 22px; font-size: 9px; border-width: 1px; }
+.av.prod { width: 22px; height: 22px; font-size: 9px; border: 1px dashed var(--muted); color: var(--muted); }
+.pp.add .av { border-style: dashed; color: var(--muted); font-size: 20px; }
+.pp.on .av { box-shadow: 0 0 0 3px var(--surface-2), 0 0 0 5px var(--text); }
+.tcard { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 14px 12px; margin-bottom: 10px; cursor: pointer; }
+.tcard.mine { border-color: color-mix(in srgb, var(--brand-yellow) 45%, var(--line)); box-shadow: inset 4px 0 0 var(--brand-yellow); }
+.tc-top { display: flex; align-items: flex-start; gap: 8px; }
+.tc-title { flex: 1; font: 800 17px/1.15 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.tc-top .kebab { margin: -6px -6px 0 0; padding: 4px 8px; font-size: 20px; color: var(--muted); }
+.tc-top .dot { position: static; }
+.tc-by { display: flex; align-items: center; gap: 7px; margin: 6px 0 2px; font: 14px/1.2 var(--serif); }
+.tc-by .faint { font-style: italic; font-size: 13px; }
+.tc-yours { font: 800 9px/1 var(--display); letter-spacing: .07em; text-transform: uppercase; color: #000; background: var(--brand-yellow); padding: 4px 7px; border-radius: 999px; }
+.tc-idea { margin: 8px 0 0; font: 16px/1.4 var(--serif); color: color-mix(in srgb, var(--text) 85%, var(--muted)); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tc-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.tc-chip { font: 14px/1.1 var(--serif); padding: 5px 9px; border-radius: 999px; border: 1px solid var(--line); display: inline-flex; gap: 6px; align-items: baseline; }
+.tc-chip .k { font: 700 8px/1 var(--display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.tc-secs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; margin-top: 10px; }
+.tc-secs .arr { color: var(--brand-yellow); padding: 0 6px; }
+.tc-sec { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 9px; background: var(--surface-2); }
+.tc-sec b { font: 800 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; }
+.tc-sec span:not(.energy) { font: italic 12px/1 var(--serif); color: var(--muted); }
+.tc-foot { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.tc-stats { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font: 13px/1.2 var(--serif); }
+.tc-stat { display: inline-flex; align-items: center; gap: 5px; color: color-mix(in srgb, var(--text) 85%, var(--muted)); }
+.tc-stat svg { width: 14px; height: 14px; color: var(--muted); }
+.tc-last { font-style: italic; color: var(--faint); }
+.tc-stats .faint { font-style: italic; }
+.tc-form { font: 700 10px/1.4 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .05em; margin-top: 8px; }
+.tc-form .arr { color: var(--brand-yellow); padding: 0 5px; }
+.tc-who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tc-k { font: 800 9px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); flex: none; }
+.tc-avs { display: flex; flex: none; }
+.tc-avs > * + * { margin-left: -6px; }
+.tc-who .faint { font: italic 13px/1.2 var(--serif); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.tc-layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.tc-l { display: flex; align-items: center; gap: 3px; min-height: 30px; padding: 4px 6px; border-radius: 9px; background: color-mix(in srgb, var(--c) 12%, transparent); overflow: hidden; }
+.tc-l > i { width: 4px; align-self: stretch; border-radius: 2px; background: var(--c); margin-right: 3px; flex: none; }
+.tc-l em { font: italic 12px/1 var(--serif); color: var(--faint); }
+.tc-l .av.xs + .av.xs { margin-left: -8px; }
+.seg { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.seg-b { padding: 7px 12px; border-radius: 999px; font: 800 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.seg-b span { font: italic 12px/1 var(--serif); text-transform: none; letter-spacing: 0; color: var(--faint); }
+.seg-b.on { background: var(--text); color: #000; }
+.seg-b.on span { color: rgba(0,0,0,.55); }
+.home .list-head { align-items: center; }
+.tcard.new { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; width: 100%; min-height: 150px; background: transparent; border: 1.5px dashed color-mix(in srgb, var(--brand-yellow) 45%, var(--line)); color: var(--text); }
+.tcard.new:hover, .tcard.new:focus-visible { background: color-mix(in srgb, var(--brand-yellow) 6%, transparent); }
+.tcard.new b { font: 800 14px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--brand-yellow); }
+.tcard.new .faint { font: italic 14px/1.3 var(--serif); }
+.nc-art { display: flex; align-items: center; gap: 14px; opacity: .55; }
+.plant-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; border-radius: var(--radius); border: 1.5px dashed var(--line); margin-bottom: 10px; }
+.plant-row b { display: block; font: 800 12px/1.2 var(--display); text-transform: uppercase; }
+.plant-row .faint { font: italic 13px/1.2 var(--serif); }
+.plant-empty { text-align: center; padding: 30px 16px; border-radius: var(--radius); border: 1.5px dashed var(--line); margin: 8px 0 14px; }
+.plant-empty b { display: block; font: 800 15px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 12px 0 6px; }
+.plant-empty p { font: 16px/1.45 var(--serif); color: var(--muted); margin: 0 0 14px; }
+.pe-tree { display: inline-flex; align-items: flex-end; gap: 6px; height: 40px; }
+.pe-tree i { width: 10px; border-radius: 3px; background: var(--c); }
+.pe-tree i:nth-child(1) { height: 38px; } .pe-tree i:nth-child(2) { height: 28px; } .pe-tree i:nth-child(3) { height: 18px; } .pe-tree i:nth-child(4) { height: 10px; }
+.concept { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: start; gap: 8px; margin-top: 22px; padding: 16px 14px; border-radius: var(--radius); border: 1px solid var(--line); }
+.cc-step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 5px; min-width: 0; }
+.cc-step b { font: 800 10px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
+.cc-step > span:last-child { font: italic 12px/1.3 var(--serif); color: var(--muted); }
+.cc-step em { font-style: normal; font-weight: 600; }
+.cc-arr { color: var(--brand-yellow); font-size: 18px; margin-top: 12px; }
+.cc-art { height: 40px; display: flex; align-items: center; justify-content: center; }
+.cc-idea { width: 40px; border-radius: 50%; background: color-mix(in srgb, var(--brand-yellow) 18%, transparent); color: var(--brand-yellow); font-size: 18px; }
+.cc-secs { gap: 3px; }
+.cc-secs i { font: 800 8px/1 var(--display); font-style: normal; text-transform: uppercase; padding: 6px 5px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); }
+.cc-tree { flex-direction: column; gap: 3px; width: 44px; }
+.cc-tree i { display: block; height: 7px; border-radius: 3px; background: var(--c); }
+.cc-tree i:nth-child(1) { width: 44px; } .cc-tree i:nth-child(2) { width: 14px; } .cc-tree i:nth-child(3) { width: 40px; } .cc-tree i:nth-child(4) { width: 30px; }
+.cc-btn { grid-column: 1 / -1; justify-self: center; margin-top: 6px; }
+.grow-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--line); }
+.gs-layers { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.gs-layers span { font: 800 10px/1 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--c); }
+.gs-layers i { color: var(--faint); font-style: normal; }
+.grow-strip .faint { font-style: italic; flex: 1; }
+@media (min-width: 900px) {
+  .wrap.home { max-width: 980px; }
+  .tlist { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  body.wide .top-in { max-width: 980px; }
+  .tlist .tcard { margin-bottom: 0; }
+  .home .list-head { margin-top: 26px; }
+}
+.logo-pick { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.lp-prev { width: 64px; height: 64px; flex: none; border-radius: 14px; border: 1.5px dashed var(--line); display: grid; place-items: center; font-size: 24px; color: var(--muted); overflow: hidden; background: var(--surface); }
+.lp-prev img { width: 100%; height: 100%; object-fit: contain; }
 .gate-space b { font-size: 14px !important; }
 .space-btn { font: inherit; color: inherit; text-transform: inherit; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .space-btn .caret { font-size: 11px; color: var(--muted); }
@@ -852,7 +967,30 @@ async function peekSpace(key) {
   return (await res.json()).space;
 }
 const SPACE_LOGOS = { abba: 'logo.png', ghorab: 'ghorab.png' };
-const logoFor = id => SPACE_LOGOS[id] || '';
+// A space's logo: one it uploaded, else a built-in one. Returns { src, cls } or null.
+function logoOf(sp) {
+  if (!sp) return null;
+  if (sp.logo_v) return { src: `${API}/api/spaces/${sp.id}/logo?v=${sp.logo_v}`, cls: 'fit' };
+  if (SPACE_LOGOS[sp.id]) return { src: SPACE_LOGOS[sp.id], cls: sp.id === 'abba' ? 'tall' : 'round' };
+  return null;
+}
+const logoImg = (sp, base, alt) => { const l = logoOf(sp); return l ? `<img class="${base} ${l.cls}" src="${l.src}" alt="${esc(alt || '')}">` : ''; };
+// Shrink a picked image on the phone: max 512px, PNG keeps transparency, WebP if that's still heavy.
+async function shrinkImage(file) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 512 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  let blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  if (blob.size > 700 * 1024) blob = await new Promise(r => c.toBlob(r, 'image/webp', 0.85));
+  return blob;
+}
+async function uploadLogo(blob, key) {
+  const res = await fetch(API + '/api/space/logo', { method: 'PUT', headers: { 'X-Band-Key': key || S.key, 'Content-Type': blob.type }, body: blob });
+  const d = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(d.error || 'Logo upload failed');
+  return d;
+}
 const isBand = () => !S.space || S.space.id === 'abba';
 const spaceName = () => (S.space && S.space.name) || '‘ala bab allah';
 
@@ -872,6 +1010,7 @@ async function loadState() {
 /* ---------- routing ---------- */
 function route() {
   stopEverything();
+  document.body.classList.remove('wide');
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
   if (h === 'band') return viewBand();
@@ -969,7 +1108,7 @@ function viewGate(chosen) {
   $('#newSpace').onclick = newSpaceSheet;
   let pick = chosen || null;
   const draw = list => {
-    $('#gs').innerHTML = list.map(x => `<button class="menu-item gate-space${pick === x.id ? ' sel' : ''}" data-id="${esc(x.id)}">${logoFor(x.id) ? `<img class="gs-logo${x.id === 'abba' ? '' : ' round'}" src="${logoFor(x.id)}" alt="">` : ''}<span><b>${esc(x.name)}</b><span class="small muted">${known.some(k => k.id === x.id) ? 'on this phone · tap to open' : 'enter its passcode'}</span></span></button>`).join('');
+    $('#gs').innerHTML = list.map(x => `<button class="menu-item gate-space${pick === x.id ? ' sel' : ''}" data-id="${esc(x.id)}">${logoImg(x, 'gs-logo')}<span><b>${esc(x.name)}</b><span class="small muted">${known.some(k => k.id === x.id) ? 'on this phone · tap to open' : 'enter its passcode'}</span></span></button>`).join('');
     $('#gs').querySelectorAll('[data-id]').forEach(b => b.onclick = async () => {
       const k = known.find(x => x.id === b.dataset.id);
       if (k) { Spaces.use(k.key); try { await loadState(); } catch (e) { return toast(e.message); } return route(); }
@@ -989,15 +1128,78 @@ function viewGate(chosen) {
   $('#pc').onkeydown = e => { if (e.key === 'Enter') submit(); };
 }
 
+// Spotlight tips: dim the screen, light up the real button, say what it does in a few words.
+const TOURS = {
+  home: [
+    ['.switch-btn', 'Switch between your spaces'],
+    ['[aria-label="People"]', 'Who’s here, guest performers, the logo'],
+    ['.people-row', 'Everyone in this space. Tap someone to see what they planted'],
+    ['.tcard.new', 'Plant a new track. It walks you through it.'],
+    ['.tcard:not(.new)', 'Open a track to sketch into it'],
+  ],
+  track: [
+    ['.form', 'The sections. Tap one to open it, → for the transition'],
+    ['.sec-title', 'Tap the name to rename'],
+    ['.lineup', 'Who plays which layer here'],
+    ['.layer .compose', 'Record, MIDI, rhythm, note or link into this layer'],
+    ['#tpPlay', 'Play this section on a loop'],
+    ['#tpMix', 'Pick exactly what plays'],
+    ['.tempo', 'The pulse. Nudge it with − and +'],
+  ],
+};
+function coach(name, force) {
+  const sid = (S.space && S.space.id) || 'abba', flag = `coach:${name}:${sid}`;
+  if (!force && store.get(flag, false)) return;
+  const steps = TOURS[name].filter(([sel]) => document.querySelector(sel));
+  if (!steps.length) return;
+  store.set(flag, true);
+  const ov = document.createElement('div'); ov.className = 'coach';
+  ov.innerHTML = '<div class="coach-hole"></div><div class="coach-tip"><p></p><div class="coach-act"><button class="coach-skip">Skip</button><span class="coach-n"></span><button class="btn primary coach-next">Next</button></div></div>';
+  document.body.appendChild(ov);
+  let k = 0;
+  const end = () => { ov.remove(); window.removeEventListener('resize', place); };
+  const place = () => {
+    const el = document.querySelector(steps[k][0]); if (!el) return;
+    const r = el.getBoundingClientRect(), pad = 6, hole = $('.coach-hole', ov), tip = $('.coach-tip', ov);
+    Object.assign(hole.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
+    $('p', tip).textContent = steps[k][1];
+    $('.coach-n', tip).textContent = `${k + 1} / ${steps.length}`;
+    $('.coach-next', tip).textContent = k === steps.length - 1 ? 'Got it' : 'Next';
+    const below = r.top + r.height / 2 < innerHeight / 2;
+    tip.classList.toggle('up', !below);
+    const tw = Math.min(300, innerWidth - 32), left = Math.max(16, Math.min(innerWidth - tw - 16, r.left + r.width / 2 - tw / 2));
+    Object.assign(tip.style, { width: tw + 'px', left: left + 'px', top: below ? r.bottom + pad + 14 + 'px' : '', bottom: below ? '' : innerHeight - r.top + pad + 14 + 'px' });
+    tip.style.setProperty('--ax', Math.max(18, Math.min(tw - 18, r.left + r.width / 2 - left)) + 'px');
+  };
+  const show = () => {
+    const el = document.querySelector(steps[k][0]);
+    if (!el) { if (++k < steps.length) return show(); return end(); }
+    const r = el.getBoundingClientRect();
+    if (r.top < 70 || r.bottom > innerHeight - 90) { el.scrollIntoView({ block: 'center' }); setTimeout(place, 260); } else place();
+  };
+  $('.coach-next', ov).onclick = () => { if (++k >= steps.length) return end(); show(); };
+  $('.coach-skip', ov).onclick = end;
+  window.addEventListener('resize', place);
+  show();
+}
+function openTour() { store.set('coach:track:' + ((S.space && S.space.id) || 'abba'), false); go(''); setTimeout(() => coach('home', true), 400); }
+
 function newSpaceSheet() {
   sheet(`<h3>Start a new space</h3><p class="lede">A space has its own people, tracks and passcode. Anyone with the passcode can open it, so pick one you’ll share only with them.</p>
     <label class="field">Space name</label><input id="ns-name" type="text" placeholder="your band or project">
     <label class="field">Your name</label><input id="ns-me" type="text" placeholder="how the others know you">
     <label class="field">What you play (optional)</label><input id="ns-inst" type="text" placeholder="e.g. oud, production">
+    <label class="field">Logo (optional)</label>
+    <label class="logo-pick"><input id="ns-logo" type="file" accept="image/png,image/jpeg,image/webp" hidden><span class="lp-prev" id="ns-prev">+</span><span class="small muted">Pick an image. Square or round works best.</span></label>
     <label class="field">Passcode</label><input id="ns-key" type="password" autocapitalize="off" placeholder="at least 6 characters">
     <input id="ns-key2" type="password" autocapitalize="off" placeholder="type it again" style="margin-top:8px">
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ns-go">Start it</button></div>`, root => {
     setTimeout(() => $('#ns-name', root).focus(), 60);
+    let logo = null;
+    $('#ns-logo', root).onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { logo = await shrinkImage(f); $('#ns-prev', root).innerHTML = `<img src="${URL.createObjectURL(logo)}" alt="">`; } catch { toast('Couldn’t read that image'); }
+    };
     $('#ns-go', root).onclick = async () => {
       const v = id => $('#' + id, root).value.trim();
       if (v('ns-key') !== v('ns-key2')) return toast('The two passcodes don’t match');
@@ -1007,6 +1209,7 @@ function newSpaceSheet() {
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Couldn’t start it');
         Spaces.add(v('ns-key'), d.space); Spaces.use(v('ns-key')); Spaces.setMe(d.me);
+        if (logo) { try { await uploadLogo(logo, v('ns-key')); } catch (e) { toast(e.message); } }
         closeSheet(); await loadState(); go(''); route(); toast(`${d.space.name} is ready. Share its passcode with your people.`);
       } catch (e) { toast(e.message); btn.disabled = false; }
     };
@@ -1016,7 +1219,7 @@ function newSpaceSheet() {
 async function viewWho() {
   if (!S.members.length) { try { await loadState(); } catch (e) { return toast(e.message); } }
   $('#app').innerHTML = `<div class="wrap"><div class="gate">
-    ${!isBand() && logoFor(S.space && S.space.id) ? `<img class="logo-big round" src="${logoFor(S.space.id)}" alt="">` : ''}
+    ${isBand() && !(S.space && S.space.logo_v) ? '' : logoImg(S.space, 'logo-big')}
     <h2>${esc(spaceName())}</h2>
     <p class="muted">Who’s this? So everyone knows who posted what. You can change it later.</p>
     <div class="people">${S.members.filter(m => !m.guest).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(m.instruments) || '&nbsp;'}</span></button>`).join('')}</div>
@@ -1033,44 +1236,95 @@ async function viewWho() {
 }
 
 /* ---------- home ---------- */
+// Initials for an avatar: first letters of the first two words.
+const initials = n => (n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const avatar = (m, cls) => `<span class="av${m && m.guest ? ' guest' : ''}${m && m.id === S.me ? ' me' : ''}${cls ? ' ' + cls : ''}">${esc(initials(m ? m.name : '?'))}</span>`;
+
+function trackCard(t, mine) {
+  const unseen = (S.seen[t.id] || 0) < t.updated_at;
+  const by = S.members.find(m => m.id === t.created_by);
+  const chips = [t.genre && ['Genre', t.genre], t.maqam && ['Maqam', t.maqam + (t.tonic ? ' on ' + t.tonic : '')], t.tempo && ['Pulse', t.tempo + ' bpm']].filter(Boolean)
+    .map(([k, v]) => `<span class="tc-chip"><span class="k">${k}</span>${esc(v)}</span>`).join('');
+  const idea = (t.notes || '').split(/\n+/).filter(Boolean)[0] || '';
+  const secs = t.sections.map(s => {
+    const meter = s.meter_n && !(s.meter_n === 4 && s.meter_sub === 1) ? `${s.meter_n}/${({ 1: 4, 2: 8, 4: 16 })[s.meter_sub] || 4}` : '';
+    const bits = [meter, s.bars ? s.bars + ' bars' : '', s.maqam || '', s.tempo ? s.tempo + ' bpm' : ''].filter(Boolean).join(' · ');
+    return `<span class="tc-sec"><b>${esc(s.name)}</b>${bits ? `<span>${esc(bits)}</span>` : ''}${s.energy ? energyBars(s.energy) : ''}</span>`;
+  }).join('<span class="arr">→</span>');
+  const k = t.kinds || {};
+  const stats = [[ICON.mic, k.audio, 'recording'], [ICON.keys, k.midi, 'MIDI take'], [ICON.note, k.text, 'note'], [ICON.link, k.link, 'link']]
+    .filter(([, n]) => n).map(([ic, n, w]) => `<span class="tc-stat">${ic}${n} ${w}${n > 1 ? 's' : ''}</span>`).join('');
+  const lastBy = t.last && S.members.find(m => m.id === t.last.by);
+  const ids = [...new Set(t.holders.map(h => h.member_id))];
+  const people = ids.filter(id => id !== PRODUCTION).map(id => S.members.find(m => m.id === id)).filter(Boolean);
+  const prod = ids.includes(PRODUCTION);
+  return `<div class="tcard${mine ? ' mine' : ''}" role="link" tabindex="0" onclick="go('t/${esc(t.id)}')">
+    <div class="tc-top"><b class="tc-title">${esc(t.title)}</b>${unseen ? '<i class="dot" title="New since you last looked">✦</i>' : ''}<button class="kebab" aria-label="Track options" onclick="event.stopPropagation(); trackMenu('${esc(t.id)}')">⋯</button></div>
+    <div class="tc-by">${mine ? '<span class="tc-yours">yours</span>' : by ? `${avatar(by, 'xs')}<span>planted by ${esc(by.name)}</span>` : ''}<span class="faint">${ago(t.created_at)}</span></div>
+    ${idea ? `<p class="tc-idea">${esc(idea)}</p>` : ''}
+    ${chips ? `<div class="tc-chips">${chips}</div>` : ''}
+    ${secs ? `<div class="tc-secs">${secs}</div>` : ''}
+    <div class="tc-foot">
+      <div class="tc-stats">${stats || '<span class="faint">nothing sketched yet</span>'}${t.last ? `<span class="tc-last">latest: ${esc(lastBy ? (lastBy.id === S.me ? 'you' : lastBy.name) : 'someone')}, ${ago(t.last.at)}</span>` : ''}</div>
+      <div class="tc-who"><span class="tc-k">Playing</span>${people.length || prod ? `<span class="tc-avs">${people.map(m => avatar(m, 'xs')).join('')}${prod ? '<span class="av prod" title="Production">P</span>' : ''}</span><span class="faint">${people.map(m => esc(m.id === S.me ? 'you' : m.name)).join(', ')}${prod ? (people.length ? ' + production' : 'production') : ''}</span>` : '<span class="faint">no line-up yet</span>'}</div>
+    </div>
+  </div>`;
+}
+
+const newCard = () => `<button class="tcard new" onclick="newTrack()">
+  <span class="nc-art"><span class="cc-secs"><i>Intro</i><i>A</i><i>B</i></span><span class="cc-tree">${LAYERS.map(l => `<i style="--c:${l.c}"></i>`).join('')}</span></span>
+  <b>+ Plant a new track</b><span class="faint">Start with the idea. Everything else can grow later.</span></button>`;
+
 function viewHome() {
   const render = () => {
     const me = S.members.find(m => m.id === S.me);
-    const list = S.tracks.map(t => {
-      const unseen = (S.seen[t.id] || 0) < t.updated_at;
-      const meta = [t.genre, t.maqam && (t.maqam + (t.tonic ? ' on ' + t.tonic : '')), t.tempo && t.tempo + ' bpm', t.ideas && t.ideas + ' idea' + (t.ideas > 1 ? 's' : '')].filter(Boolean).map(esc).join(' · ');
-      const form = t.sections.length > 1 || t.sections.some(s => s.energy) ? `<div class="form-line">${t.sections.map(s => `<span class="fl-sec">${esc(s.name)}${s.energy ? energyBars(s.energy) : ''}</span>`).join('<span class="arr">→</span>')}</div>` : '';
-      const mini = LAYERS.map(l => {
-        const names = [...new Set(t.holders.filter(h => h.layer === l.key).map(h => memberName(h.member_id)))];
-        const beats = [...new Set(t.beats.filter(b => b.layer === l.key).map(b => b.name || 'beat'))];
-        return `<div class="mini-layer" style="--c:${l.c}"><span class="ln">${l.short}</span><span class="who">${names.length ? names.map(esc).join(', ') : '<span class="open">open</span>'}</span><span class="bt">${beats.length ? '◆ ' + beats.map(esc).join(' / ') : ''}</span></div>`;
-      }).join('');
-      return `<div class="track-row" role="link" tabindex="0" onclick="go('t/${esc(t.id)}')">
-        <div class="tr-top"><div class="t">${esc(t.title)}</div>${unseen ? '<i class="dot">✦</i>' : ''}<button class="kebab" aria-label="Track options" onclick="event.stopPropagation(); trackMenu('${esc(t.id)}')">⋯</button></div>
-        <div class="meta">${meta ? meta + ' · ' : ''}${ago(t.updated_at)}</div>
-        ${form}<div class="mini-tree">${mini}</div></div>`;
-    }).join('');
+    const members = S.members.filter(m => !m.guest), guests = S.members.filter(m => m.guest);
+    const f = S.homeFilter && S.members.some(m => m.id === S.homeFilter) ? S.homeFilter : null;
+    const mineT = S.tracks.filter(t => t.created_by === S.me), othersT = S.tracks.filter(t => t.created_by !== S.me);
+    const people = [...members.sort((a, b) => (b.id === S.me) - (a.id === S.me)), ...guests].map(m => {
+      const n = S.tracks.filter(t => t.created_by === m.id).length;
+      return `<button class="pp${f === m.id ? ' on' : ''}" data-who="${esc(m.id)}">${avatar(m)}<span class="pp-n">${esc(m.id === S.me ? 'You' : m.name)}</span><span class="pp-c">${m.guest ? 'guest' : n ? n + ' track' + (n > 1 ? 's' : '') : ''}</span></button>`;
+    }).join('') + `<button class="pp add" onclick="go('band')"><span class="av">+</span><span class="pp-n">People</span></button>`;
+    let body;
+    if (f) {
+      const who = S.members.find(m => m.id === f), list = S.tracks.filter(t => t.created_by === f);
+      body = `<div class="list-head"><b>Planted by ${esc(f === S.me ? 'you' : who.name)}</b><button class="sug" onclick="S.homeFilter=null; viewHome()">Show all</button></div>
+        ${list.length || f === S.me ? `<div class="tlist">${f === S.me ? newCard() : ''}${list.map(t => trackCard(t, f === S.me)).join('')}</div>` : `<div class="empty small">Nothing planted by ${esc(who.name)} yet.</div>`}`;
+    } else if (!S.tracks.length) {
+      body = `<div class="plant-empty"><div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>
+        <b>No tracks yet</b><p>Start with the idea. The wizard asks what it’s about, what it’s built on and how it moves.</p>
+        <button class="btn primary" onclick="newTrack()">+ Plant the first track</button></div>`;
+    } else {
+      const tab = S.homeTab || 'all';
+      const list = tab === 'mine' ? mineT : tab === 'others' ? othersT : S.tracks;
+      const seg = [['all', 'All', S.tracks.length], ['mine', 'Yours', mineT.length], ['others', 'Others', othersT.length]]
+        .map(([k, l, n]) => `<button class="seg-b${tab === k ? ' on' : ''}" data-tab="${k}">${l}<span>${n}</span></button>`).join('');
+      body = `<div class="list-head"><b>Tracks</b><div class="seg">${seg}</div></div>
+        ${tab === 'others' && !list.length ? '<div class="empty small">Nothing from the others yet.</div>' : `<div class="tlist">${tab !== 'others' ? newCard() : ''}${list.map(t => trackCard(t, t.created_by === S.me)).join('')}</div>`}`;
+    }
     $('#app').innerHTML = topBar(`<button class="space-btn" onclick="spacesSheet()" aria-label="Switch space">${esc(spaceName())}<span class="caret">▾</span></button>`,
-      isBand() ? `<img class="logo" src="logo.png" alt="‘ala bab allah">` : logoFor(S.space && S.space.id) ? `<img class="logo round" src="${logoFor(S.space.id)}" alt="${esc(spaceName())}">` : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z\u0600-\u06FF]+/, '').slice(0, 1).toUpperCase())}</span>`,
+      logoOf(S.space || { id: 'abba' }) ? logoImg(S.space || { id: 'abba' }, 'logo', spaceName()) : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z؀-ۿ]+/, '').slice(0, 1).toUpperCase())}</span>`,
       `<button class="switch-btn" aria-label="Switch space" onclick="spacesSheet()">⇄ <span>Switch</span></button><button class="icon-btn" aria-label="People" onclick="go('band')">${ICON.people}</button>`) +
-      `<div class="wrap">
-        <div class="hello"><div><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} growing</div></div><span class="ar">شجرة</span></div>
-        ${legend()}
-        <div class="list-head"><b>Tracks</b><span class="ar">التراكات</span></div>
-        ${list || `<div class="empty">No tracks yet.<br>Plant the first one.</div>`}
-      </div>
-      <button class="btn primary fab" onclick="newTrack()">+ New track</button>`;
+      `<div class="wrap home">
+        <div class="hello"><div><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} · ${members.length} ${members.length === 1 ? 'person' : 'people'}${guests.length ? ` · ${guests.length} guest${guests.length > 1 ? 's' : ''}` : ''}</div></div><span class="ar">شجرة</span></div>
+        <div class="people-row">${people}</div>
+        ${body}
+        <div class="concept">
+          <div class="cc-step"><span class="cc-art cc-idea">✦</span><b>An idea</b><span>what it’s about, what it’s built on</span></div>
+          <span class="cc-arr">→</span>
+          <div class="cc-step"><span class="cc-art cc-secs"><i>Intro</i><i>A</i><i>B</i></span><b>Sections</b><span>each with its length, energy, moves</span></div>
+          <span class="cc-arr">→</span>
+          <div class="cc-step"><span class="cc-art cc-tree">${LAYERS.map(l => `<i style="--c:${l.c}" title="${l.name}"></i>`).join('')}</span><b>Each a tree</b><span>${LAYERS.map(l => `<em style="color:${l.c}">${l.short}</em>`).join(' · ')}</span></div>
+          <button class="sug cc-btn" onclick="openTour()">Show me around</button>
+        </div>
+      </div>`;
+    document.body.classList.add('wide');
+    $('#app').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.homeTab = b.dataset.tab; render(); });
+    $('#app').querySelectorAll('[data-who]').forEach(b => b.onclick = () => { S.homeFilter = S.homeFilter === b.dataset.who ? null : b.dataset.who; render(); });
   };
   render();
-  loadState().then(render).catch(e => toast(e.message));
+  loadState().then(() => { render(); if (!$('.scrim')) setTimeout(() => coach('home'), 300); }).catch(e => toast(e.message));
   poll(() => loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === '') render(); }));
-}
-
-function legend() {
-  return `<div class="legend"><h4>How a track grows <span class="ar">الشجرة</span></h4>
-    <p style="margin:0 0 10px">A track is a run of sections (Intro, A, B…) with transitions between them. Each section is a tree, from the top down:</p>
-    ${LAYERS.map(l => `<div class="l" style="--c:${l.c}"><b>${l.name}</b><span class="muted">${l.role}</span></div>`).join('')}
-    <p>Anyone can hold any layer, on any instrument. One pulse runs through the whole track; each layer brings its own part on top of it, whether that’s a groove, a bass line, chords or a melody.</p></div>`;
 }
 
 /* ---------- track ---------- */
@@ -1083,6 +1337,7 @@ async function viewTrack(id) {
     if (!S.members.length) await loadState();
     S.track = await api('/tracks/' + id);
     renderTrack();
+    setTimeout(() => { if (!$('.scrim') && !$('.coach')) coach('track'); }, 400);
   } catch (e) { toast(e.message); if (!cached) go(''); return; }
   poll(async () => {
     if (location.hash.replace(/^#\/?/, '') !== 't/' + id || Player.on || playing.size || $('.scrim')) return;
@@ -1425,13 +1680,14 @@ function trackMenu(id) {
   ]);
 }
 function moveTrackSheet(t) {
-  const others = Spaces.list().filter(x => x.key !== S.key);
-  sheet(`<h3>Move ${esc(t.title)}</h3><p class="lede">It leaves ${esc(spaceName())} with everything in it. People are matched by name in the new space; anyone missing there is added as a guest.</p>
-    ${others.length ? `<div class="menu">${others.map(x => `<button class="menu-item" data-k="${esc(x.key)}"><span><b>${esc(x.name || 'Space')}</b><span class="small muted">move it here</span></span></button>`).join('')}</div>` : ''}
-    <label class="field">${others.length ? 'Or another space’s passcode' : 'The other space’s passcode'}</label>
-    <div class="tempo-row"><input id="mk" type="password" autocapitalize="off" placeholder="Passcode"><button class="btn" id="mb">Move</button></div>`, root => {
+  const known = Spaces.list();
+  sheet(`<h3>Move ${esc(t.title)}</h3><p class="lede">Pick where it goes. It leaves ${esc(spaceName())} with its sections, recordings and credits; people are matched by name there, and anyone missing is added as a guest performer.</p>
+    <div class="menu" id="mvList"><p class="small faint" style="text-align:center">Loading spaces…</p></div>
+    <div id="mvKey" class="hidden"><label class="field" id="mvLbl"></label>
+      <div class="tempo-row"><input id="mk" type="password" autocapitalize="off" placeholder="Passcode"><button class="btn primary" id="mb">Move</button></div></div>`, root => {
     const doMove = async key => {
       let to; try { to = await peekSpace(key); } catch (e) { return toast(e.message); }
+      if (S.space && to.id === S.space.id) return toast('It’s already here');
       confirmSheet(`Move to ${esc(to.name)}?`, `${esc(t.title)} disappears from ${esc(spaceName())} for everyone here.`, 'Move it', async () => {
         const r = await api(`/tracks/${t.id}/move`, { method: 'POST', body: { target_key: key } });
         Spaces.add(key, r.space);
@@ -1439,8 +1695,21 @@ function moveTrackSheet(t) {
         go(''); route(); toast(`Moved to ${r.space.name}`);
       });
     };
-    root.querySelectorAll('[data-k]').forEach(b => b.onclick = () => doMove(b.dataset.k));
-    $('#mb', root).onclick = () => { const k = $('#mk', root).value.trim(); if (k) doMove(k); };
+    fetch(API + '/api/spaces').then(r => r.json()).then(d => {
+      const list = (d.spaces || []).filter(x => !S.space || x.id !== S.space.id);
+      const box = $('#mvList', root);
+      if (!list.length) { box.innerHTML = '<p class="small faint" style="text-align:center">There’s no other space yet.</p>'; return; }
+      box.innerHTML = list.map(x => { const k = known.find(y => y.id === x.id);
+        return `<button class="menu-item gate-space" data-id="${esc(x.id)}">${logoImg(x, 'gs-logo')}<span><b>${esc(x.name)}</b><span class="small muted">${k ? 'on this phone · tap to move here' : 'needs its passcode'}</span></span></button>`; }).join('');
+      box.querySelectorAll('[data-id]').forEach(b => b.onclick = () => {
+        const x = list.find(y => y.id === b.dataset.id), k = known.find(y => y.id === x.id);
+        box.querySelectorAll('[data-id]').forEach(e => e.classList.toggle('sel', e === b));
+        if (k) return doMove(k.key);
+        $('#mvKey', root).classList.remove('hidden'); $('#mvLbl', root).textContent = `${x.name} passcode`; $('#mk', root).focus();
+        $('#mb', root).onclick = () => { const v = $('#mk', root).value.trim(); if (v) doMove(v); };
+        $('#mk', root).onkeydown = e => { if (e.key === 'Enter') $('#mb', root).click(); };
+      });
+    }).catch(() => toast('Couldn’t load the spaces'));
   });
 }
 function deleteTrack(t) {
@@ -3012,33 +3281,52 @@ function prefetchStack(sid) { stackIdeas(sid).forEach(i => audioBuffer(i).catch(
 
 /* ---------- band ---------- */
 async function spacesSheet() {
-  let l = Spaces.list();
-  if (l.some(x => !x.name)) {
-    await Promise.all(l.filter(x => !x.name).map(x => peekSpace(x.key).then(sp => Spaces.add(x.key, sp)).catch(() => {})));
-    l = Spaces.list();
-  }
-  sheet(`<h3>Spaces</h3><p class="lede">Every passcode opens its own space with its own people and tracks.</p>
-    <div class="menu">${l.map(x => `<button class="menu-item${x.key === S.key ? ' sel' : ''}" data-k="${esc(x.key)}"><span><b>${esc(x.name || 'Space')}</b><span class="small muted">${x.key === S.key ? 'you’re here' : 'switch to it'}</span></span></button>`).join('')}</div>
-    <label class="field">Join another space</label>
-    <div class="tempo-row"><input id="jk" type="password" autocapitalize="off" placeholder="Its passcode"><button class="btn" id="jb">Join</button></div>`, root => {
-    root.querySelectorAll('[data-k]').forEach(b => b.onclick = async () => {
-      if (b.dataset.k === S.key) return closeSheet();
-      Spaces.use(b.dataset.k); closeSheet(); go(''); try { await loadState(); } catch (e) { toast(e.message); } route();
-    });
-    const join = async () => {
-      const k = $('#jk', root).value.trim(); if (!k) return;
-      try { const sp = await peekSpace(k); Spaces.add(k, sp); Spaces.use(k); closeSheet(); go(''); await loadState(); route(); toast(`You’re in ${sp.name}`); }
+  const known = Spaces.list();
+  sheet(`<h3>Spaces</h3><p class="lede">Every space has its own people, tracks and passcode.</p>
+    <div class="menu" id="spList"><p class="small faint" style="text-align:center">Loading spaces…</p></div>
+    <div id="spKey" class="hidden"><label class="field" id="spLbl"></label>
+      <div class="tempo-row"><input id="jk" type="password" autocapitalize="off" placeholder="Passcode"><button class="btn primary" id="jb">Join</button></div></div>
+    <button class="btn block lp-new" id="spNew" style="margin-top:14px">+ Start a new space</button>`, root => {
+    $('#spNew', root).onclick = () => { closeSheet(); newSpaceSheet(); };
+    const open = async key => { Spaces.use(key); closeSheet(); go(''); try { await loadState(); } catch (e) { toast(e.message); } route(); };
+    const join = async key => {
+      try { const sp = await peekSpace(key); Spaces.add(key, sp); await open(key); toast(`You’re in ${sp.name}`); }
       catch (e) { toast(e.message); }
     };
-    $('#jb', root).onclick = join; $('#jk', root).onkeydown = e => { if (e.key === 'Enter') join(); };
+    fetch(API + '/api/spaces').then(r => r.json()).then(d => {
+      const list = d.spaces || [], box = $('#spList', root);
+      box.innerHTML = list.map(x => {
+        const k = known.find(y => y.id === x.id), here = S.space && S.space.id === x.id;
+        return `<button class="menu-item gate-space${here ? ' sel' : ''}" data-id="${esc(x.id)}">${logoImg(x, 'gs-logo')}<span><b>${esc(x.name)}</b><span class="small muted">${here ? 'you’re here' : k ? 'on this phone · tap to switch' : 'needs its passcode'}</span></span></button>`;
+      }).join('');
+      box.querySelectorAll('[data-id]').forEach(b => b.onclick = () => {
+        const x = list.find(y => y.id === b.dataset.id), k = known.find(y => y.id === x.id);
+        if (S.space && S.space.id === x.id) return closeSheet();
+        if (k) return open(k.key);
+        box.querySelectorAll('[data-id]').forEach(e => e.classList.toggle('sel', e === b));
+        $('#spKey', root).classList.remove('hidden'); $('#spLbl', root).textContent = `${x.name} passcode`; $('#jk', root).value = ''; $('#jk', root).focus();
+        $('#jb', root).onclick = () => { const v = $('#jk', root).value.trim(); if (v) join(v); };
+        $('#jk', root).onkeydown = e => { if (e.key === 'Enter') $('#jb', root).click(); };
+      });
+    }).catch(() => { $('#spList', root).innerHTML = ''; toast('Couldn’t load the spaces'); });
   });
 }
 function spaceSettings() {
   sheet(`<h3>${esc(spaceName())} · settings</h3>
     <label class="field">Name</label><input id="sn" type="text" value="${esc(spaceName())}">
+    <label class="field">Logo</label>
+    <label class="logo-pick"><input id="sl" type="file" accept="image/png,image/jpeg,image/webp" hidden><span class="lp-prev">${logoOf(S.space) ? `<img src="${logoOf(S.space).src}" alt="">` : '+'}</span><span class="small muted">Tap to ${logoOf(S.space) ? 'change it' : 'add one'}. It shows on the opening page and in the header.</span></label>
+    ${S.space && S.space.logo_v ? '<button class="sug" id="slRm" style="margin-top:8px">Remove the uploaded logo</button>' : ''}
     <label class="field">New passcode</label><input id="sk" type="password" autocapitalize="off" placeholder="leave empty to keep it">
     <p class="small faint" style="font-style:italic">Changing the passcode signs everyone else out of this space, and old invite links stop working. Share the new one yourself.</p>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
+    $('#sl', root).onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { const r = await uploadLogo(await shrinkImage(f)); S.space = { ...S.space, logo_v: r.logo_v }; closeSheet(); viewBand(); toast('Logo updated'); } catch (err) { toast(err.message); }
+    };
+    const rm = $('#slRm', root); if (rm) rm.onclick = async () => {
+      try { await api('/space/logo', { method: 'DELETE' }); S.space = { ...S.space, logo_v: null }; closeSheet(); viewBand(); toast('Logo removed'); } catch (err) { toast(err.message); }
+    };
     $('#ok', root).onclick = async () => {
       const name = $('#sn', root).value.trim(), nk = $('#sk', root).value.trim();
       try {
@@ -3064,7 +3352,7 @@ function viewBand() {
       <label class="field">Add someone</label>
       <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="addG">Guest</button><button class="btn" id="add">Member</button></div>
       <p class="muted small" style="margin-top:14px">Tap “this is me” to switch who you are on this phone. Instruments show up as one-tap choices in the line-up.</p>
-      <div style="margin-top:24px;display:flex;gap:10px"><button class="btn block" onclick="spacesSheet()">Switch or join a space</button></div>
+      <div style="margin-top:24px;display:flex;gap:10px"><button class="btn block" onclick="store.set('coach:track:' + ((S.space && S.space.id) || 'abba'), false); openTour()">Show me around</button><button class="btn block" onclick="spacesSheet()">Switch or join</button></div>
       <div style="margin-top:10px"><button class="btn block" id="logout">Leave ${esc(spaceName())} on this phone</button></div>
     </div>`;
     $('#app').querySelectorAll('[data-me]').forEach(b => b.onclick = () => { Spaces.setMe(b.dataset.me); render(); });

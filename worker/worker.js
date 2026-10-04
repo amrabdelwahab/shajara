@@ -130,6 +130,21 @@ async function route(req, env, url, member, space) {
   const inSpace = `SELECT id FROM tracks WHERE space_id = '${sp.replace(/'/g, '')}'`;
 
   if (a === 'space') {
+    if (id === 'logo' && m === 'PUT') {
+      const buf = await req.arrayBuffer();
+      const mime = (req.headers.get('Content-Type') || '').slice(0, 40);
+      if (!/^image\/(png|jpeg|webp)$/.test(mime)) return json({ error: 'logo must be a PNG, JPEG or WebP image' }, 400);
+      if (!buf.byteLength || buf.byteLength > 1024 * 1024) return json({ error: 'logo must be under 1 MB' }, 413);
+      await env.AUDIO.put('logo:' + sp, buf, { metadata: { mime } });
+      const v = now();
+      await env.DB.prepare('UPDATE spaces SET logo_v = ? WHERE id = ?').bind(v, sp).run();
+      return json({ id: sp, logo_v: v });
+    }
+    if (id === 'logo' && m === 'DELETE') {
+      await env.AUDIO.delete('logo:' + sp);
+      await env.DB.prepare('UPDATE spaces SET logo_v = NULL WHERE id = ?').bind(sp).run();
+      return json({ id: sp, logo_v: null });
+    }
     if (m === 'PATCH') {
       const b = await body(req);
       const name = str(b.name, 60);
@@ -150,20 +165,22 @@ async function route(req, env, url, member, space) {
   if (a === 'state' && m === 'GET') {
     const [members, tracks, sections, holders, beats, counts, grooves] = await Promise.all([
       env.DB.prepare('SELECT * FROM members WHERE space_id = ? ORDER BY guest, created_at').bind(sp).all(),
-      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, updated_at, created_at FROM tracks WHERE space_id = ? ORDER BY updated_at DESC').bind(sp).all(),
-      env.DB.prepare(`SELECT id, track_id, name, position, meter_n, meter_sub, energy, bars FROM sections WHERE track_id IN (${inSpace}) ORDER BY position, created_at`).all(),
+      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, notes, created_by, updated_at, created_at FROM tracks WHERE space_id = ? ORDER BY updated_at DESC').bind(sp).all(),
+      env.DB.prepare(`SELECT id, track_id, name, position, meter_n, meter_sub, energy, bars, maqam, tempo FROM sections WHERE track_id IN (${inSpace}) ORDER BY position, created_at`).all(),
       env.DB.prepare(`SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id WHERE s.track_id IN (${inSpace})`).all(),
       env.DB.prepare(`SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id WHERE s.track_id IN (${inSpace})`).all(),
-      env.DB.prepare(`SELECT track_id, COUNT(*) AS n FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id`).all(),
+      env.DB.prepare(`SELECT track_id, kind, COUNT(*) AS n, MAX(created_at) AS last FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id, kind`).all(),
       env.DB.prepare('SELECT * FROM grooves WHERE space_id = ? ORDER BY name').bind(sp).all(),
     ]);
     const byTrack = {};
-    for (const t of tracks.results) byTrack[t.id] = { ...t, sections: [], holders: [], beats: [], ideas: 0 };
+    for (const t of tracks.results) byTrack[t.id] = { ...t, notes: (t.notes || '').slice(0, 280), sections: [], holders: [], beats: [], ideas: 0, kinds: {}, last: null };
     for (const s of sections.results) byTrack[s.track_id]?.sections.push(s);
     for (const h of holders.results) byTrack[h.track_id]?.holders.push(h);
     for (const b of beats.results) byTrack[b.track_id]?.beats.push(b);
-    for (const c of counts.results) if (byTrack[c.track_id]) byTrack[c.track_id].ideas = c.n;
-    return json({ space: { id: space.id, name: space.name }, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
+    for (const c of counts.results) { const t = byTrack[c.track_id]; if (!t) continue; t.ideas += c.n; t.kinds[c.kind] = c.n; }
+    const lasts = await env.DB.prepare(`SELECT i.track_id, i.author_id, i.kind, i.created_at FROM ideas i JOIN (SELECT track_id, MAX(created_at) AS m FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id) x ON x.track_id = i.track_id AND x.m = i.created_at`).all();
+    for (const l of lasts.results) if (byTrack[l.track_id]) byTrack[l.track_id].last = { by: l.author_id, kind: l.kind, at: l.created_at };
+    return json({ space: { id: space.id, name: space.name, logo_v: space.logo_v || null }, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
   if (a === 'grooves') {
@@ -466,8 +483,14 @@ export default {
       ]);
       return json({ space: { id: sid, name }, me: mid }, 201, h);
     }
+    const lm = url.pathname.match(/^\/api\/spaces\/([a-z0-9]+)\/logo$/);
+    if (lm && req.method === 'GET') {
+      const { value, metadata } = await env.AUDIO.getWithMetadata('logo:' + lm[1], { type: 'arrayBuffer', cacheTtl: 86400 });
+      if (!value) return json({ error: 'not found' }, 404, h);
+      return new Response(value, { headers: { ...h, 'Content-Type': metadata?.mime || 'image/png', 'Cache-Control': 'public, max-age=31536000, immutable' } });
+    }
     if (url.pathname === '/api/spaces' && req.method === 'GET') {
-      const rows = await env.DB.prepare('SELECT id, name FROM spaces ORDER BY created_at').all();
+      const rows = await env.DB.prepare('SELECT id, name, logo_v FROM spaces ORDER BY created_at').all();
       return json({ spaces: rows.results, epoch: env.LOGOUT_EPOCH || '' }, 200, h);
     }
     const key = req.headers.get('X-Band-Key') || url.searchParams.get('k') || '';

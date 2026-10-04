@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   key_hash TEXT,
+  logo_v INTEGER,
   created_at INTEGER NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS spaces_key ON spaces (key_hash);
