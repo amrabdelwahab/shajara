@@ -230,8 +230,12 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .coach { position: fixed; inset: 0; z-index: 60; opacity: 0; transition: opacity .18s ease-out; }
 .coach.ready { opacity: 1; }
 .coach-hole { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(0,0,0,.74); pointer-events: none; }
-.coach-hole::after { content: ""; position: absolute; inset: -4px; border-radius: 20px; border: 2px solid var(--brand-yellow); animation: coachPulse 1.4s ease-out infinite; }
-@keyframes coachPulse { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.12); } }
+.coach-hole::after { content: ""; position: absolute; inset: -3px; border-radius: 19px; border: 2px solid var(--brand-yellow); }
+/* Between steps the highlight and the tip glide to their next place; while following a scroll they don't lag. */
+.coach.glide .coach-hole { transition: left .32s cubic-bezier(.2,.8,.2,1), top .32s cubic-bezier(.2,.8,.2,1), width .32s cubic-bezier(.2,.8,.2,1), height .32s cubic-bezier(.2,.8,.2,1); }
+.coach.glide .coach-tip { transition: left .32s cubic-bezier(.2,.8,.2,1), top .32s cubic-bezier(.2,.8,.2,1), bottom .32s cubic-bezier(.2,.8,.2,1); }
+.coach-tip p, .coach-n { transition: opacity .16s ease-out; }
+.coach.swap .coach-tip p, .coach.swap .coach-n { opacity: 0; }
 .coach-tip { position: fixed; background: var(--brand-yellow); color: #000; border-radius: 16px; padding: 14px 14px 10px; box-shadow: 0 12px 30px rgba(0,0,0,.5); }
 .coach-tip::before { content: ""; position: absolute; left: calc(var(--ax) - 8px); top: -8px; border: 8px solid transparent; border-top: 0; border-bottom-color: var(--brand-yellow); }
 .coach-tip.up::before { top: auto; bottom: -8px; border-bottom: 0; border-top: 8px solid var(--brand-yellow); }
@@ -323,7 +327,6 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .cc-tree { flex-direction: column; gap: 3px; width: 44px; }
 .cc-tree i { display: block; height: 7px; border-radius: 3px; background: var(--c); }
 .cc-tree i:nth-child(1) { width: 44px; } .cc-tree i:nth-child(2) { width: 14px; } .cc-tree i:nth-child(3) { width: 40px; } .cc-tree i:nth-child(4) { width: 30px; }
-.cc-btn { grid-column: 1 / -1; justify-self: center; margin-top: 6px; }
 .grow-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--line); }
 .gs-layers { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
 .gs-layers span { font: 800 10px/1 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--c); }
@@ -366,8 +369,13 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .lp-prev { width: 64px; height: 64px; flex: none; border-radius: 14px; border: 1.5px dashed var(--line); display: grid; place-items: center; font-size: 24px; color: var(--muted); overflow: hidden; background: var(--surface); }
 .lp-prev img { width: 100%; height: 100%; object-fit: contain; }
 .gate-space b { font-size: 14px !important; }
-.space-btn { font: inherit; color: inherit; text-transform: inherit; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.space-btn .caret { font-size: 11px; color: var(--muted); }
+.space-btn { flex: none; display: inline-flex; align-items: center; gap: 8px; max-width: 62%; height: 42px; padding: 0 5px 0 4px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text); font: 800 12.5px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .02em; }
+.space-btn:active { background: var(--surface-2); }
+.space-btn .sb-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space-btn .sb-name { padding-left: 2px; }
+.space-btn .sb-chev { width: 28px; height: 28px; flex: none; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; color: var(--text); }
+.space-btn .sb-chev svg { width: 14px; height: 14px; }
+.space-btn .logo, .space-btn .space-mono { height: 32px !important; width: 32px !important; font-size: 13px; border-radius: 50%; object-fit: contain; flex: none; }
 .space-mono { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); font: 800 15px/1 var(--display); flex: none; }
 .guest-tag { font: 700 9px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 7px; vertical-align: 2px; margin-left: 6px; }
 .invite { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid color-mix(in srgb, var(--brand-yellow) 40%, var(--line)); margin: 6px 0 10px; }
@@ -637,9 +645,15 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 
 /* ---------- tabs, you, space, welcome ---------- */
 .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, #000 90%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); }
-.tabbar-in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); padding: 0 8px; }
+.tabbar-in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); padding: 0 4px; }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: var(--faint); border-radius: 12px; }
-.tab svg { width: 22px; height: 22px; }
+.tab svg { width: 24px; height: 24px; transition: transform .15s ease-out; }
+.tab.on { color: var(--text); }
+.tab.on svg { color: var(--brand-yellow); }
+.tab.on svg .f { fill: currentColor; }
+.tab.on svg .w { stroke-width: 2.6; }
+.tab.on svg .h { fill: #000; stroke: #000; }
+.tab:active svg { transform: scale(.9); }
 .tab .av.xs { width: 22px; height: 22px; font-size: 9px; }
 .tab span:not(.av) { font: 800 9.5px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .05em; }
 .tab.on { color: var(--text); }
@@ -726,9 +740,6 @@ button.snd-tag.on { background: var(--brand-yellow); color: #000; border-color: 
 .shelf-card > span:nth-child(2) { flex: 1; }
 .shelf-card .caret { font-size: 22px; color: var(--muted); }
 .shelf-rec { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 14px; }
-.shelf-cfg { display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: center; margin-bottom: 12px; }
-.shelf-cfg .sugs { margin: 0; }
-.shelf-cfg input { width: 90px; }
 .shelf-rec .compose { margin: 0; padding: 0; }
 .shelf-item { --c: var(--brand-yellow); }
 .shelf-item .sh-title { font: 800 13px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; }
@@ -746,6 +757,233 @@ button.snd-tag.on { background: var(--brand-yellow); color: #000; border-color: 
 .who-out { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .who-out .faint { font-style: italic; text-align: center; margin: 0; }
 .look-t { font: 800 20px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; }
+
+/* ---------- add to home screen ---------- */
+.a2hs { position: fixed; left: 12px; right: 12px; z-index: 40; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 12px; border-radius: 18px; background: #151515; border: 1px solid color-mix(in srgb, var(--brand-yellow) 40%, var(--line)); box-shadow: 0 14px 36px rgba(0,0,0,.6); animation: a2in .28s cubic-bezier(.2,.8,.2,1); }
+@keyframes a2in { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
+.a2hs img { width: 44px; height: 44px; border-radius: 11px; flex: none; }
+.a2-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.a2-t b { font: 800 11.5px/1.25 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .02em; }
+.a2-t span { font: 14px/1.35 var(--serif); color: var(--muted); }
+.a2-t span b { font: 600 14px/1.35 var(--serif); text-transform: none; letter-spacing: 0; color: var(--text); }
+.a2-ic { display: inline-grid; place-items: center; width: 20px; height: 20px; vertical-align: -4px; color: #3b8bff; }
+.a2-ic svg { width: 17px; height: 17px; }
+.a2-x { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+
+.sp-seg { margin: 12px 0 4px; display: inline-flex; }
+.sp-lede { font-style: italic; margin: 14px 0 4px; }
+.page-h { display: flex; align-items: baseline; justify-content: space-between; margin: 14px 0 2px; }
+.page-h b { font: 800 20px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.page-h .ar { font: 24px/1 var(--arabic); color: var(--muted); }
+
+/* ---------- projects ---------- */
+.proj-row { display: flex; gap: 10px; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; }
+.proj-row::-webkit-scrollbar { display: none; }
+.proj { flex: none; width: 150px; text-align: left; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.proj .pj-ic { position: relative; width: 38px; height: 32px; display: grid; place-items: center; color: var(--brand-yellow); }
+.proj .pj-ic svg { width: 34px; height: 30px; }
+.proj .pj-ic i { position: absolute; right: -6px; bottom: -4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px; background: var(--brand-yellow); color: #000; font: 800 10px/18px var(--display); font-style: normal; text-align: center; }
+.proj b { font: 800 12px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pj-meta { font: italic 13px/1.25 var(--serif); color: var(--muted); }
+.proj.new { border-style: dashed; background: transparent; }
+.proj.new .pj-ic { color: var(--muted); font: 300 28px/1 var(--display); }
+.tc-projs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+.tc-proj { display: inline-flex; align-items: center; gap: 5px; font: 700 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; color: var(--brand-yellow); padding: 4px 8px 4px 6px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--brand-yellow) 40%, var(--line)); }
+.tc-proj svg { width: 12px; height: 12px; }
+.pj-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px 0 4px; }
+.pj-kind { display: inline-flex; align-items: center; gap: 6px; font: 800 11px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: #000; background: var(--brand-yellow); padding: 6px 10px; border-radius: 999px; }
+.pj-kind svg { width: 14px; height: 14px; }
+.pj-date { font: 800 13px/1 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.pj-head .faint { font-style: italic; }
+.pj-notes { color: var(--muted); font-size: 16px; white-space: pre-wrap; margin: 8px 0 0; }
+.pj-list { display: flex; flex-direction: column; gap: 8px; }
+.pj-t { display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.pj-n { width: 24px; flex: none; font: 800 16px/1 var(--display); color: var(--brand-yellow); text-align: center; }
+.pj-open { flex: 1; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 3px; }
+.pj-open b { font: 800 13px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.pj-open .small { font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pj-act { display: flex; gap: 2px; flex: none; }
+.pj-act .icon-btn[disabled] { opacity: .25; }
+.menu-item .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; flex: none; }
+.menu-item.sel .check { background: var(--brand-yellow); border-color: var(--brand-yellow); color: #000; }
+
+/* ---------- sounds page ---------- */
+.snd-people { margin-top: 6px; }
+.snd-hero { display: flex; align-items: center; gap: 14px; margin: 8px 0 14px; padding: 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.snd-hero.mine { background: linear-gradient(135deg, color-mix(in srgb, var(--brand-yellow) 16%, var(--surface)), var(--surface) 70%); border-color: color-mix(in srgb, var(--brand-yellow) 40%, var(--line)); }
+.sh-k { font: 800 10px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--brand-yellow); }
+.sh-name { font: 800 20px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.ins-card { margin-top: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.ins-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.ins-name { font: 800 15px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--text); text-align: left; }
+.ins-n { font: italic 13px/1 var(--serif); color: var(--faint); }
+.snd-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.snd-tile { display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 10px 8px 8px; border-radius: 14px; background: #0b0b0b; border: 1px solid var(--line); text-align: left; }
+.snd-tile.has { border-color: color-mix(in srgb, var(--brand-yellow) 30%, var(--line)); }
+.st-play, .st-dot { width: 36px; height: 36px; flex: none; border-radius: 50%; display: grid; place-items: center; }
+.st-play { background: var(--brand-yellow); color: #000; }
+.st-play svg { width: 13px; height: 13px; margin-left: 2px; }
+.st-play.on svg { margin-left: 0; }
+.st-dot { background: var(--surface-2); color: var(--faint); font: 300 20px/1 var(--display); }
+.st-dot svg { width: 18px; height: 18px; }
+.st-name { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; text-align: left; }
+.st-name b { font: 600 15px/1.15 var(--serif); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st-name span { font: italic 12px/1.2 var(--serif); color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.snd-tile.add { border-style: dashed; background: transparent; }
+.snd-empty { margin-top: 12px; padding: 22px 16px; text-align: center; border-radius: var(--radius); border: 1px dashed var(--line); font: italic 16px/1.4 var(--serif); color: var(--muted); }
+.look-note { margin: 12px 0 4px; padding: 12px 14px; border-radius: 14px; border: 1px dashed var(--line); display: flex; flex-direction: column; gap: 4px; }
+.look-note b { font: 800 11px/1 var(--display); text-transform: uppercase; letter-spacing: .05em; }
+.look-note span { font: italic 15px/1.35 var(--serif); color: var(--muted); }
+.snd-page .you-name input { font-size: 18px; }
+
+/* spacing pass: shelf + top of tracks */
+.sh-lede { font: italic 16px/1.45 var(--serif); color: var(--muted); margin: 14px 0 16px; }
+.shelf-cfg { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.sc-row { display: flex; flex-direction: column; gap: 7px; }
+.sc-k { font: 800 10px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.shelf-cfg .tempo-row { align-items: center; }
+.shelf-cfg input { width: 84px; }
+.sc-unit { font: italic 14px/1 var(--serif); color: var(--faint); margin-right: auto; }
+.sc-meters { flex-wrap: nowrap; overflow-x: auto; margin: 0 -14px; padding: 0 14px; scrollbar-width: none; }
+.sc-meters::-webkit-scrollbar { display: none; }
+.sc-meters .sug { flex: none; }
+.shelf .list-head { margin-top: 26px; }
+.shelf-item { padding: 14px 0; }
+.shelf-item .idea-top { margin-bottom: 10px; }
+.shelf-item .player { margin-top: 0; }
+.shelf-item .roll { margin-top: 10px; }
+.sh-meta { margin-top: 10px; font-size: 14px; line-height: 1.4; }
+.home .hello { margin: 16px 0 16px; align-items: center; }
+.home .hello h2 { margin: 0 0 6px; line-height: 1.1; }
+.home .hello .muted { line-height: 1.3; }
+.home .list-head { margin-top: 26px; }
+
+/* ================= consistency pass =================
+   One rhythm for every page: 16px gutters, 28px between sections, 12px between a section title and its content,
+   cards at 18px radius with 14-16px padding, items inside cards at 14px radius. Helper text is italic serif, muted. */
+:root { --s1: 6px; --s2: 10px; --s3: 14px; --s4: 20px; --s5: 28px; }
+.wrap > :first-child:not(.top) { margin-top: var(--s4); }
+.list-head { margin: var(--s5) 0 var(--s2); align-items: center; min-height: 20px; }
+.list-head .small, .list-head .muted { font: italic 13px/1.3 var(--serif); color: var(--muted); text-align: right; }
+.home .list-head, .shelf .list-head { margin-top: var(--s5); }
+.menu { gap: 8px; }
+.menu-item { border-radius: 16px; padding: 14px 16px; }
+.member-row { border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; }
+.ins-card, .snd-hero, .shelf-rec, .card-box, .proj, .pj-t, .link-card { border-radius: var(--radius); }
+.ins-card, .shelf-rec { padding: 16px; }
+.ins-card + .ins-card { margin-top: 10px; }
+.snd-hero { margin: 0 0 var(--s3); }
+.snd-people { margin: 0 -16px var(--s3); }
+.sp-seg { margin: 0 0 var(--s1); }
+.sp-lede, .sh-lede { margin: 0 0 var(--s3); }
+.pj-head { margin: 0 0 var(--s1); }
+.home .hello { margin: 0 0 var(--s1); }
+.proj-row { padding-bottom: 2px; }
+.empty { padding: 36px 16px; }
+/* track filter row */
+.fchips { display: flex; gap: 6px; overflow-x: auto; margin: 0 -16px var(--s3); padding: 0 16px; scrollbar-width: none; }
+.fchips::-webkit-scrollbar { display: none; }
+.fchip { flex: none; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font: 800 10.5px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.fchip .av.xs { margin-left: -6px; }
+.fchip span:not(.av) { font: italic 12px/1 var(--serif); text-transform: none; letter-spacing: 0; color: var(--faint); }
+.fchip.on { background: var(--text); border-color: var(--text); color: #000; }
+.fchip.on span:not(.av) { color: rgba(0,0,0,.55); }
+/* desktop: every tab page shares the header's width and left edge */
+@media (min-width: 900px) {
+  body.wide .wrap { max-width: 980px; }
+  .snd-page > .menu { max-width: 720px; }
+  .wrap > .sp-seg ~ * , .wrap > .pj-head ~ *, .wrap > .pj-head { max-width: 720px; }
+  .ins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+  .ins-grid .ins-card { margin: 0; }
+  .shelf-grid { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 40px; align-items: start; }
+  .sg-left { position: sticky; top: 84px; }
+  .sg-right > .list-head:first-child { margin-top: var(--s4); }
+  .shelf-item .roll { max-width: 560px; }
+}
+
+/* sounds: picking whose sounds, with room around the selected ring */
+.snd-people { gap: 4px; padding-top: 6px; }
+.snd-people .pp { width: 76px; gap: 8px; padding: 6px 2px 4px; background: none; }
+.snd-people .pp .av { width: 48px; height: 48px; transition: box-shadow .15s ease-out; }
+.snd-people .pp.on { background: none; }
+.snd-people .pp.on .av { box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--brand-yellow); }
+.snd-people .pp .pp-n { color: var(--muted); }
+.snd-people .pp.on .pp-n { color: var(--text); }
+.snd-people .pp-c { margin-top: -2px; }
+
+/* ---------- projects tab ---------- */
+.pgrid { display: grid; gap: 10px; }
+.pcard { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); position: relative; }
+.pcard.ask { border-color: #ff9f43; background: color-mix(in srgb, #ff9f43 7%, var(--surface)); }
+.pcard.new { flex-direction: row; align-items: center; gap: 12px; border-style: dashed; background: transparent; }
+.pcard.new b { font: 800 13px/1 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.pcard.new .faint { font: italic 14px/1.2 var(--serif); }
+.pn-plus { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 300 22px/1 var(--display); color: var(--muted); }
+.pc-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.stage-pill { display: inline-flex; align-items: center; gap: 6px; font: 800 9.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--c); padding: 5px 8px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); }
+.stage-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+.pc-scale { font: 800 9.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pc-date, .pj-date { font: 800 11px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; color: var(--text); }
+.pc-name { font: 800 17px/1.15 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.pc-phil { margin: 0; font: italic 16px/1.4 var(--serif); color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pc-foot { display: flex; align-items: center; gap: 7px; font: 14px/1.2 var(--serif); }
+.pc-foot .sp { flex: 1; }
+.pc-foot .faint { font-style: italic; font-size: 13px; }
+.pc-votes { font: 800 9.5px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; color: #ff9f43; }
+.pc-votes.ok { color: var(--brand-green); } .pc-votes.no { color: var(--danger); }
+.pc-ask { position: absolute; top: -9px; right: 14px; font: 800 9px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; background: #ff9f43; color: #000; padding: 4px 8px; border-radius: 999px; }
+details.aside { margin-top: var(--s5); }
+details.aside summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--s2); }
+details.aside summary::-webkit-details-marker { display: none; }
+details.aside summary b { font: 800 13px/1 var(--display); font-stretch: 125%; text-transform: uppercase; }
+details.aside summary b::after { content: " ▾"; color: var(--muted); font-size: 10px; }
+details.aside .small { font: italic 13px/1.3 var(--serif); }
+/* project page */
+.pj-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pj-phil { margin-top: var(--s3); padding: 18px; border-radius: var(--radius); background: linear-gradient(135deg, color-mix(in srgb, var(--brand-yellow) 12%, var(--surface)), var(--surface) 70%); border: 1px solid color-mix(in srgb, var(--brand-yellow) 35%, var(--line)); }
+.pp-k { display: block; font: 800 10px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--brand-yellow); margin-bottom: 8px; }
+.pj-phil p { margin: 0; font: italic 21px/1.35 var(--serif); }
+.pj-one { margin: 10px 0 0 !important; font: 15px/1.4 var(--serif) !important; color: var(--muted); font-style: normal !important; }
+.pp-empty { text-align: left; display: block; width: 100%; }
+.pp-empty span:last-child { font: italic 17px/1.4 var(--serif); color: var(--muted); }
+.pj-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; margin-top: var(--s3); padding: 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.pj-facts > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pf-k { font: 800 9.5px/1 var(--display); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.pj-facts b { font: 600 15px/1.25 var(--serif); display: inline-flex; align-items: center; gap: 6px; }
+.pj-facts .faint { font: italic 14px/1.25 var(--serif); }
+.stepper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.step { display: flex; flex-direction: column; gap: 8px; text-align: left; padding: 0; color: var(--faint); }
+.step i { height: 6px; border-radius: 999px; background: var(--surface-2); }
+.step.past i { background: color-mix(in srgb, var(--c) 45%, var(--surface-2)); }
+.step.on i { background: var(--c); }
+.step span { font: 800 8.5px/1.2 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+.step.on span { color: var(--text); }
+.aside-btns { margin-top: 12px; }
+.aside-now { display: flex; align-items: center; gap: 12px; }
+.votes { display: flex; flex-direction: column; gap: 8px; }
+.vrow { padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.vrow.mine { border-color: color-mix(in srgb, #ff9f43 50%, var(--line)); }
+.vwho { display: flex; align-items: center; gap: 8px; }
+.vwho b { font: 800 12px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+.vwho .faint { font: italic 13px/1 var(--serif); }
+.vq { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+.vrow:not(.mine) .vq { flex-direction: row; align-items: center; justify-content: space-between; }
+.vq > span { font: 15px/1.3 var(--serif); color: var(--muted); }
+.vchips { display: flex; gap: 4px; }
+.vchip { height: 30px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--line); font: 800 10px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.vchip.yes.on { background: var(--brand-green); border-color: var(--brand-green); color: #000; }
+.vchip.unsure.on { background: #ff9f43; border-color: #ff9f43; color: #000; }
+.vchip.no.on { background: var(--danger); border-color: var(--danger); color: #000; }
+.vans { font: 800 10px/1 var(--display); text-transform: uppercase; letter-spacing: .05em; }
+.vans.yes { color: var(--brand-green); } .vans.unsure { color: #ff9f43; } .vans.no { color: var(--danger); } .vans.none { color: var(--faint); }
+.vneeds { padding: 9px 12px; font-size: 15px; }
+.vneed-t { margin: 0; font: italic 14px/1.35 var(--serif); color: var(--muted); }
+.menu.prop .small { font-style: normal; }
+@media (min-width: 900px) {
+  .pgrid { grid-template-columns: 1fr 1fr; }
+  .projects > .pcard.new { max-width: 480px; }
+  .wrap.project > * { max-width: 720px; }
+}
 </style>
 </head>
 <body>
@@ -922,6 +1160,7 @@ const ICON = {
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
   rhythm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="4" height="8" rx="1.2" fill="currentColor"/><rect x="10" y="8" width="4" height="8" rx="1.2"/><rect x="17" y="8" width="4" height="8" rx="1.2" fill="currentColor" fill-opacity=".45"/></svg>',
+  folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>',
   shelf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M3 12h18"/><rect x="5" y="5" width="4" height="7" rx="1"/><rect x="11" y="7" width="3" height="5" rx="1"/><rect x="6" y="15" width="7" height="5" rx="1"/><path d="M16 15l3 5"/></svg>',
   tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-7"/><path d="M12 14c-4 0-7-2.4-7-5.6C5 5.3 8 3 12 3s7 2.3 7 5.4C19 11.6 16 14 12 14Z"/><path d="M8 21h8"/></svg>',
   space: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><path d="M17 14v6M14 17h6"/></svg>',
@@ -1176,6 +1415,7 @@ async function loadState() {
   S.instruments = d.instruments || [];
   S.sounds = d.sounds || [];
   S.soundTakes = d.sound_takes || [];
+  S.projects = d.projects || [];
   S.space = d.space || null;
   if (S.space) {
     const l = Spaces.list(), c = l.find(x => x.key === S.key);
@@ -1198,6 +1438,8 @@ function route() {
   if (h === 'shelf') return viewShelf();
   if (h === 'space') return viewSpace();
   if (h.startsWith('t/')) return viewTrack(h.slice(2));
+  if (h.startsWith('p/')) return viewProject(h.slice(2));
+  if (h === 'projects') return viewProjects();
   return viewHome();
 }
 window.addEventListener('hashchange', route);
@@ -1207,18 +1449,28 @@ function topBar(title, left, right) {
   return `<div class="top"><div class="top-in">${left || ''}<h1>${title}</h1>${right || ''}</div></div>`;
 }
 const backBtn = to => `<button class="icon-btn" aria-label="Back" onclick="go('${to}')">${ICON.back}</button>`;
-const TABS = [['', 'Tracks', 'tree'], ['band', 'People', 'people'], ['me', 'You', 'you'], ['space', 'Space', 'space']];
+const TABS = [['', 'Tracks', 'tree'], ['projects', 'Projects', 'folder'], ['shelf', 'Shelf', 'shelf'], ['me', 'Sounds', 'sounds'], ['space', 'Space', 'home']];
+// One family for the tab bar: same stroke, and the shapes marked .f fill in when the tab is on.
+const TAB_ICON = {
+  tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="f" d="M7.6 15.2a4.1 4.1 0 0 1-.9-8.1 5.4 5.4 0 0 1 10.6 0 4.1 4.1 0 0 1-.9 8.1Z"/><path d="M12 11.5v9.5M12 15l-2.4-2.2M12 16.5l2.6-2.4M8.5 21h7"/></svg>',
+  shelf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 20.5h19"/><circle class="f" cx="8" cy="14.6" r="5.4"/><circle class="h" cx="8" cy="14.6" r="1.3"/><path class="f" d="M14.6 7.2l4.6-.9 2.2 13.8-4.6.4Z"/></svg>',
+  sounds: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3.5 10.5v3M7.25 7v10M11 3.5v17M14.75 7.5v9M18.5 5.5v13M22 10.5v3" class="w"/></svg>',
+  folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path class="f" d="M3 7.2A2.2 2.2 0 0 1 5.2 5h3.9l2.2 2.4h7.5A2.2 2.2 0 0 1 21 9.6v8.2a2.2 2.2 0 0 1-2.2 2.2H5.2A2.2 2.2 0 0 1 3 17.8Z"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="f" d="M3.8 10.4 12 3.6l8.2 6.8V19.6a1 1 0 0 1-1 1h-4.6v-5.8a2.6 2.6 0 0 0-5.2 0v5.8H4.8a1 1 0 0 1-1-1Z"/></svg>',
+};
 function tabBar(cur) {
+  document.body.classList.add('wide');
   const me = S.members.find(m => m.id === S.me);
-  return `<nav class="tabbar" aria-label="Sections"><div class="tabbar-in">${TABS.map(([h, label, ic]) => `<button class="tab${cur === h ? ' on' : ''}" data-tab-go="${h}" aria-label="${label}"${cur === h ? ' aria-current="page"' : ''}>${ic === 'you' ? avatar(me, 'xs') : ICON[ic]}<span>${label}</span></button>`).join('')}</div></nav>`;
+  return `<nav class="tabbar" aria-label="Sections"><div class="tabbar-in">${TABS.map(([h, label, ic]) => `<button class="tab${cur === h ? ' on' : ''}" data-tab-go="${h}" aria-label="${label}"${cur === h ? ' aria-current="page"' : ''}>${TAB_ICON[ic]}<span>${label}</span></button>`).join('')}</div></nav>`;
 }
 function wireTabs() { document.querySelectorAll('[data-tab-go]').forEach(b => b.onclick = () => { if (location.hash.replace(/^#\/?/, '') !== b.dataset.tabGo) go(b.dataset.tabGo); else scrollTo({ top: 0, behavior: 'smooth' }); }); }
 // The space's header: logo + name ▾ (switch) on every tab.
-function spaceTop(right) {
-  const sp = S.space || { id: 'abba' };
-  return topBar(`<button class="space-btn" onclick="spacesSheet()" aria-label="Switch space">${esc(spaceName())}<span class="caret">▾</span></button>`,
-    logoOf(sp) ? logoImg(sp, 'logo', spaceName()) : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z؀-ۿ]+/, '').slice(0, 1).toUpperCase())}</span>`,
-    right == null ? `<button class="switch-btn" aria-label="Switch space" onclick="spacesSheet()">⇄ <span>Switch</span></button>` : right);
+// Page title on the left, the space switcher on the right: logo, name and arrow in one pill.
+const PAGE_TITLE = { '': 'Tracks', projects: 'Projects', shelf: 'Shelf', me: 'Sounds', space: 'Space' };
+function spaceTop() {
+  const sp = S.space || { id: 'abba' }, h = location.hash.replace(/^#\/?/, '');
+  const mark = logoOf(sp) ? logoImg(sp, 'logo', '') : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z؀-ۿ]+/, '').slice(0, 1).toUpperCase())}</span>`;
+  return topBar(esc(PAGE_TITLE[h] || ''), '', `<button class="space-btn" onclick="spacesSheet()" aria-label="${esc(spaceName())}, switch space">${mark}<span class="sb-name">${esc(spaceName())}</span><span class="sb-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button>`);
 }
 
 /* ---------- gate & identity ---------- */
@@ -1326,13 +1578,14 @@ function viewGate(chosen) {
 // Spotlight tips: dim the screen, light up the real button, say what it does in a few words.
 const TOURS = {
   home: [
-    ['.space-btn', 'Switch between your spaces'],
-    ['.people-row', 'Tap someone to see what they planted'],
+    ['.space-btn', 'Your spaces. Tap to switch'],
+    ['.fchips', 'Everything, or what one person planted'],
     ['.tcard.new', 'Plant a new track. It walks you through it.'],
     ['.tcard:not(.new)', 'Open a track to sketch into it'],
-    ['[data-tab-go="band"]', 'Everyone here, their instruments and sounds'],
+    ['[data-tab-go="projects"]', 'Projects: an album, a track, a show. Philosophy first'],
+    ['[data-tab-go="shelf"]', 'Your shelf: riffs and loops to reuse in any track'],
     ['[data-tab-go="me"]', 'Your instruments and sounds. Edit them any time'],
-    ['[data-tab-go="space"]', 'The space itself: genres, logo, passcode'],
+    ['[data-tab-go="space"]', 'People, genres and settings of this space'],
   ],
   track: [
     ['.form', 'The sections. Tap one to open it, → for the transition'],
@@ -1374,9 +1627,18 @@ function coach(name, force) {
   const show = () => {
     const el = document.querySelector(steps[k][0]);
     if (!el) { if (++k < steps.length) return show(); return end(); }
-    $('p', tip).textContent = steps[k][1];
-    $('.coach-n', tip).textContent = `${k + 1} / ${steps.length}`;
-    $('.coach-next', tip).textContent = k === steps.length - 1 ? 'Got it' : 'Next';
+    const text = () => {
+      $('p', tip).textContent = steps[k][1];
+      $('.coach-n', tip).textContent = `${k + 1} / ${steps.length}`;
+      $('.coach-next', tip).textContent = k === steps.length - 1 ? 'Got it' : 'Next';
+    };
+    // First step appears in place; later steps glide there while the words fade over.
+    if (ov.classList.contains('ready')) {
+      ov.classList.add('glide', 'swap');
+      clearTimeout(ov._t1); clearTimeout(ov._t2);
+      ov._t1 = setTimeout(() => { text(); ov.classList.remove('swap'); }, 160);
+      ov._t2 = setTimeout(() => ov.classList.remove('glide'), 700);
+    } else text();
     // Only scroll things that live in the page; the header and tab bar are always on screen.
     const r = el.getBoundingClientRect(), fixed = el.closest('.top, .tabbar, .transport');
     if (!fixed && (r.top < 80 || r.bottom > innerHeight - 100)) scrollTo({ top: scrollY + r.top + r.height / 2 - innerHeight / 2, behavior: 'smooth' });
@@ -1768,6 +2030,7 @@ function trackCard(t, mine) {
   return `<div class="tcard${mine ? ' mine' : ''}" role="link" tabindex="0" onclick="go('t/${esc(t.id)}')">
     <div class="tc-top"><b class="tc-title">${esc(t.title)}</b>${unseen ? '<i class="dot" title="New since you last looked">✦</i>' : ''}<button class="kebab" aria-label="Track options" onclick="event.stopPropagation(); trackMenu('${esc(t.id)}')">⋯</button></div>
     <div class="tc-by">${mine ? '<span class="tc-yours">yours</span>' : by ? `${avatar(by, 'xs')}<span>planted by ${esc(by.name)}</span>` : ''}<span class="faint">${ago(t.created_at)}</span></div>
+    ${projectsOf(t.id).length ? `<div class="tc-projs">${projectsOf(t.id).map(p => `<span class="tc-proj">${ICON.folder}${esc(p.name)}</span>`).join('')}</div>` : ''}
     ${idea ? `<p class="tc-idea">${esc(idea)}</p>` : ''}
     ${chips ? `<div class="tc-chips">${chips}</div>` : ''}
     ${secs ? `<div class="tc-secs">${secs}</div>` : ''}
@@ -1787,32 +2050,24 @@ function viewHome() {
     const me = S.members.find(m => m.id === S.me);
     const members = S.members.filter(m => !m.guest), guests = S.members.filter(m => m.guest);
     const f = S.homeFilter && S.members.some(m => m.id === S.homeFilter) ? S.homeFilter : null;
-    const mineT = S.tracks.filter(t => t.created_by === S.me), othersT = S.tracks.filter(t => t.created_by !== S.me);
-    const people = [...members.sort((a, b) => (b.id === S.me) - (a.id === S.me)), ...guests].map(m => {
-      const n = S.tracks.filter(t => t.created_by === m.id).length;
-      return `<button class="pp${f === m.id ? ' on' : ''}" data-who="${esc(m.id)}">${avatar(m)}<span class="pp-n">${esc(m.id === S.me ? 'You' : m.name)}</span><span class="pp-c">${m.guest ? 'guest' : n ? n + ' track' + (n > 1 ? 's' : '') : ''}</span></button>`;
-    }).join('') + `<button class="pp add" onclick="go('band')"><span class="av">+</span><span class="pp-n">Add</span></button>`;
+    // One filter row for the track list: everything, or what one person planted (you first).
+    const who = [...members.sort((a, b) => (b.id === S.me) - (a.id === S.me)), ...guests].filter(m => m.id === S.me || S.tracks.some(t => t.created_by === m.id));
+    const chip = (id, label, n, m) => `<button class="fchip${(f || '') === id ? ' on' : ''}" data-who="${esc(id)}">${m ? avatar(m, 'xs') : ''}${esc(label)}<span>${n}</span></button>`;
+    const filters = `<div class="fchips">${chip('', 'All', S.tracks.length)}${who.map(m => chip(m.id, m.id === S.me ? 'You' : m.name, S.tracks.filter(t => t.created_by === m.id).length, m)).join('')}</div>`;
     let body;
-    if (f) {
-      const who = S.members.find(m => m.id === f), list = S.tracks.filter(t => t.created_by === f);
-      body = `<div class="list-head"><b>Planted by ${esc(f === S.me ? 'you' : who.name)}</b><button class="sug" onclick="S.homeFilter=null; viewHome()">Show all</button></div>
-        ${list.length || f === S.me ? `<div class="tlist">${f === S.me ? newCard() : ''}${list.map(t => trackCard(t, f === S.me)).join('')}</div>` : `<div class="empty small">Nothing planted by ${esc(who.name)} yet.</div>`}`;
-    } else if (!S.tracks.length) {
-      body = `<div class="plant-empty"><div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>
+    if (!S.tracks.length) {
+      body = `<div class="list-head"><b>Tracks</b></div><div class="plant-empty"><div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>
         <b>No tracks yet</b><p>Start with the idea. The wizard asks what it’s about, what it’s built on and how it moves.</p>
         <button class="btn primary" onclick="newTrack()">+ Plant the first track</button></div>`;
     } else {
-      const tab = S.homeTab || 'all';
-      const list = tab === 'mine' ? mineT : tab === 'others' ? othersT : S.tracks;
-      const seg = [['all', 'All', S.tracks.length], ['mine', 'Yours', mineT.length], ['others', 'Others', othersT.length]]
-        .map(([k, l, n]) => `<button class="seg-b${tab === k ? ' on' : ''}" data-tab="${k}">${l}<span>${n}</span></button>`).join('');
-      body = `<div class="list-head"><b>Tracks</b><div class="seg">${seg}</div></div>
-        ${tab === 'others' && !list.length ? '<div class="empty small">Nothing from the others yet.</div>' : `<div class="tlist">${tab !== 'others' ? newCard() : ''}${list.map(t => trackCard(t, t.created_by === S.me)).join('')}</div>`}`;
+      const list = f ? S.tracks.filter(t => t.created_by === f) : S.tracks, whoF = f && S.members.find(m => m.id === f);
+      const showNew = !f || f === S.me;
+      body = `<div class="list-head"><b>Tracks</b></div>${filters}
+        ${list.length || showNew ? `<div class="tlist">${showNew ? newCard() : ''}${list.map(t => trackCard(t, t.created_by === S.me)).join('')}</div>` : `<div class="empty small">Nothing planted by ${esc(whoF.name)} yet.</div>`}`;
     }
     $('#app').innerHTML = spaceTop() +
       `<div class="wrap home">
         <div class="hello"><div><h2>${looking() ? 'Just looking' : 'Ahlan' + (me ? ', ' + esc(me.name) : '')}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} · ${members.length} ${members.length === 1 ? 'person' : 'people'}${guests.length ? ` · ${guests.length} guest${guests.length > 1 ? 's' : ''}` : ''}</div></div><span class="ar">شجرة</span></div>
-        <div class="people-row">${people}</div>
         ${body}
         <div class="concept">
           <div class="cc-step"><span class="cc-art cc-idea">✦</span><b>An idea</b><span>what it’s about, what it’s built on</span></div>
@@ -1820,13 +2075,11 @@ function viewHome() {
           <div class="cc-step"><span class="cc-art cc-secs"><i>Intro</i><i>A</i><i>B</i></span><b>Sections</b><span>each with its length, energy, moves</span></div>
           <span class="cc-arr">→</span>
           <div class="cc-step"><span class="cc-art cc-tree">${LAYERS.map(l => `<i style="--c:${l.c}" title="${l.name}"></i>`).join('')}</span><b>Each a tree</b><span>${LAYERS.map(l => `<em style="color:${l.c}">${l.short}</em>`).join(' · ')}</span></div>
-          <button class="sug cc-btn" onclick="openTour()">Show me around</button>
         </div>
       </div>` + tabBar('');
     wireTabs();
     document.body.classList.add('wide');
-    $('#app').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.homeTab = b.dataset.tab; render(); });
-    $('#app').querySelectorAll('[data-who]').forEach(b => b.onclick = () => { S.homeFilter = S.homeFilter === b.dataset.who ? null : b.dataset.who; render(); });
+    $('#app').querySelectorAll('[data-who]').forEach(b => b.onclick = () => { S.homeFilter = b.dataset.who || null; render(); });
   };
   render();
   loadState().then(() => {
@@ -2195,6 +2448,7 @@ function trackMenu(id) {
   menuSheet(esc(t.title), [
     ...(onPage ? [{ label: 'Edit track details', hint: 'title, maqam, pulse, genre, notes', icon: ICON.edit, run: () => editTrack() },
       { label: 'Add a section', icon: ICON.note, run: () => newSection() }] : [{ label: 'Open', icon: ICON.play, run: () => go('t/' + t.id) }]),
+    { label: 'Projects', hint: projectsOf(t.id).length ? projectsOf(t.id).map(p => p.name).join(', ') : 'an album, a show…', icon: ICON.folder, run: () => trackProjectsSheet(t) },
     { label: 'Move to another space', hint: 'with its sections, recordings and credits', icon: ICON.share, run: () => moveTrackSheet(t) },
     { label: 'Delete track', hint: 'every section, idea and recording in it', icon: ICON.trash, danger: true, run: () => deleteTrack(t) },
   ]);
@@ -3884,6 +4138,276 @@ async function spacesSheet() {
     }).catch(() => { $('#spList', root).innerHTML = ''; toast('Couldn’t load the spaces'); });
   });
 }
+/* ---------- projects ---------- */
+// The band's way of making things: everything new is a project (an album, a single track, a show),
+// it starts with its philosophy, one person directs it, and the band says yes before it moves on.
+// A project holds tracks in its own order; a track can be in several.
+const SCALES = [['album', 'Album'], ['ep', 'EP'], ['single', 'Single track'], ['show', 'Show'], ['experiment', 'Experiment']];
+const STAGES = [['philosophy', 'Philosophy', '#8a8a8a'], ['proposal', 'Proposal', 'var(--brand-yellow)'], ['buyin', 'Seeking buy-in', '#ff9f43'], ['development', 'In development', '#3b8bff'], ['rehearsing', 'Rehearsing', '#c38bff'], ['done', 'Performed / Released', 'var(--brand-green)'],
+  ['parked', 'Parked', '#ff5a4e'], ['notadopted', 'Not adopted', '#a07a5a'], ['outside', 'Outside the band', '#b07ad8']];
+const MAIN_STAGES = STAGES.slice(0, 6), ASIDE = ['parked', 'notadopted', 'outside'];
+const STEP_SHORT = { philosophy: 'Philosophy', proposal: 'Proposal', buyin: 'Buy-in', development: 'Making', rehearsing: 'Rehearsing', done: 'Done' };
+const FORMATS = [['live', 'Live first'], ['underground', 'Underground band sound'], ['cinematic', 'Cinematic / production first'], ['mixed', 'Mixed']];
+const PRODS = [['universe', 'Builds the universe'], ['fills', 'Fills in instruments'], ['both', 'Both']];
+const ANSWERS = [['yes', 'Yes'], ['unsure', 'Not sure'], ['no', 'No']];
+const lbl = (list, k) => (list.find(x => x[0] === k) || [])[1] || '';
+const stageOf = k => STAGES.find(x => x[0] === k) || STAGES[0];
+const projectsOf = tid => (S.projects || []).filter(p => p.track_ids.includes(tid));
+const bandMembers = () => S.members.filter(m => !m.guest);
+const needsBuyin = () => bandMembers().length > 1;
+const voteOf = (p, mid) => (p.votes || []).find(v => v.member_id === mid) || { want: '', director_ok: '', needs: '' };
+const answered = v => v.want && v.director_ok;
+const waitingOnMe = p => p.stage === 'buyin' && needsBuyin() && S.members.some(m => m.id === S.me && !m.guest) && !answered(voteOf(p, S.me));
+function buyinSum(p) {
+  const ms = bandMembers(), vs = ms.map(m => voteOf(p, m.id));
+  const done = vs.filter(answered).length, allYes = vs.every(v => v.want === 'yes' && v.director_ok === 'yes'), anyNo = vs.some(v => v.want === 'no' || v.director_ok === 'no');
+  return { n: ms.length, done, allYes, anyNo };
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const x = new Date(d + 'T12:00:00'); if (isNaN(x)) return d;
+  return x.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: x.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' });
+}
+const stagePill = k => { const s = stageOf(k); return `<span class="stage-pill" style="--c:${s[2]}">${esc(s[1])}</span>`; };
+
+function projectCard(p) {
+  const dir = S.members.find(m => m.id === p.director), b = p.stage === 'buyin' && needsBuyin() ? buyinSum(p) : null;
+  return `<button class="pcard${waitingOnMe(p) ? ' ask' : ''}" onclick="go('p/${esc(p.id)}')">
+    <div class="pc-top">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pc-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
+    <b class="pc-name">${esc(p.name)}</b>
+    ${p.philosophy ? `<p class="pc-phil">${esc(p.philosophy)}</p>` : p.oneline ? `<p class="pc-phil">${esc(p.oneline)}</p>` : '<p class="pc-phil faint">no philosophy yet</p>'}
+    <div class="pc-foot">${dir ? `${avatar(dir, 'xs')}<span>${esc(dir.id === S.me ? 'you direct' : dir.name + ' directs')}</span>` : '<span class="faint">no director yet</span>'}
+      <span class="sp"></span>${p.track_ids.length ? `<span class="faint">${plural(p.track_ids.length, 'track')}</span>` : ''}
+      ${b ? `<span class="pc-votes${b.allYes ? ' ok' : b.anyNo ? ' no' : ''}">${b.done}/${b.n} answered</span>` : ''}</div>
+    ${waitingOnMe(p) ? '<span class="pc-ask">Waiting for your answer</span>' : ''}</button>`;
+}
+function viewProjects() {
+  const render = () => {
+    const ps = S.projects || [];
+    const groups = [
+      ['Waiting for your answer', ps.filter(waitingOnMe)],
+      ['Taking shape', ps.filter(p => ['philosophy', 'proposal', 'buyin'].includes(p.stage) && !waitingOnMe(p))],
+      ['Being made', ps.filter(p => ['development', 'rehearsing'].includes(p.stage))],
+      ['Done', ps.filter(p => p.stage === 'done')],
+    ];
+    const aside = ps.filter(p => ASIDE.includes(p.stage));
+    $('#app').innerHTML = spaceTop() + `<div class="wrap projects">
+      <p class="sh-lede">An album, a single track, a show. Each starts with its philosophy and has one person directing it${needsBuyin() ? ', and the band says yes before it moves on' : ''}.</p>
+      <button class="pcard new" onclick="newProject()"><span class="pn-plus">+</span><b>New project</b><span class="faint">start with what it’s about</span></button>
+      ${groups.filter(([, l]) => l.length).map(([t, l]) => `<div class="list-head"><b>${t}</b><span class="small muted">${l.length}</span></div><div class="pgrid">${l.map(projectCard).join('')}</div>`).join('')}
+      ${aside.length ? `<details class="aside"><summary><b>Set aside</b><span class="small muted">${aside.length} · parked, not adopted, outside the band</span></summary><div class="pgrid">${aside.map(projectCard).join('')}</div></details>` : ''}
+      ${!ps.length ? '<div class="empty small">No projects yet.</div>' : ''}
+    </div>` + tabBar('projects');
+    wireTabs();
+  };
+  render();
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'projects' && !$('.scrim')) render(); }).catch(e => toast(e.message));
+}
+
+// Creating one follows the band's template: philosophy first, then its shape, who directs it, how it comes out.
+function newProject(seedTracks, after) {
+  if (needMe()) return;
+  const W = { step: 0, name: '', philosophy: '', oneline: '', scale: '', date: '', director: S.me, format: '', production: '' };
+  const STEPS = ['Philosophy', 'Its shape', 'Who directs it', 'How it comes out'];
+  const root = sheet('<div id="npz"></div>');
+  const chips = (id, list, cur, attr) => `<div class="sugs" id="${id}">${list.map(([k, l]) => `<button class="sug${cur === k ? ' on' : ''}" data-${attr}="${esc(k)}">${esc(l)}</button>`).join('')}</div>`;
+  const stepHtml = () => {
+    switch (W.step) {
+      case 0: return `<h3>A new project</h3><p class="lede">Before the rhythm, before the references: what is it actually about?</p>
+        <label class="field">Name</label><input id="np-name" type="text" value="${esc(W.name)}" placeholder="e.g. Yemeni EP, Berghain 12 Dec">
+        <label class="field">Philosophy · one line</label><textarea id="np-phil" rows="3" placeholder="What is it about? Not the genre, the thing underneath.">${esc(W.philosophy)}</textarea>
+        <label class="field">In one line (optional)</label><input id="np-one" type="text" value="${esc(W.oneline)}" placeholder="how you’d describe it to a friend">`;
+      case 1: return `<h3>Its shape</h3><p class="lede">How big is it, and is it aiming at a date?</p>
+        ${chips('np-scale', SCALES, W.scale, 'v')}
+        <label class="field">Target date (optional)</label><input id="np-date" type="date" value="${esc(W.date)}">`;
+      case 2: return `<h3>Who directs it</h3><p class="lede">Exactly one person. Not a committee. They draft the decisions, ask the people it affects, then decide and own the result.</p>
+        ${chips('np-dir', bandMembers().map(m => [m.id, m.id === S.me ? 'Me' : m.name]), W.director, 'v')}
+        ${needsBuyin() ? '<p class="small faint serif" style="font-style:italic;margin-top:10px">The band answers two questions before it moves on: do we want to do this, and is this the right director.</p>' : ''}`;
+      default: return `<h3>How it comes out</h3><p class="lede">Decide it early, don’t discover it three rehearsals in.</p>
+        <label class="field">Format</label>${chips('np-fmt', FORMATS, W.format, 'v')}
+        <label class="field">What production does</label>${chips('np-prod', PRODS, W.production, 'v')}`;
+    }
+  };
+  const read = () => {
+    const v = id => { const el = $('#' + id, root); return el ? el.value.trim() : null; };
+    if (W.step === 0) { W.name = v('np-name'); W.philosophy = v('np-phil'); W.oneline = v('np-one'); }
+    if (W.step === 1) W.date = v('np-date');
+  };
+  const render = () => {
+    $('#npz', root).innerHTML = `<div class="wz-dots">${STEPS.map((x, i) => `<i class="${i < W.step ? 'done' : i === W.step ? 'on' : ''}"></i>`).join('')}<span>${STEPS[W.step]}</span></div>
+      ${stepHtml()}
+      <div class="actions">${W.step ? '<button class="btn" id="np-back">Back</button>' : '<button class="btn" id="np-cancel">Cancel</button>'}<button class="btn primary" id="np-next">${W.step === STEPS.length - 1 ? 'Create it' : 'Next'}</button></div>
+      ${W.step && W.step < STEPS.length - 1 ? '<div class="sugs" style="justify-content:center;margin-top:10px"><button class="sug wz-skip" id="np-skip">Skip the rest, create it</button></div>' : ''}`;
+    const tog = (sel, k) => root.querySelectorAll(sel + ' .sug').forEach(b => b.onclick = () => { read(); W[k] = W[k] === b.dataset.v ? '' : b.dataset.v; render(); });
+    tog('#np-scale', 'scale'); tog('#np-dir', 'director'); tog('#np-fmt', 'format'); tog('#np-prod', 'production');
+    const back = $('#np-back', root); if (back) back.onclick = () => { read(); W.step--; render(); };
+    const cancel = $('#np-cancel', root); if (cancel) cancel.onclick = closeSheet;
+    const skip = $('#np-skip', root); if (skip) skip.onclick = () => { read(); create(); };
+    $('#np-next', root).onclick = () => {
+      read();
+      if (W.step === 0 && !W.name) return toast('Give it a name');
+      if (W.step < STEPS.length - 1) { W.step++; return render(); }
+      create();
+    };
+    if (W.step === 0 && !W.name) setTimeout(() => $('#np-name', root).focus(), 60);
+    $('.sheet', root).scrollTop = 0;
+  };
+  const create = async () => {
+    const btn = $('#np-next', root); btn.disabled = true;
+    try {
+      const r = await api('/projects', { method: 'POST', body: { ...W, stage: W.philosophy ? 'proposal' : 'philosophy', track_ids: seedTracks || [] } });
+      S.projects = [...(S.projects || []), r]; closeSheet();
+      if (after) after(r); else go('p/' + r.id);
+    } catch (e) { toast(e.message); btn.disabled = false; }
+  };
+  render();
+}
+function projectEdit(p, after) {
+  const P = { ...p, genres: (() => { try { return JSON.parse(p.genres || '[]'); } catch { return []; } })() };
+  const chips = (id, list, cur) => `<div class="sugs" id="${id}">${list.map(([k, l]) => `<button class="sug${(Array.isArray(cur) ? cur.includes(k) : cur === k) ? ' on' : ''}" data-v="${esc(k)}">${esc(l)}</button>`).join('')}</div>`;
+  sheet(`<h3>Project</h3>
+    <label class="field">Name</label><input id="pe-name" type="text" value="${esc(P.name)}">
+    <label class="field">Philosophy</label><textarea id="pe-phil" rows="3">${esc(P.philosophy)}</textarea>
+    <label class="field">In one line</label><input id="pe-one" type="text" value="${esc(P.oneline)}">
+    <label class="field">Size</label>${chips('pe-scale', SCALES, P.scale)}
+    <label class="field">Target date</label><input id="pe-date" type="date" value="${esc(P.date)}">
+    <label class="field">Creative director</label>${chips('pe-dir', bandMembers().map(m => [m.id, m.id === S.me ? 'Me' : m.name]), P.director)}
+    <label class="field">Format</label>${chips('pe-fmt', FORMATS, P.format)}
+    <label class="field">What production does</label>${chips('pe-prod', PRODS, P.production)}
+    ${genresOf().length ? `<label class="field">Genres</label>${chips('pe-gen', genresOf().map(g => [g, g]), P.genres)}` : ''}
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="pe-ok">Save</button></div>
+    <div style="margin-top:18px"><button class="btn danger block" id="pe-del">Delete project</button></div>`, root => {
+    const one = (id, k) => root.querySelectorAll(`#${id} .sug`).forEach(b => b.onclick = () => { P[k] = P[k] === b.dataset.v ? '' : b.dataset.v; root.querySelectorAll(`#${id} .sug`).forEach(x => x.classList.toggle('on', x.dataset.v === P[k])); });
+    one('pe-scale', 'scale'); one('pe-dir', 'director'); one('pe-fmt', 'format'); one('pe-prod', 'production');
+    root.querySelectorAll('#pe-gen .sug').forEach(b => b.onclick = () => { const g = b.dataset.v; P.genres = P.genres.includes(g) ? P.genres.filter(x => x !== g) : [...P.genres, g]; b.classList.toggle('on'); });
+    $('#pe-ok', root).onclick = async () => {
+      const name = $('#pe-name', root).value.trim(); if (!name) return toast('Give it a name');
+      try {
+        const r = await api('/projects/' + p.id, { method: 'PATCH', body: { name, philosophy: $('#pe-phil', root).value.trim(), oneline: $('#pe-one', root).value.trim(), date: $('#pe-date', root).value, scale: P.scale, director: P.director || '', format: P.format, production: P.production, genres: P.genres } });
+        Object.assign(S.projects.find(x => x.id === p.id), r); closeSheet(); after();
+      } catch (e) { toast(e.message); }
+    };
+    $('#pe-del', root).onclick = () => confirmSheet(`Delete ${esc(p.name)}?`, 'Only the project goes. Its tracks stay, untouched.', 'Delete project', async () => {
+      await api('/projects/' + p.id, { method: 'DELETE' }); S.projects = S.projects.filter(x => x.id !== p.id); go('projects');
+    });
+  });
+}
+async function patchProject(p, body) {
+  const r = await api('/projects/' + p.id, { method: 'PATCH', body });
+  Object.assign(S.projects.find(x => x.id === p.id), r);
+  return r;
+}
+const setProjectTracks = (p, ids) => patchProject(p, { track_ids: ids });
+
+function viewProject(id) {
+  const render = () => {
+    const p = (S.projects || []).find(x => x.id === id);
+    if (!p) { $('#app').innerHTML = topBar('Project', backBtn('projects')) + '<div class="wrap"><p class="muted">Not found. It may have been deleted.</p></div>' + tabBar('projects'); wireTabs(); return; }
+    const list = p.track_ids.map(tid => S.tracks.find(t => t.id === tid)).filter(Boolean), ids = list.map(t => t.id);
+    const dir = S.members.find(m => m.id === p.director);
+    const prop = (() => { try { return JSON.parse(p.proposal || '{}'); } catch { return {}; } })();
+    const genres = (() => { try { return JSON.parse(p.genres || '[]'); } catch { return []; } })();
+    const si = MAIN_STAGES.findIndex(x => x[0] === p.stage), aside = ASIDE.includes(p.stage);
+    const b = buyinSum(p), showVotes = needsBuyin() && (p.stage === 'buyin' || (p.votes || []).length);
+    const listName = p.scale === 'show' ? 'Setlist' : ['album', 'ep'].includes(p.scale) ? 'Tracklist' : 'Tracks';
+    const voteRow = m => {
+      const v = voteOf(p, m.id), mine = m.id === S.me;
+      const ans = (k, q) => mine ? `<div class="vq"><span>${q}</span><div class="vchips">${ANSWERS.map(([a, l]) => `<button class="vchip ${a}${v[k] === a ? ' on' : ''}" data-vote="${k}" data-a="${a}">${l}</button>`).join('')}</div></div>`
+        : `<div class="vq"><span>${q}</span><b class="vans ${v[k] || 'none'}">${v[k] ? lbl(ANSWERS, v[k]) : '—'}</b></div>`;
+      return `<div class="vrow${mine ? ' mine' : ''}"><div class="vwho">${avatar(m, 'xs')}<b>${esc(mine ? 'You' : m.name)}</b>${answered(v) ? '' : '<span class="faint">hasn’t answered</span>'}</div>
+        ${ans('want', 'Do we want to do this?')}${ans('director_ok', dir ? `${dir.id === m.id ? 'You' : esc(dir.name)} directing?` : 'This director?')}
+        ${mine ? `<input class="vneeds" id="vneeds" type="text" value="${esc(v.needs)}" placeholder="what I need first (optional)">` : v.needs ? `<p class="vneed-t">“${esc(v.needs)}”</p>` : ''}</div>`;
+    };
+    $('#app').innerHTML = topBar(esc(p.name), backBtn('projects'), `<button class="icon-btn" aria-label="Edit project" id="pjEdit">${ICON.edit}</button>`) + `<div class="wrap project">
+      <div class="pj-head">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pj-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
+      <div class="pj-phil">${p.philosophy ? `<span class="pp-k">Philosophy</span><p>${esc(p.philosophy)}</p>` : `<button class="pp-empty" id="pjPhil"><span class="pp-k">Philosophy</span><span>What is it actually about? Write this before anything else.</span></button>`}
+        ${p.oneline ? `<p class="pj-one">${esc(p.oneline)}</p>` : ''}</div>
+      <div class="pj-facts">
+        <div><span class="pf-k">Directed by</span>${dir ? `<b>${avatar(dir, 'xs')} ${esc(dir.id === S.me ? 'You' : dir.name)}</b>` : '<button class="link-btn" id="pjDir">pick one person</button>'}</div>
+        <div><span class="pf-k">Format</span>${p.format ? `<b>${esc(lbl(FORMATS, p.format))}</b>` : '<span class="faint">not decided</span>'}</div>
+        <div><span class="pf-k">Production</span>${p.production ? `<b>${esc(lbl(PRODS, p.production))}</b>` : '<span class="faint">not decided</span>'}</div>
+        ${genres.length ? `<div><span class="pf-k">Genres</span><b>${esc(genres.join(', '))}</b></div>` : ''}
+      </div>
+      <div class="list-head"><b>Stage</b>${aside ? '' : '<span class="small muted">tap to move it</span>'}</div>
+      ${aside ? `<div class="aside-now">${stagePill(p.stage)}<button class="sug" data-stage="${p.director ? 'proposal' : 'philosophy'}">Bring it back</button></div>` : `<div class="stepper">${MAIN_STAGES.map(([k, l, c], i) => `<button class="step${i < si ? ' past' : i === si ? ' on' : ''}" style="--c:${c}" data-stage="${k}" title="${esc(l)}"><i></i><span>${STEP_SHORT[k]}</span></button>`).join('')}</div>`}
+      ${aside ? '' : `<div class="sugs aside-btns">${STAGES.slice(6).map(([k, l]) => `<button class="sug ghost" data-stage="${k}">${l}</button>`).join('')}</div>`}
+      ${showVotes ? `<div class="list-head"><b>Band buy-in</b><span class="small muted">${b.done} of ${b.n} answered${b.allYes && b.done === b.n ? ' · everyone’s in' : ''}</span></div>
+        <div class="votes">${bandMembers().sort((a, c) => (c.id === S.me) - (a.id === S.me)).map(voteRow).join('')}</div>
+        ${p.stage === 'buyin' && b.allYes && b.done === b.n ? '<button class="btn primary block" data-stage="development" style="margin-top:12px">Everyone said yes · move to In development</button>' : ''}` : ''}
+      <div class="list-head"><b>${listName}</b>${list.length > 1 ? '<span class="small muted">↑ ↓ to reorder</span>' : ''}</div>
+      ${list.length ? `<div class="pj-list">${list.map((t, i) => `<div class="pj-t"><span class="pj-n">${i + 1}</span>
+          <button class="pj-open" data-go="${esc(t.id)}"><b>${esc(t.title)}</b><span class="small muted serif">${esc([t.genre, t.tempo ? t.tempo + ' bpm' : '', t.sections.map(x => x.name).join(' → ')].filter(Boolean).join(' · '))}</span></button>
+          <span class="pj-act"><button class="icon-btn sm" data-up="${i}" aria-label="Move up"${i ? '' : ' disabled'}>↑</button><button class="icon-btn sm" data-dn="${i}" aria-label="Move down"${i < list.length - 1 ? '' : ' disabled'}>↓</button><button class="icon-btn sm" data-out="${esc(t.id)}" aria-label="Take out of this project">✕</button></span></div>`).join('')}</div>`
+        : '<div class="empty small">No tracks in it yet.</div>'}
+      <button class="btn block lp-new" id="pjAdd">+ Add tracks</button>
+      <div class="list-head"><b>The proposal</b><span class="small muted">tap to write</span></div>
+      <div class="menu prop">${[['taking', 'What exactly are we taking', 'A rhythm, a time signature, a maqam, a melody, a form… and what we deliberately leave out'], ['scope', 'Scope', 'How many rehearsals, aiming at what, what does done mean'], ['open', 'Open questions', 'What you genuinely don’t know and want the band’s input on']]
+        .map(([k, t, h]) => `<button class="menu-item" data-prop="${k}"><span><b>${t}</b><span class="small ${prop[k] ? '' : 'muted'}" style="white-space:pre-wrap">${esc(prop[k] || h)}</span></span></button>`).join('')}</div>
+    </div>` + tabBar('projects');
+    wireTabs();
+    const save = async body => { try { await patchProject(p, body); render(); } catch (e) { toast(e.message); } };
+    $('#pjEdit').onclick = () => projectEdit(p, render);
+    const ph = $('#pjPhil'); if (ph) ph.onclick = () => projectEdit(p, render);
+    const pd = $('#pjDir'); if (pd) pd.onclick = () => projectEdit(p, render);
+    $('#app').querySelectorAll('[data-stage]').forEach(btn => btn.onclick = () => {
+      const k = btn.dataset.stage, to = MAIN_STAGES.findIndex(x => x[0] === k), past = to > MAIN_STAGES.findIndex(x => x[0] === 'buyin');
+      if (k === p.stage) return;
+      if (past && needsBuyin() && !(b.allYes && b.done === b.n) && !(si > 2)) {
+        return confirmSheet(`Move ${esc(p.name)} past buy-in?`, `${b.done} of ${b.n} have answered${b.anyNo ? ', and someone said no' : ''}. Nothing moves past Seeking buy-in without the band agreeing to the idea and the director.`, 'Move it anyway', () => save({ stage: k }));
+      }
+      save({ stage: k });
+    });
+    $('#app').querySelectorAll('[data-vote]').forEach(btn => btn.onclick = async () => {
+      const v = voteOf(p, S.me), next = { want: v.want, director_ok: v.director_ok, needs: ($('#vneeds') || {}).value || v.needs };
+      next[btn.dataset.vote] = v[btn.dataset.vote] === btn.dataset.a ? '' : btn.dataset.a;
+      try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: next }); Object.assign(S.projects.find(x => x.id === p.id), r); render(); } catch (e) { toast(e.message); }
+    });
+    const vn = $('#vneeds'); if (vn) vn.onchange = async () => { const v = voteOf(p, S.me); try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: { ...v, needs: vn.value.trim() } }); Object.assign(S.projects.find(x => x.id === p.id), r); toast('Saved'); } catch (e) { toast(e.message); } };
+    $('#app').querySelectorAll('[data-prop]').forEach(btn => btn.onclick = () => {
+      const k = btn.dataset.prop, t = btn.querySelector('b').textContent;
+      sheet(`<h3>${esc(t)}</h3><textarea id="prt" rows="8">${esc(prop[k] || '')}</textarea><div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
+        setTimeout(() => $('#prt', root).focus(), 60);
+        $('#ok', root).onclick = async () => { closeSheet(); await save({ proposal: { ...prop, [k]: $('#prt', root).value } }); };
+      });
+    });
+    $('#app').querySelectorAll('[data-go]').forEach(x => x.onclick = () => go('t/' + x.dataset.go));
+    $('#app').querySelectorAll('[data-up]').forEach(x => x.onclick = () => { const i = +x.dataset.up, n = [...ids]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; save({ track_ids: n }); });
+    $('#app').querySelectorAll('[data-dn]').forEach(x => x.onclick = () => { const i = +x.dataset.dn, n = [...ids]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; save({ track_ids: n }); });
+    $('#app').querySelectorAll('[data-out]').forEach(x => x.onclick = () => save({ track_ids: ids.filter(y => y !== x.dataset.out) }));
+    $('#pjAdd').onclick = () => {
+      const pick = new Set(), others = S.tracks.filter(t => !ids.includes(t.id));
+      sheet(`<h3>Add to ${esc(p.name)}</h3><p class="lede">Tick the tracks. They go to the end; reorder after.</p>
+        <div class="menu" id="pjPick">${others.map(t => `<button class="menu-item" data-t="${esc(t.id)}"><span class="check"></span><span><b>${esc(t.title)}</b><span class="small muted">${esc([t.genre, projectsOf(t.id).map(x => x.name).join(', ')].filter(Boolean).join(' · ') || ago(t.updated_at))}</span></span></button>`).join('') || '<p class="small faint" style="text-align:center">Every track is in it already.</p>'}</div>
+        <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="pjGo">Add</button></div>`, root => {
+        root.querySelectorAll('[data-t]').forEach(x => x.onclick = () => { const k = x.dataset.t; pick.has(k) ? pick.delete(k) : pick.add(k); x.classList.toggle('sel', pick.has(k)); $('.check', x).textContent = pick.has(k) ? '✓' : ''; });
+        $('#pjGo', root).onclick = () => { closeSheet(); if (pick.size) save({ track_ids: [...ids, ...others.filter(t => pick.has(t.id)).map(t => t.id)] }); };
+      });
+    };
+  };
+  render();
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'p/' + id && !$('.scrim') && document.activeElement.id !== 'vneeds') render(); }).catch(e => toast(e.message));
+}
+// From a track: tick the projects it belongs to.
+function trackProjectsSheet(t) {
+  const on = new Set(projectsOf(t.id).map(p => p.id));
+  sheet(`<h3>${esc(t.title)}</h3><p class="lede">Which projects is it in? It can be in several.</p>
+    <div class="menu" id="tpj">${(S.projects || []).map(p => `<button class="menu-item${on.has(p.id) ? ' sel' : ''}" data-p="${esc(p.id)}"><span class="check">${on.has(p.id) ? '✓' : ''}</span><span><b>${esc(p.name)}</b><span class="small muted">${esc([lbl(SCALES, p.scale), stageOf(p.stage)[1], plural(p.track_ids.length, 'track')].filter(Boolean).join(' · '))}</span></span></button>`).join('')}</div>
+    <button class="btn block lp-new" id="tpjNew" style="margin-top:10px">+ New project with this track</button>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="tpjOk">Save</button></div>`, root => {
+    root.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { const k = b.dataset.p; on.has(k) ? on.delete(k) : on.add(k); b.classList.toggle('sel', on.has(k)); $('.check', b).textContent = on.has(k) ? '✓' : ''; });
+    $('#tpjNew', root).onclick = () => { closeSheet(); setTimeout(() => newProject([t.id], r => { route(); toast(`${t.title} is in ${r.name}`); }), 0); };
+    $('#tpjOk', root).onclick = async () => {
+      try {
+        for (const p of S.projects) {
+          const has = p.track_ids.includes(t.id), want = on.has(p.id);
+          if (has !== want) await setProjectTracks(p, want ? [...p.track_ids, t.id] : p.track_ids.filter(x => x !== t.id));
+        }
+        closeSheet(); route(); toast('Projects updated');
+      } catch (e) { toast(e.message); }
+    };
+  });
+}
+
 /* ---------- your shelf ---------- */
 // Recordings that belong to you rather than a track. They travel with you across spaces
 // and drop into any layer of any track as a take; the recording itself is shared, not copied.
@@ -3901,17 +4425,22 @@ function shelfTrack(items) {
     holders: [], beats: [], ideas: items.map(shelfIdea) };
 }
 function viewShelf() {
+  if (looking()) {
+    $('#app').innerHTML = spaceTop() + `<div class="wrap"><div class="page-h"><b>Your shelf</b><span class="ar">رف</span></div><div class="empty small">Your shelf is yours, so pick who you are first.<br><br><button class="btn primary" id="shPick">Pick who I am</button></div></div>` + tabBar('shelf');
+    wireTabs(); $('#shPick').onclick = () => { Spaces.setMe(''); route(); }; return;
+  }
   const render = () => {
     const d = S.shelf || { items: [], uses: [] }, cfg = store.get('shelfCfg', { bpm: 90, n: 4, sub: 1 });
     S.track = shelfTrack(d.items); S.view.shelf = { sid: 'shelf' };
     const usesOf = id => d.uses.filter(u => u.shelf_id === id);
-    $('#app').innerHTML = topBar('Your shelf', backBtn('me')) + `<div class="wrap shelf">
-      <p class="lede serif muted" style="font-style:italic;margin:6px 0 14px">Riffs, loops and lines that aren’t in a track yet. They go wherever you go, in every space, and drop into any track from the Shelf button in a layer.</p>
+    $('#app').innerHTML = spaceTop() + `<div class="wrap shelf"><div class="shelf-grid"><div class="sg-left">
+      <p class="sh-lede">Riffs, loops and lines that aren’t in a track yet. They go wherever you go, in every space, and drop into any track from the Shelf button in a layer.</p>
       <div class="shelf-rec">
-        <div class="shelf-cfg"><span class="snd-k">pulse</span><div class="tempo-row"><input id="shBpm" type="number" inputmode="numeric" value="${cfg.bpm}"><button class="btn tap" id="shTap" type="button">Tap</button></div>
-          <span class="snd-k">time</span><div class="sugs" id="shMeter">${METERS.slice(0, 6).map(([a, b, l]) => `<button class="sug${a === cfg.n && b === cfg.sub ? ' on' : ''}" data-m="${a}/${b}">${l}</button>`).join('')}</div></div>
+        <div class="shelf-cfg"><div class="sc-row"><span class="sc-k">Pulse</span><div class="tempo-row"><input id="shBpm" type="number" inputmode="numeric" value="${cfg.bpm}"><span class="sc-unit">bpm</span><button class="btn tap" id="shTap" type="button">Tap</button></div></div>
+          <div class="sc-row"><span class="sc-k">Time</span><div class="sugs sc-meters" id="shMeter">${METERS.slice(0, 6).map(([a, b, l]) => `<button class="sug${a === cfg.n && b === cfg.sub ? ' on' : ''}" data-m="${a}/${b}">${l}</button>`).join('')}</div></div></div>
         <div class="compose"><button class="rec" onclick="openRecorder('shelf')">${ICON.mic}Record</button>${HAS_MIDI ? `<button onclick="openMidi('shelf')">${ICON.keys}MIDI</button>` : ''}</div>
       </div>
+      </div><div class="sg-right">
       <div class="list-head"><b>On the shelf</b><span class="small muted">${d.items.length}</span></div>
       ${d.items.length ? S.track.ideas.map(i => {
         const u = usesOf(i.id), here = u.filter(x => !x.elsewhere), away = u.length - here.length;
@@ -3921,7 +4450,7 @@ function viewShelf() {
             : `<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${esc(shelfMeta(i))}</span></div>${rollSvg(parseTake(i), i.id)}`}
           <div class="sh-meta small muted">${i.kind === 'audio' ? esc(shelfMeta(i)) + ' · ' : ''}${ago(i.created_at)}${u.length ? ` · used in ${here.map(x => `<button class="link-btn" data-go="${esc(x.track_id)}|${esc(x.section_id)}">${esc(x.title)}${x.section ? ' · ' + esc(x.section) : ''}</button>`).join(', ')}${away ? `${here.length ? ', ' : ''}${plural(away, 'place')} in your other spaces` : ''}` : ''}</div></div>`;
       }).join('') : `<div class="empty small">Nothing yet. Record something, or open any take in a track and choose “Put on my shelf”.</div>`}
-    </div>` + tabBar('me');
+    </div></div></div>` + tabBar('shelf');
     wireTabs();
     const saveCfg = c => { store.set('shelfCfg', { ...store.get('shelfCfg', { bpm: 90, n: 4, sub: 1 }), ...c }); };
     const bi = $('#shBpm'); bi.onchange = () => { const v = Math.max(30, Math.min(300, +bi.value || 90)); saveCfg({ bpm: v }); render(); };
@@ -3930,7 +4459,7 @@ function viewShelf() {
     $('#app').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { const [tid, sid] = b.dataset.go.split('|'); S.view[tid] = { sid }; S.track = null; go('t/' + tid); });
     $('#app').querySelectorAll('[data-shm]').forEach(b => b.onclick = () => shelfMenu(b.dataset.shm, render));
   };
-  if (S.shelf) render(); else $('#app').innerHTML = topBar('Your shelf', backBtn('me')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
+  if (S.shelf) render(); else $('#app').innerHTML = spaceTop() + '<div class="wrap"><p class="muted">Loading…</p></div>' + tabBar('shelf');
   loadShelf().then(() => { if (location.hash.replace(/^#\/?/, '') === 'shelf' && !$('.scrim')) render(); }).catch(e => toast(e.message));
 }
 function shelfMenu(id, after) {
@@ -3953,7 +4482,7 @@ async function shelfPicker(lane) {
     const draw = () => {
       const items = (S.shelf && S.shelf.items) || [];
       $('#shp', root).innerHTML = items.length ? items.map(x => `<div class="menu-item shp"><button class="shp-play" data-pv="${esc(x.id)}" aria-label="Hear it">${ICON.play}</button><span><b>${esc(x.title || 'Untitled')}</b><span class="small muted">${esc(shelfMeta(x))}${x.sound_id && soundLabel(x.sound_id) ? ' · ' + esc(soundLabel(x.sound_id)) : ''}</span></span><button class="btn sm primary" data-use="${esc(x.id)}">Use</button></div>`).join('')
-        : `<div class="empty small">Your shelf is empty. Record onto it from You → Your shelf, or put any take there from its ⋯ menu.</div>`;
+        : `<div class="empty small">Your shelf is empty. Record onto it from the Shelf tab, or put any take there from its ⋯ menu.</div>`;
       root.querySelectorAll('[data-pv]').forEach(b => b.onclick = async () => {
         const on = b.classList.contains('on'); stopPv(); if (on) return;
         const x = items.find(y => y.id === b.dataset.pv); b.classList.add('on'); b.innerHTML = ICON.stop;
@@ -4062,37 +4591,49 @@ function viewWelcome() {
   const skip = $('#wl-skip'); if (skip) skip.onclick = done;
 }
 
+// Instruments as cards, each sound a tile you can hear (if it has a sample) and tap to edit.
+function instrumentCards(mid) {
+  const ins = insOf(mid), mine = mid === S.me;
+  if (!ins.length) return `<div class="snd-empty">${mine ? 'Nothing yet. Add what you play below, then the sounds you make on it.' : `${esc(memberName(mid))} hasn’t added any instruments yet.`}</div>`;
+  return '<div class="ins-grid">' + ins.map(i => {
+    const snds = soundsOf(i.id);
+    return `<div class="ins-card"><div class="ins-h"><button class="ins-name" onclick="instrumentSheet('${esc(mid)}', '${esc(i.id)}')">${esc(i.name)}</button><span class="ins-n">${snds.length ? plural(snds.length, 'sound') : 'no sounds yet'}</span></div>
+      <div class="snd-grid">${snds.map(x => `<div class="snd-tile${x.audio_id ? ' has' : ''}">
+          ${x.audio_id ? `<button class="st-play" aria-label="Hear ${esc(x.name)}" onclick="playSample('${esc(x.id)}', this)">${ICON.play}</button>` : `<span class="st-dot" title="No sample yet">${TAB_ICON.sounds}</span>`}
+          <button class="st-name" onclick="soundSheet('${esc(i.id)}', '${esc(x.id)}')"><b>${esc(x.name)}</b><span>${esc(x.notes || (x.audio_id ? fmtTime(x.duration) + ' sample' : 'tap to add a sample'))}</span></button></div>`).join('')}
+        <button class="snd-tile add" onclick="soundSheet('${esc(i.id)}')"><span class="st-dot">+</span><span class="st-name"><b>New sound</b><span>on ${esc(i.name)}</span></span></button></div></div>`;
+  }).join('') + '</div>';
+}
+// The Sounds tab: yours first and editable; the row on top shows anyone else's.
 function viewYou() {
   const render = () => {
     const me = S.members.find(m => m.id === S.me);
-    if (!me) {
-      $('#app').innerHTML = spaceTop() + `<div class="wrap"><div class="you-hero">${avatar(null, 'xl')}<div class="you-name"><b class="look-t">Just looking</b><span class="small muted serif">in ${esc(spaceName())}. You can listen, look around and change the space’s settings.</span></div></div>
-        <div class="menu" style="margin-top:18px">
-          <button class="menu-item" id="y-pick"><span><b>Pick who I am</b><span class="small muted">to record, write and plant tracks here</span></span></button>
-          <button class="menu-item" onclick="spacesSheet()"><span><b>Back to another space</b><span class="small muted">${plural(Spaces.list().length, 'space')} on this phone</span></span></button>
-        </div></div>` + tabBar('me');
-      wireTabs(); $('#y-pick').onclick = () => { Spaces.setMe(''); route(); };
-      return;
-    }
-    const mine = S.tracks.filter(t => t.created_by === S.me);
-    const n = insOf(S.me).reduce((k, i) => k + soundsOf(i.id).length, 0);
-    $('#app').innerHTML = spaceTop() + `<div class="wrap">
-      <div class="you-hero">${avatar(me, 'xl')}<div class="you-name"><input id="yname" type="text" value="${esc(me.name)}" aria-label="Your name"><span class="small muted serif">in ${esc(spaceName())} · ${plural(insOf(S.me).length, 'instrument')} · ${plural(n, 'sound')}</span></div></div>
-      <div id="linkBox"></div>
-      <button class="shelf-card" onclick="go('shelf')"><span class="sc-ic">${ICON.shelf}</span><span><b>Your shelf</b><span class="small muted">${S.shelf ? plural(S.shelf.items.length, 'thing') + ' · ' : ''}riffs and loops to reuse in any track, in any space</span></span><span class="caret">›</span></button>
-      <div class="list-head"><b>Instruments &amp; sounds</b><span class="small muted" style="font-style:italic">tap to edit</span></div>
-      <div class="card-box">${soundsBlock(S.me)}</div>
-      ${quickIns(S.me, true)}
-      <div class="list-head"><b>Your tracks</b><span class="small muted">${mine.length}</span></div>
-      ${mine.length ? `<div class="menu">${mine.slice(0, 6).map(t => `<button class="menu-item" onclick="go('t/${esc(t.id)}')"><span><b>${esc(t.title)}</b><span class="small muted">${esc([t.genre, ago(t.updated_at)].filter(Boolean).join(' · '))}</span></span></button>`).join('')}
-        ${mine.length > 6 ? `<button class="sug" onclick="S.homeTab='mine'; go('')">See all ${mine.length}</button>` : ''}</div>` : '<p class="small faint" style="font-style:italic">Nothing planted yet.</p>'}
-      <div class="list-head"><b>This phone</b></div>
+    const people = [...S.members.filter(m => !m.guest), ...S.members.filter(m => m.guest)];
+    let who = S.soundsWho && S.members.some(m => m.id === S.soundsWho) ? S.soundsWho : (me ? S.me : (people[0] || {}).id);
+    const sel = S.members.find(m => m.id === who), mine = !!me && who === S.me;
+    const countOf = id => insOf(id).reduce((k, i) => k + soundsOf(i.id).length, 0);
+    const strip = `<div class="people-row snd-people">${people.map(m => `<button class="pp${m.id === who ? ' on' : ''}" data-who="${esc(m.id)}">${avatar(m)}<span class="pp-n">${esc(m.id === S.me ? 'Yours' : m.name)}</span><span class="pp-c">${countOf(m.id) ? plural(countOf(m.id), 'sound') : m.guest ? 'guest' : ''}</span></button>`).join('')}</div>`;
+    const hero = mine
+      ? `<div class="snd-hero mine">${avatar(me, 'xl')}<div class="you-name"><span class="sh-k">Your sounds</span><input id="yname" type="text" value="${esc(me.name)}" aria-label="Your name"><span class="small muted serif">${plural(insOf(S.me).length, 'instrument')} · ${plural(countOf(S.me), 'sound')} · they follow you to every space you’re in</span></div></div>`
+      : sel ? `<div class="snd-hero">${avatar(sel, 'xl')}<div class="you-name"><span class="sh-k">${sel.guest ? 'Guest performer' : 'Their sounds'}</span><b class="sh-name">${esc(sel.name)}</b><span class="small muted serif">${plural(insOf(sel.id).length, 'instrument')} · ${plural(countOf(sel.id), 'sound')}${me ? ' · tap ▶ to hear one' : ''}</span></div></div>` : '';
+    $('#app').innerHTML = spaceTop() + `<div class="wrap snd-page">
+      ${!me ? `<div class="look-note"><b>Just looking</b><span>You can hear everyone’s sounds. To add your own, <button class="link-btn" id="y-pick">pick who you are</button>.</span></div>` : ''}
+      ${strip}
+      ${hero}
+      ${mine ? '<div id="linkBox"></div>' : ''}
+      ${sel ? instrumentCards(sel.id) : ''}
+      ${mine ? `<div class="list-head"><b>Add an instrument</b></div>${quickIns(S.me, false)}` : ''}
+      ${mine ? `<div class="list-head"><b>This phone</b></div>
       <div class="menu">
-        <button class="menu-item" id="y-tour"><span><b>Show me around</b><span class="small muted">the tips, again</span></span></button>
+        <button class="menu-item" id="y-tour"><span><b>Replay the tips</b><span class="small muted">if you skipped them</span></span></button>
         <button class="menu-item" id="y-switch"><span><b>Not ${esc(me.name)}?</b><span class="small muted">pick who you are on this phone</span></span></button>
-      </div>
+      </div>` : ''}
     </div>` + tabBar('me');
-    wireTabs(); wireQuickIns($('#app'), S.me, render);
+    wireTabs();
+    $('#app').querySelectorAll('[data-who]').forEach(b => b.onclick = () => { S.soundsWho = b.dataset.who; render(); });
+    const pick = $('#y-pick'); if (pick) pick.onclick = () => { Spaces.setMe(''); route(); };
+    if (!mine) return;
+    wireQuickIns($('#app'), S.me, render);
     linkBox($('#linkBox'), render);
     const nm = $('#yname');
     nm.onchange = async () => { const v = nm.value.trim(); if (!v) { nm.value = me.name; return; } try { await patchMe({ name: v }); toast('Saved'); } catch (e) { toast(e.message); } };
@@ -4104,26 +4645,55 @@ function viewYou() {
   Promise.all([loadState(), loadShelf().catch(() => null)]).then(() => { if (location.hash.replace(/^#\/?/, '') === 'me' && !$('.scrim') && document.activeElement.id !== 'yname') render(); }).catch(e => toast(e.message));
 }
 
-function viewBand() {
+// People now live in the Space tab; old links to #band land there.
+function viewBand() { S.spaceTab = 'people'; history.replaceState(null, '', '#space'); viewSpace(); }
+
+// The space and everything shared in it: its people, its genres, its settings.
+function viewSpace() {
+  const TABS3 = [['people', 'People'], ['genres', 'Genres'], ['settings', 'Settings']];
   const render = () => {
+    const tab = S.spaceTab || 'people', sp = S.space || { id: 'abba' }, g = genresOf();
     const members = S.members.filter(m => !m.guest), guests = S.members.filter(m => m.guest);
     const row = m => {
       const n = insOf(m.id).reduce((k, i) => k + soundsOf(i.id).length, 0), open = S.expanded['p:' + m.id];
       return `<div class="member-row${open ? ' open' : ''}"><button class="nm" data-open="${esc(m.id)}">${avatar(m)}<span class="nm-txt"><b>${esc(m.name)}</b><span class="small muted serif">${esc(instrumentsOf(m.id).join(', ')) || (m.guest ? 'guest performer' : m.ready ? 'no instruments yet' : 'hasn’t joined yet')}${n ? ` · ${plural(n, 'sound')}` : ''}</span></span>${m.id === S.me ? '<span class="me-tag">you</span>' : ''}<span class="caret">${open ? '▴' : '▾'}</span></button>
         ${open ? `<div class="nm-body">${soundsBlock(m.id)}<div class="sugs" style="margin-top:10px">${m.guest ? `<button class="sug" data-promote="${esc(m.id)}">Make a member</button>` : ''}<button class="sug" data-rename="${esc(m.id)}">Rename</button><button class="sug danger" data-rm="${esc(m.id)}">Remove</button></div></div>` : ''}</div>`;
     };
-    $('#app').innerHTML = spaceTop() + `<div class="wrap">
-      <div class="list-head"><b>Members</b><span class="small muted" style="font-style:italic">use the app</span></div>
+    const body = {
+      people: () => `<div class="list-head"><b>Members</b><span class="small muted" style="font-style:italic">use the app</span></div>
       ${members.map(row).join('') || '<p class="small faint">Nobody yet.</p>'}
-      <div class="list-head"><b>Guest performers</b><span class="small muted" style="font-style:italic">named in line-ups, don’t use the app</span></div>
+      <div class="list-head"><b>Guests</b><span class="small muted" style="font-style:italic">named in line-ups, not app users</span></div>
       ${guests.map(row).join('') || '<p class="small faint" style="font-style:italic">None yet. Add one here or straight from a line-up.</p>'}
       <label class="field">Add someone</label>
       <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="addG">Guest</button><button class="btn" id="add">Member</button></div>
-      <p class="muted small serif" style="margin-top:12px;font-style:italic">Members you add pick their name the first time they open ${esc(spaceName())}.</p>
-    </div>` + tabBar('band');
+      <p class="muted small serif" style="margin-top:12px;font-style:italic">Members you add pick their name the first time they open ${esc(spaceName())}.</p>`,
+      genres: () => `<p class="muted serif sp-lede">The genres ${esc(spaceName())} moves between. They’re offered when someone plants a track.</p>
+      <div class="sugs gen-list">${g.map((x, i) => `<span class="sug gen">${esc(x)}<button data-gx="${i}" aria-label="Remove ${esc(x)}">×</button></span>`).join('') || '<span class="small faint" style="font-style:italic">None yet.</span>'}</div>
+      <div class="tempo-row" style="margin-top:10px"><input id="gnew" type="text" placeholder="add a genre"><button class="btn" id="gadd">Add</button></div>
+      ${GENRE_IDEAS.filter(x => !g.some(y => y.toLowerCase() === x.toLowerCase())).length ? `<div class="sugs gen-ideas">${GENRE_IDEAS.filter(x => !g.some(y => y.toLowerCase() === x.toLowerCase())).slice(0, 8).map(x => `<button class="sug ghost" data-gi="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>` : ''}`,
+      settings: () => `<div class="sp-hero">
+        <label class="sp-logo"><input id="sl" type="file" accept="image/png,image/jpeg,image/webp" hidden>${logoOf(sp) ? `<img src="${logoOf(sp).src}" alt="">` : '<span>+ logo</span>'}</label>
+        <div class="sp-name"><input id="sn" type="text" value="${esc(spaceName())}" aria-label="Space name"><span class="small muted serif">${plural(members.length, 'member')} · ${plural(S.tracks.length, 'track')}${S.space && S.space.logo_v ? ' · <button class="link-btn" id="slRm">remove logo</button>' : ''}</span></div>
+      </div>
+      <div class="list-head"><b>Passcode</b></div>
+      <div class="menu"><button class="menu-item" id="sk"><span><b>Change the passcode</b><span class="small muted">everyone else signs in again with the new one</span></span></button></div>
+      <div class="list-head"><b>Your spaces</b></div>
+      <div class="menu">
+        <button class="menu-item" onclick="spacesSheet()"><span><b>Switch or join a space</b><span class="small muted">${plural(Spaces.list().length, 'space')} on this phone</span></span></button>
+        <button class="menu-item" onclick="newSpaceSheet()"><span><b>+ Start a new space</b><span class="small muted">a band, a project, or just you</span></span></button>
+        <button class="menu-item danger" id="logout"><span><b>Leave ${esc(spaceName())} on this phone</b><span class="small muted">nothing is deleted</span></span></button>
+      </div>`,
+    };
+    $('#app').innerHTML = spaceTop('') + `<div class="wrap">
+      <div class="seg sp-seg">${TABS3.map(([k, l]) => `<button class="seg-b${tab === k ? ' on' : ''}" data-st="${k}">${l}${k === 'people' ? `<span>${S.members.length}</span>` : k === 'genres' ? `<span>${g.length}</span>` : ''}</button>`).join('')}</div>
+      ${body[tab]()}
+    </div>` + tabBar('space');
     wireTabs();
-    $('#app').querySelectorAll('[data-open]').forEach(b => b.onclick = () => { const k = 'p:' + b.dataset.open; S.expanded[k] = !S.expanded[k]; render(); });
-    $('#app').querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
+    $('#app').querySelectorAll('[data-st]').forEach(b => b.onclick = () => { S.spaceTab = b.dataset.st; render(); scrollTo(0, 0); });
+    const on = (sel, fn) => $('#app').querySelectorAll(sel).forEach(fn);
+    // people
+    on('[data-open]', b => b.onclick = () => { const k = 'p:' + b.dataset.open; S.expanded[k] = !S.expanded[k]; render(); });
+    on('[data-rm]', b => b.onclick = () => {
       const m = S.members.find(x => x.id === b.dataset.rm);
       confirmSheet(`Remove ${esc(m.name)}?`, 'They come off every line-up. Their ideas and recordings stay, still credited to them.', 'Remove', async () => {
         await api('/members/' + m.id, { method: 'DELETE' });
@@ -4132,83 +4702,64 @@ function viewBand() {
         route();
       });
     });
-    $('#app').querySelectorAll('[data-rename]').forEach(b => b.onclick = () => {
+    on('[data-rename]', b => b.onclick = () => {
       const m = S.members.find(x => x.id === b.dataset.rename);
       sheet(`<h3>Rename</h3><input id="rn" type="text" value="${esc(m.name)}"><div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
         const inp = $('#rn', root); setTimeout(() => inp.select(), 60);
         $('#ok', root).onclick = async () => { const v = inp.value.trim(); if (!v) return; try { const r = await api('/members/' + m.id, { method: 'PATCH', body: { name: v } }); Object.assign(m, r); closeSheet(); render(); } catch (e) { toast(e.message); } };
       });
     });
-    $('#app').querySelectorAll('[data-promote]').forEach(b => b.onclick = async () => {
+    on('[data-promote]', b => b.onclick = async () => {
       try { const m = await api('/members/' + b.dataset.promote, { method: 'PATCH', body: { guest: false } }); Object.assign(S.members.find(x => x.id === m.id), m); render(); } catch (e) { toast(e.message); }
     });
-    const add = guest => async () => {
-      const name = $('#newName').value.trim(); if (!name) return $('#newName').focus();
-      try { const m = await api('/members', { method: 'POST', body: { name, guest } }); S.members.push(m); render(); toast(guest ? `${name} added as a guest performer` : `${name} added. They pick their name when they open it.`); } catch (e) { toast(e.message); }
-    };
-    $('#add').onclick = add(false); $('#addG').onclick = add(true);
-  };
-  render();
-  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'band' && !$('.scrim')) render(); }).catch(e => toast(e.message));
-}
-
-function viewSpace() {
-  const render = () => {
-    const sp = S.space || { id: 'abba' }, g = genresOf();
-    const people = S.members.filter(m => !m.guest).length;
-    $('#app').innerHTML = spaceTop('') + `<div class="wrap">
-      <div class="sp-hero">
-        <label class="sp-logo"><input id="sl" type="file" accept="image/png,image/jpeg,image/webp" hidden>${logoOf(sp) ? `<img src="${logoOf(sp).src}" alt="">` : '<span>+ logo</span>'}</label>
-        <div class="sp-name"><input id="sn" type="text" value="${esc(spaceName())}" aria-label="Space name"><span class="small muted serif">${plural(people, 'member')} · ${plural(S.tracks.length, 'track')}${S.space && S.space.logo_v ? ' · <button class="link-btn" id="slRm">remove logo</button>' : ''}</span></div>
-      </div>
-      <div class="list-head"><b>Genres</b><span class="small muted" style="font-style:italic">offered when planting a track</span></div>
-      <div class="sugs gen-list">${g.map((x, i) => `<span class="sug gen">${esc(x)}<button data-gx="${i}" aria-label="Remove ${esc(x)}">×</button></span>`).join('') || '<span class="small faint" style="font-style:italic">None yet.</span>'}</div>
-      <div class="tempo-row" style="margin-top:10px"><input id="gnew" type="text" placeholder="add a genre"><button class="btn" id="gadd">Add</button></div>
-      ${GENRE_IDEAS.filter(x => !g.some(y => y.toLowerCase() === x.toLowerCase())).length ? `<div class="sugs gen-ideas">${GENRE_IDEAS.filter(x => !g.some(y => y.toLowerCase() === x.toLowerCase())).slice(0, 8).map(x => `<button class="sug ghost" data-gi="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>` : ''}
-      <div class="list-head"><b>Passcode</b></div>
-      <div class="menu"><button class="menu-item" id="sk"><span><b>Change the passcode</b><span class="small muted">everyone else signs in again with the new one</span></span></button></div>
-      <div class="list-head"><b>Your spaces</b></div>
-      <div class="menu">
-        <button class="menu-item" onclick="spacesSheet()"><span><b>Switch or join a space</b><span class="small muted">${plural(Spaces.list().length, 'space')} on this phone</span></span></button>
-        <button class="menu-item" onclick="newSpaceSheet()"><span><b>+ Start a new space</b><span class="small muted">a band, a project, or just you</span></span></button>
-        <button class="menu-item danger" id="logout"><span><b>Leave ${esc(spaceName())} on this phone</b><span class="small muted">nothing is deleted</span></span></button>
-      </div>
-    </div>` + tabBar('space');
-    wireTabs();
-    const nm = $('#sn');
-    nm.onchange = async () => {
-      const v = nm.value.trim(); if (!v) { nm.value = spaceName(); return; }
-      try { const r = await api('/space', { method: 'PATCH', body: { name: v } }); S.space = { ...S.space, name: r.name }; Spaces.add(S.key, S.space); render(); toast('Renamed'); } catch (e) { toast(e.message); }
-    };
-    nm.onkeydown = e => { if (e.key === 'Enter') nm.blur(); };
-    $('#sl').onchange = async e => {
-      const f = e.target.files[0]; if (!f) return;
-      try { const r = await uploadLogo(await shrinkImage(f)); S.space = { ...S.space, logo_v: r.logo_v }; render(); toast('Logo updated'); } catch (err) { toast(err.message); }
-    };
-    const rm = $('#slRm'); if (rm) rm.onclick = e => { e.preventDefault(); confirmSheet('Remove the logo?', '', 'Remove', async () => { await api('/space/logo', { method: 'DELETE' }); S.space = { ...S.space, logo_v: null }; render(); }); };
-    const setG = async list => { try { await saveGenres(list); render(); } catch (e) { toast(e.message); } };
-    $('#app').querySelectorAll('[data-gx]').forEach(b => b.onclick = () => setG(g.filter((_, i) => i !== +b.dataset.gx)));
-    const gn = $('#gnew');
-    const addG = async () => { const v = gn.value.trim(); if (!v) return gn.focus(); if (g.some(x => x.toLowerCase() === v.toLowerCase())) return toast('Already there'); await setG([...g, v]); $('#gnew').focus(); };
-    $('#gadd').onclick = addG; gn.onkeydown = e => { if (e.key === 'Enter') addG(); };
-    $('#sk').onclick = () => sheet(`<h3>New passcode</h3><p class="lede">Everyone else in ${esc(spaceName())} signs in again with it. Share it yourself.</p>
-      <input id="k1" type="password" autocapitalize="off" placeholder="at least 6 characters"><input id="k2" type="password" autocapitalize="off" placeholder="type it again" style="margin-top:8px">
-      <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Change it</button></div>`, root => {
-      setTimeout(() => $('#k1', root).focus(), 60);
-      $('#ok', root).onclick = async () => {
-        const nk = $('#k1', root).value.trim();
-        if (nk !== $('#k2', root).value.trim()) return toast('The two passcodes don’t match');
-        try {
-          await api('/space', { method: 'PATCH', body: { new_key: nk } });
-          const l = Spaces.list(), c = l.find(x => x.key === S.key); if (c) c.key = nk; Spaces.save(l); S.key = nk; store.set('key', nk);
-          closeSheet(); toast('Passcode changed');
-        } catch (e) { toast(e.message); }
+    if (tab === 'people') {
+      const add = guest => async () => {
+        const name = $('#newName').value.trim(); if (!name) return $('#newName').focus();
+        try { const m = await api('/members', { method: 'POST', body: { name, guest } }); S.members.push(m); render(); toast(guest ? `${name} added as a guest performer` : `${name} added. They pick their name when they open it.`); } catch (e) { toast(e.message); }
       };
-    });
-    confirmBtn($('#logout'), 'Tap again to leave', () => { Spaces.forget(S.key); go(''); (S.key ? loadState().catch(() => {}) : Promise.resolve()).then(route); });
+      $('#add').onclick = add(false); $('#addG').onclick = add(true);
+    }
+    // genres
+    if (tab === 'genres') {
+      const setG = async list => { try { await saveGenres(list); render(); } catch (e) { toast(e.message); } };
+      on('[data-gx]', b => b.onclick = () => setG(g.filter((_, i) => i !== +b.dataset.gx)));
+      on('[data-gi]', b => b.onclick = () => setG([...g, b.dataset.gi]));
+      const gn = $('#gnew');
+      const addG = async () => { const v = gn.value.trim(); if (!v) return gn.focus(); if (g.some(x => x.toLowerCase() === v.toLowerCase())) return toast('Already there'); await setG([...g, v]); $('#gnew').focus(); };
+      $('#gadd').onclick = addG; gn.onkeydown = e => { if (e.key === 'Enter') addG(); };
+    }
+    // settings
+    if (tab === 'settings') {
+      const nm = $('#sn');
+      nm.onchange = async () => {
+        const v = nm.value.trim(); if (!v) { nm.value = spaceName(); return; }
+        try { const r = await api('/space', { method: 'PATCH', body: { name: v } }); S.space = { ...S.space, name: r.name }; Spaces.add(S.key, S.space); render(); toast('Renamed'); } catch (e) { toast(e.message); }
+      };
+      nm.onkeydown = e => { if (e.key === 'Enter') nm.blur(); };
+      $('#sl').onchange = async e => {
+        const f = e.target.files[0]; if (!f) return;
+        try { const r = await uploadLogo(await shrinkImage(f)); S.space = { ...S.space, logo_v: r.logo_v }; render(); toast('Logo updated'); } catch (err) { toast(err.message); }
+      };
+      const rm = $('#slRm'); if (rm) rm.onclick = e => { e.preventDefault(); confirmSheet('Remove the logo?', '', 'Remove', async () => { await api('/space/logo', { method: 'DELETE' }); S.space = { ...S.space, logo_v: null }; render(); }); };
+      $('#sk').onclick = () => sheet(`<h3>New passcode</h3><p class="lede">Everyone else in ${esc(spaceName())} signs in again with it. Share it yourself.</p>
+        <input id="k1" type="password" autocapitalize="off" placeholder="at least 6 characters"><input id="k2" type="password" autocapitalize="off" placeholder="type it again" style="margin-top:8px">
+        <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Change it</button></div>`, root => {
+        setTimeout(() => $('#k1', root).focus(), 60);
+        $('#ok', root).onclick = async () => {
+          const nk = $('#k1', root).value.trim();
+          if (nk !== $('#k2', root).value.trim()) return toast('The two passcodes don’t match');
+          try {
+            await api('/space', { method: 'PATCH', body: { new_key: nk } });
+            const l = Spaces.list(), c = l.find(x => x.key === S.key); if (c) c.key = nk; Spaces.save(l); S.key = nk; store.set('key', nk);
+            closeSheet(); toast('Passcode changed');
+          } catch (e) { toast(e.message); }
+        };
+      });
+      confirmBtn($('#logout'), 'Tap again to leave', () => { Spaces.forget(S.key); go(''); (S.key ? loadState().catch(() => {}) : Promise.resolve()).then(route); });
+    }
   };
   render();
-  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'space' && !$('.scrim') && !['sn', 'gnew'].includes(document.activeElement.id)) render(); }).catch(e => toast(e.message));
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'space' && !$('.scrim') && !['sn', 'gnew', 'newName'].includes(document.activeElement.id)) render(); }).catch(e => toast(e.message));
 }
 
 function shareTrack() {
@@ -4228,6 +4779,42 @@ function poll(fn) {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && S.key && !$('.scrim') && !playing.size && !Player.on && !Beat.on) route();
 });
+
+/* ---------- add to home screen ---------- */
+// Opened in a phone's browser rather than from the home screen: offer to add it.
+// Android (Chrome, Edge, Samsung) gets the real install prompt; iPhone gets the two taps it takes in Safari.
+const A2HS = {
+  evt: null,
+  standalone: () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
+  ios: () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
+  android: () => /Android/.test(navigator.userAgent),
+  show() {
+    if (this.standalone() || $('.a2hs') || !(this.ios() || this.android())) return;
+    if (Date.now() - store.get('a2hsLater', 0) < 10 * 864e5) return;
+    const ios = this.ios(), share = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
+    const how = ios
+      ? `Tap <span class="a2-ic">${share}</span> Share, then <b>Add to Home Screen</b>.`
+      : this.evt ? 'Opens full screen, like an app.' : 'Tap <b>⋮</b> in the browser, then <b>Add to Home screen</b> or <b>Install app</b>.';
+    const el = document.createElement('div'); el.className = 'a2hs'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Add Shajara to your home screen');
+    el.innerHTML = `<img src="icon-192.png" alt=""><div class="a2-t"><b>Put Shajara on your home screen</b><span>${how}</span></div>
+      ${!ios && this.evt ? '<button class="btn sm primary" id="a2Go">Add</button>' : ''}<button class="a2-x" aria-label="Not now">✕</button>`;
+    document.body.appendChild(el);
+    this.place(el);
+    // Pages re-render under it (tabs appear, a track's transport bar): keep it above them.
+    const t = setInterval(() => { if (!el.isConnected) return clearInterval(t); this.place(el); }, 400);
+    $('.a2-x', el).onclick = () => { store.set('a2hsLater', Date.now()); el.remove(); };
+    const go = $('#a2Go', el); if (go) go.onclick = async () => { const e = this.evt; this.evt = null; el.remove(); e.prompt(); try { const r = await e.userChoice; if (r.outcome !== 'accepted') store.set('a2hsLater', Date.now()); } catch {} };
+  },
+  // Sit just above whatever bar is fixed at the bottom (tabs, transport).
+  place(el) {
+    const bars = [...document.querySelectorAll('.tabbar, .transport')].filter(b => b.getBoundingClientRect().height > 0);
+    const h = bars.reduce((m, b) => Math.max(m, innerHeight - b.getBoundingClientRect().top), 0);
+    el.style.bottom = `calc(${Math.round(h) + 10}px ${h ? '' : '+ env(safe-area-inset-bottom)'})`;
+  },
+};
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); A2HS.evt = e; const old = $('.a2hs'); if (old) old.remove(); A2HS.show(); });
+window.addEventListener('appinstalled', () => { const el = $('.a2hs'); if (el) el.remove(); });
+setTimeout(() => A2HS.show(), 2500);
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 

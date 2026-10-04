@@ -126,6 +126,8 @@ async function dropUnusedAudio(env, ids) {
 
 // Move a track to another space, re-pointing credits to the same-named person there (adding them as a guest if missing).
 async function moveTrack(env, tid, from, to) {
+  // Projects belong to a space, so a track leaving the space leaves its projects.
+  await env.DB.prepare('DELETE FROM project_tracks WHERE track_id = ?').bind(tid).run();
   const used = new Set();
   const t = await env.DB.prepare('SELECT created_by FROM tracks WHERE id = ?').bind(tid).first();
   if (t.created_by) used.add(t.created_by);
@@ -225,7 +227,11 @@ async function route(req, env, url, member, space) {
     for (const c of counts.results) { const t = byTrack[c.track_id]; if (!t) continue; t.ideas += c.n; t.kinds[c.kind] = c.n; }
     const lasts = await env.DB.prepare(`SELECT i.track_id, i.author_id, i.kind, i.created_at FROM ideas i JOIN (SELECT track_id, MAX(created_at) AS m FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id) x ON x.track_id = i.track_id AND x.m = i.created_at`).all();
     for (const l of lasts.results) if (byTrack[l.track_id]) byTrack[l.track_id].last = { by: l.author_id, kind: l.kind, at: l.created_at };
-    return json({ space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
+    const pr = await env.DB.prepare('SELECT * FROM projects WHERE space_id = ? ORDER BY CASE WHEN date = \'\' THEN 1 ELSE 0 END, date, created_at').bind(sp).all();
+    const pt = await env.DB.prepare('SELECT pt.project_id, pt.track_id FROM project_tracks pt JOIN projects p ON p.id = pt.project_id WHERE p.space_id = ? ORDER BY pt.position').bind(sp).all();
+    const pv = await env.DB.prepare('SELECT v.* FROM project_votes v JOIN projects p ON p.id = v.project_id WHERE p.space_id = ?').bind(sp).all();
+    const projects = pr.results.map(p => ({ ...p, track_ids: pt.results.filter(x => x.project_id === p.id).map(x => x.track_id), votes: pv.results.filter(v => v.project_id === p.id) }));
+    return json({ projects, space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
   if (a === 'grooves') {
@@ -363,6 +369,73 @@ async function route(req, env, url, member, space) {
       return json({ ok: true });
     }
   }
+  // Projects, as the band defines them: philosophy first, one creative director, a stage, and the band's buy-in.
+  // A project holds tracks in its own order (an album's tracklist, a show's setlist); a track can be in several.
+  if (a === 'projects') {
+    const SCALES = ['album', 'ep', 'single', 'show', 'experiment'];
+    const STAGES = ['philosophy', 'proposal', 'buyin', 'development', 'rehearsing', 'done', 'parked', 'notadopted', 'outside'];
+    const FORMATS = ['live', 'underground', 'cinematic', 'mixed'];
+    const PRODS = ['universe', 'fills', 'both'];
+    const pick = (v, list, d) => list.includes(v) ? v : d;
+    const read = async pid => {
+      const p = await env.DB.prepare('SELECT * FROM projects WHERE id = ? AND space_id = ?').bind(pid, sp).first();
+      if (!p) return null;
+      p.track_ids = (await env.DB.prepare('SELECT track_id FROM project_tracks WHERE project_id = ? ORDER BY position').bind(pid).all()).results.map(r => r.track_id);
+      p.votes = (await env.DB.prepare('SELECT member_id, want, director_ok, needs, updated_at FROM project_votes WHERE project_id = ?').bind(pid).all()).results;
+      return p;
+    };
+    const setTracks = async (pid, ids) => {
+      const ok = (await env.DB.prepare('SELECT id FROM tracks WHERE space_id = ?').bind(sp).all()).results.map(r => r.id);
+      const list = [...new Set(ids.filter(x => typeof x === 'string' && ok.includes(x)))].slice(0, 200);
+      await env.DB.batch([
+        env.DB.prepare('DELETE FROM project_tracks WHERE project_id = ?').bind(pid),
+        ...list.map((tid, i) => env.DB.prepare('INSERT INTO project_tracks (project_id, track_id, position) VALUES (?, ?, ?)').bind(pid, tid, i)),
+      ]);
+    };
+    const fields = async (b, cur) => {
+      const g = cleanGenres(b.genres);
+      const dir = 'director' in b ? (b.director && await memberInSpace(str(b.director, 40)) ? str(b.director, 40) : null) : cur.director;
+      let prop = cur.proposal || '{}';
+      if (b.proposal && typeof b.proposal === 'object') { const o = {}; for (const k of ['taking', 'scope', 'open', 'notes']) o[k] = str(b.proposal[k], 4000); prop = JSON.stringify(o); }
+      return {
+        name: str(b.name, 80) || cur.name, scale: 'scale' in b ? pick(b.scale, SCALES, '') : cur.scale, stage: 'stage' in b ? pick(b.stage, STAGES, cur.stage) : cur.stage,
+        philosophy: 'philosophy' in b ? str(b.philosophy, 600) : cur.philosophy, oneline: 'oneline' in b ? str(b.oneline, 200) : cur.oneline, director: dir,
+        format: 'format' in b ? pick(b.format, FORMATS, '') : cur.format, production: 'production' in b ? pick(b.production, PRODS, '') : cur.production,
+        genres: g ? JSON.stringify(g) : cur.genres, date: 'date' in b ? str(b.date, 20) : cur.date, proposal: prop,
+      };
+    };
+    const COLS = ['name', 'scale', 'stage', 'philosophy', 'oneline', 'director', 'format', 'production', 'genres', 'date', 'proposal'];
+    if (m === 'POST' && !id) {
+      const b = await body(req);
+      if (!str(b.name, 80)) return json({ error: 'a project needs a name' }, 400);
+      const pid = uid(), t = now();
+      const f = await fields(b, { name: '', scale: '', stage: 'philosophy', philosophy: '', oneline: '', director: member, format: '', production: '', genres: '[]', date: '', proposal: '{}' });
+      await env.DB.prepare(`INSERT INTO projects (id, space_id, ${COLS.join(', ')}, created_by, created_at, updated_at) VALUES (?, ?, ${COLS.map(() => '?').join(', ')}, ?, ?, ?)`)
+        .bind(pid, sp, ...COLS.map(c => f[c]), member, t, t).run();
+      if (Array.isArray(b.track_ids)) await setTracks(pid, b.track_ids);
+      return json(await read(pid), 201);
+    }
+    const cur = id ? await read(id) : null;
+    if (id && !cur) return json({ error: 'not found' }, 404);
+    if (sub === 'vote' && m === 'PUT') {
+      const b = await body(req), who = str(b.member_id, 40) || member;
+      if (!who || !(await memberInSpace(who))) return json({ error: 'pick who you are first' }, 400);
+      const ans = v => ['yes', 'no', 'unsure'].includes(v) ? v : '';
+      await env.DB.prepare('INSERT OR REPLACE INTO project_votes (project_id, member_id, want, director_ok, needs, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
+        .bind(id, who, ans(b.want), ans(b.director_ok), str(b.needs, 500), now()).run();
+      return json(await read(id));
+    }
+    if (m === 'PATCH' && id && !sub) {
+      const b = await body(req), f = await fields(b, cur);
+      await env.DB.prepare(`UPDATE projects SET ${COLS.map(c => c + ' = ?').join(', ')}, updated_at = ? WHERE id = ?`).bind(...COLS.map(c => f[c]), now(), id).run();
+      if (Array.isArray(b.track_ids)) await setTracks(id, b.track_ids);
+      return json(await read(id));
+    }
+    if (m === 'DELETE' && id && !sub) {
+      await env.DB.batch([env.DB.prepare('DELETE FROM project_tracks WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM project_votes WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(id)]);
+      return json({ ok: true });
+    }
+  }
   if (a === 'members') {
     if (m === 'POST' && !id) {
       const b = await body(req);
@@ -445,6 +518,7 @@ async function route(req, env, url, member, space) {
         env.DB.prepare('DELETE FROM holders WHERE section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(id),
         env.DB.prepare('DELETE FROM beats WHERE section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(id),
         env.DB.prepare('DELETE FROM sections WHERE track_id = ?').bind(id),
+        env.DB.prepare('DELETE FROM project_tracks WHERE track_id = ?').bind(id),
         env.DB.prepare('DELETE FROM tracks WHERE id = ?').bind(id),
       ]);
       return json({ ok: true });
