@@ -12,4 +12,6 @@ binding = "AUDIO"
 id = "75eacdb2c1c34adcb1ccb81fde55796a"
 
 [vars]
+# Bump to sign every phone out once (they re-enter their space passcode).
+LOGOUT_EPOCH = "2026-10-04"
 ALLOWED_ORIGINS = "https://amrabdelwahab.github.io"

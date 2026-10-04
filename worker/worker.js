@@ -28,6 +28,23 @@ async function body(req) {
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max || 500) : '');
 const intIn = (v, lo, hi, d) => { const n = Math.round(Number(v)); return n >= lo && n <= hi ? n : d; };
 
+async function sha256(text) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+// A passcode opens exactly one space. The band's original passcode (BAND_KEY secret) opens 'abba' until that space sets its own.
+async function resolveSpace(env, key) {
+  if (!key) return null;
+  const row = await env.DB.prepare('SELECT * FROM spaces WHERE key_hash = ?').bind(await sha256(key)).first();
+  if (row) return row;
+  if (env.BAND_KEY && key === env.BAND_KEY) return env.DB.prepare("SELECT * FROM spaces WHERE id = 'abba' AND key_hash IS NULL").first();
+  return null;
+}
+async function trackInSpace(env, tid, sp) {
+  const t = await env.DB.prepare('SELECT space_id FROM tracks WHERE id = ?').bind(tid).first();
+  return !!t && t.space_id === sp;
+}
+
 async function loadTrack(env, id) {
   const track = await env.DB.prepare('SELECT * FROM tracks WHERE id = ?').bind(id).first();
   if (!track) return null;
@@ -69,25 +86,76 @@ async function addSection(env, trackId, name, copyFrom) {
 }
 
 async function deleteIdeas(env, where, arg) {
-  const audio = await env.DB.prepare(`SELECT audio_id FROM ideas WHERE ${where} AND audio_id IS NOT NULL`).bind(arg).all();
-  await Promise.all(audio.results.map(r => env.AUDIO.delete(r.audio_id)));
+  const audio = await env.DB.prepare(`SELECT DISTINCT audio_id FROM ideas WHERE ${where} AND audio_id IS NOT NULL`).bind(arg).all();
   await env.DB.prepare(`DELETE FROM ideas WHERE ${where}`).bind(arg).run();
+  await dropUnusedAudio(env, audio.results.map(r => r.audio_id));
+}
+async function dropUnusedAudio(env, ids) {
+  for (const aid of ids) {
+    const still = await env.DB.prepare('SELECT 1 FROM ideas WHERE audio_id = ? LIMIT 1').bind(aid).first();
+    if (!still) await env.AUDIO.delete(aid);
+  }
 }
 
-async function route(req, env, url, member) {
+// Move a track to another space, re-pointing credits to the same-named person there (adding them as a guest if missing).
+async function moveTrack(env, tid, from, to) {
+  const used = new Set();
+  const t = await env.DB.prepare('SELECT created_by FROM tracks WHERE id = ?').bind(tid).first();
+  if (t.created_by) used.add(t.created_by);
+  (await env.DB.prepare('SELECT DISTINCT author_id AS m FROM ideas WHERE track_id = ? AND author_id IS NOT NULL').bind(tid).all()).results.forEach(r => used.add(r.m));
+  (await env.DB.prepare("SELECT DISTINCT h.member_id AS m FROM holders h JOIN sections s ON s.id = h.section_id WHERE s.track_id = ? AND h.member_id != 'production'").bind(tid).all()).results.forEach(r => used.add(r.m));
+  const map = {};
+  for (const mid of used) {
+    const src = await env.DB.prepare('SELECT * FROM members WHERE id = ? AND space_id = ?').bind(mid, from).first();
+    if (!src) continue;
+    const dst = await env.DB.prepare('SELECT id FROM members WHERE space_id = ? AND lower(name) = lower(?)').bind(to.id, src.name).first();
+    if (dst) { map[mid] = dst.id; continue; }
+    const nid = uid();
+    await env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest) VALUES (?, ?, ?, ?, ?, 1)').bind(nid, src.name, src.instruments, now(), to.id).run();
+    map[mid] = nid;
+  }
+  const stmts = [env.DB.prepare('UPDATE tracks SET space_id = ?, created_by = COALESCE(?, created_by), updated_at = ? WHERE id = ?').bind(to.id, map[t.created_by] || null, now(), tid)];
+  for (const [a, b] of Object.entries(map)) {
+    stmts.push(env.DB.prepare('UPDATE ideas SET author_id = ? WHERE track_id = ? AND author_id = ?').bind(b, tid, a));
+    stmts.push(env.DB.prepare('UPDATE holders SET member_id = ? WHERE member_id = ? AND section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(b, a, tid));
+  }
+  await env.DB.batch(stmts);
+}
+
+async function route(req, env, url, member, space) {
   const parts = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
   const m = req.method;
   const [a, id, sub, subId] = parts;
+  const sp = space.id;
+  const inSpace = `SELECT id FROM tracks WHERE space_id = '${sp.replace(/'/g, '')}'`;
+
+  if (a === 'space') {
+    if (m === 'PATCH') {
+      const b = await body(req);
+      const name = str(b.name, 60);
+      const key = typeof b.new_key === 'string' ? b.new_key.trim() : '';
+      if (key) {
+        if (key.length < 6) return json({ error: 'passcode must be at least 6 characters' }, 400);
+        const h = await sha256(key);
+        const clash = await env.DB.prepare('SELECT id FROM spaces WHERE key_hash = ? AND id != ?').bind(h, sp).first();
+        if (clash || (env.BAND_KEY && key === env.BAND_KEY && sp !== 'abba')) return json({ error: 'pick a different passcode' }, 400);
+        await env.DB.prepare('UPDATE spaces SET key_hash = ? WHERE id = ?').bind(h, sp).run();
+      }
+      if (name) await env.DB.prepare('UPDATE spaces SET name = ? WHERE id = ?').bind(name, sp).run();
+      const row = await env.DB.prepare('SELECT id, name FROM spaces WHERE id = ?').bind(sp).first();
+      return json(row);
+    }
+  }
 
   if (a === 'state' && m === 'GET') {
     const [members, tracks, sections, holders, beats, counts, grooves] = await Promise.all([
-      env.DB.prepare('SELECT * FROM members ORDER BY created_at').all(),
-      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, updated_at, created_at FROM tracks ORDER BY updated_at DESC').all(),
-      env.DB.prepare('SELECT id, track_id, name, position, meter_n, meter_sub, energy, bars FROM sections ORDER BY position, created_at').all(),
-      env.DB.prepare('SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id').all(),
-      env.DB.prepare('SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id').all(),
-      env.DB.prepare('SELECT track_id, COUNT(*) AS n FROM ideas GROUP BY track_id').all(),
-      env.DB.prepare('SELECT * FROM grooves ORDER BY name').all(),
+      env.DB.prepare('SELECT * FROM members WHERE space_id = ? ORDER BY guest, created_at').bind(sp).all(),
+      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, updated_at, created_at FROM tracks WHERE space_id = ? ORDER BY updated_at DESC').bind(sp).all(),
+      env.DB.prepare(`SELECT id, track_id, name, position, meter_n, meter_sub, energy, bars FROM sections WHERE track_id IN (${inSpace}) ORDER BY position, created_at`).all(),
+      env.DB.prepare(`SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id WHERE s.track_id IN (${inSpace})`).all(),
+      env.DB.prepare(`SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id WHERE s.track_id IN (${inSpace})`).all(),
+      env.DB.prepare(`SELECT track_id, COUNT(*) AS n FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id`).all(),
+      env.DB.prepare('SELECT * FROM grooves WHERE space_id = ? ORDER BY name').bind(sp).all(),
     ]);
     const byTrack = {};
     for (const t of tracks.results) byTrack[t.id] = { ...t, sections: [], holders: [], beats: [], ideas: 0 };
@@ -95,7 +163,7 @@ async function route(req, env, url, member) {
     for (const h of holders.results) byTrack[h.track_id]?.holders.push(h);
     for (const b of beats.results) byTrack[b.track_id]?.beats.push(b);
     for (const c of counts.results) if (byTrack[c.track_id]) byTrack[c.track_id].ideas = c.n;
-    return json({ members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
+    return json({ space: { id: space.id, name: space.name }, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
   if (a === 'grooves') {
@@ -107,14 +175,14 @@ async function route(req, env, url, member) {
       const bar = Number(b.bar) || pattern.length;
       if (!name) return json({ error: 'name required' }, 400);
       if (!/^[DTK-]{2,128}$/.test(pattern) || !/[DTK]/.test(pattern) || bar < 1 || bar > 32 || pattern.length % bar) return json({ error: 'bad pattern' }, 400);
-      const same = await env.DB.prepare('SELECT id FROM grooves WHERE lower(name) = lower(?)').bind(name).first();
+      const same = await env.DB.prepare('SELECT id FROM grooves WHERE space_id = ? AND lower(name) = lower(?)').bind(sp, name).first();
       const gid = same ? same.id : uid();
-      await env.DB.prepare('INSERT OR REPLACE INTO grooves (id, name, pattern, sub, bar, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .bind(gid, name, pattern, sub, bar, member, now()).run();
+      await env.DB.prepare('INSERT OR REPLACE INTO grooves (id, name, pattern, sub, bar, created_by, created_at, space_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(gid, name, pattern, sub, bar, member, now(), sp).run();
       return json(await env.DB.prepare('SELECT * FROM grooves WHERE id = ?').bind(gid).first(), 201);
     }
     if (m === 'DELETE' && id) {
-      await env.DB.prepare('DELETE FROM grooves WHERE id = ?').bind(id).run();
+      await env.DB.prepare('DELETE FROM grooves WHERE id = ? AND space_id = ?').bind(id, sp).run();
       return json({ ok: true });
     }
   }
@@ -124,18 +192,22 @@ async function route(req, env, url, member) {
       const b = await body(req);
       const name = str(b.name, 60);
       if (!name) return json({ error: 'name required' }, 400);
-      const row = { id: uid(), name, instruments: str(b.instruments, 200), created_at: now() };
-      await env.DB.prepare('INSERT INTO members (id, name, instruments, created_at) VALUES (?, ?, ?, ?)')
-        .bind(row.id, row.name, row.instruments, row.created_at).run();
+      const row = { id: uid(), name, instruments: str(b.instruments, 200), created_at: now(), space_id: sp, guest: b.guest ? 1 : 0 };
+      await env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest) VALUES (?, ?, ?, ?, ?, ?)')
+        .bind(row.id, row.name, row.instruments, row.created_at, sp, row.guest).run();
       return json(row, 201);
     }
     if (m === 'PATCH' && id) {
       const b = await body(req);
-      await env.DB.prepare('UPDATE members SET name = COALESCE(NULLIF(?, \'\'), name), instruments = ? WHERE id = ?')
-        .bind(str(b.name, 60), str(b.instruments, 200), id).run();
+      const cur = await env.DB.prepare('SELECT * FROM members WHERE id = ? AND space_id = ?').bind(id, sp).first();
+      if (!cur) return json({ error: 'not found' }, 404);
+      await env.DB.prepare('UPDATE members SET name = COALESCE(NULLIF(?, \'\'), name), instruments = ?, guest = ? WHERE id = ?')
+        .bind(str(b.name, 60), 'instruments' in b ? str(b.instruments, 200) : cur.instruments, 'guest' in b ? (b.guest ? 1 : 0) : cur.guest, id).run();
       return json(await env.DB.prepare('SELECT * FROM members WHERE id = ?').bind(id).first());
     }
     if (m === 'DELETE' && id) {
+      const cur = await env.DB.prepare('SELECT id FROM members WHERE id = ? AND space_id = ?').bind(id, sp).first();
+      if (!cur) return json({ error: 'not found' }, 404);
       await env.DB.batch([
         env.DB.prepare('DELETE FROM members WHERE id = ?').bind(id),
         env.DB.prepare('DELETE FROM holders WHERE member_id = ?').bind(id),
@@ -152,8 +224,8 @@ async function route(req, env, url, member) {
       const t = now();
       const tid = uid();
       await env.DB.prepare(
-        'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, chords, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.chords, 1000), str(b.notes, 4000), member, t, t).run();
+        'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, chords, notes, created_by, created_at, updated_at, space_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.chords, 1000), str(b.notes, 4000), member, t, t, sp).run();
       const plan = Array.isArray(b.sections) ? b.sections.filter(x => x && str(x.name, 60)).slice(0, 16) : [];
       if (!plan.length) plan.push({ name: str(b.section, 60) || 'Main' });
       for (const p of plan) {
@@ -168,6 +240,15 @@ async function route(req, env, url, member) {
       return json(await loadTrack(env, tid), 201);
     }
     if (!id) return null;
+    if (!(await trackInSpace(env, id, sp))) return json({ error: 'not found' }, 404);
+    if (sub === 'move' && m === 'POST') {
+      const b = await body(req);
+      const to = await resolveSpace(env, typeof b.target_key === 'string' ? b.target_key.trim() : '');
+      if (!to) return json({ error: 'that passcode doesn’t open a space' }, 400);
+      if (to.id === sp) return json({ error: 'it’s already in this space' }, 400);
+      await moveTrack(env, id, sp, to);
+      return json({ ok: true, space: { id: to.id, name: to.name } });
+    }
     if (m === 'GET' && !sub) {
       const track = await loadTrack(env, id);
       return track ? json(track) : json({ error: 'not found' }, 404);
@@ -204,7 +285,7 @@ async function route(req, env, url, member) {
 
   if (a === 'sections' && id) {
     const trackId = await sectionTrack(env, id);
-    if (!trackId) return json({ error: 'not found' }, 404);
+    if (!trackId || !(await trackInSpace(env, trackId, sp))) return json({ error: 'not found' }, 404);
 
     if (m === 'PATCH' && !sub) {
       const b = await body(req);
@@ -316,7 +397,7 @@ async function route(req, env, url, member) {
 
   if (a === 'ideas' && id) {
     const idea = await env.DB.prepare('SELECT * FROM ideas WHERE id = ?').bind(id).first();
-    if (!idea) return json({ error: 'not found' }, 404);
+    if (!idea || !(await trackInSpace(env, idea.track_id, sp))) return json({ error: 'not found' }, 404);
     if (m === 'PATCH') {
       const b = await body(req);
       const starred = 'starred' in b ? (b.starred ? 1 : 0) : idea.starred;
@@ -333,8 +414,8 @@ async function route(req, env, url, member) {
       return json({ ...idea, starred, body: text, layer, data });
     }
     if (m === 'DELETE') {
-      if (idea.audio_id) await env.AUDIO.delete(idea.audio_id);
       await env.DB.prepare('DELETE FROM ideas WHERE id = ?').bind(id).run();
+      if (idea.audio_id) await dropUnusedAudio(env, [idea.audio_id]);
       return json({ ok: true });
     }
   }
@@ -350,6 +431,8 @@ async function route(req, env, url, member) {
       return json({ id: aid, mime, size: buf.byteLength }, 201);
     }
     if (m === 'GET' && id) {
+      const owned = await env.DB.prepare(`SELECT 1 FROM ideas WHERE audio_id = ? AND track_id IN (${inSpace}) LIMIT 1`).bind(id).first();
+      if (!owned) return json({ error: 'not found' }, 404);
       const { value, metadata } = await env.AUDIO.getWithMetadata(id, { type: 'arrayBuffer', cacheTtl: 86400 });
       if (!value) return json({ error: 'not found' }, 404);
       return new Response(value, {
@@ -368,12 +451,33 @@ export default {
     const url = new URL(req.url);
     if (!url.pathname.startsWith('/api/')) return json({ ok: true, app: 'shajara' }, 200, h);
 
+    if (url.pathname === '/api/spaces' && req.method === 'POST') {
+      const b = await body(req);
+      const name = str(b.name, 40), me = str(b.me, 60), key = typeof b.key === 'string' ? b.key.trim() : '';
+      if (!name || !me) return json({ error: 'a space needs a name, and so do you' }, 400, h);
+      if (key.length < 6) return json({ error: 'passcode must be at least 6 characters' }, 400, h);
+      const kh = await sha256(key);
+      if ((await env.DB.prepare('SELECT 1 FROM spaces WHERE key_hash = ?').bind(kh).first()) || (env.BAND_KEY && key === env.BAND_KEY)) return json({ error: 'pick a different passcode' }, 400, h);
+      if (await env.DB.prepare('SELECT 1 FROM spaces WHERE lower(name) = lower(?)').bind(name).first()) return json({ error: 'a space with that name exists already' }, 400, h);
+      const sid = uid(), mid = uid(), t = now();
+      await env.DB.batch([
+        env.DB.prepare('INSERT INTO spaces (id, name, key_hash, created_at) VALUES (?, ?, ?, ?)').bind(sid, name, kh, t),
+        env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest) VALUES (?, ?, ?, ?, ?, 0)').bind(mid, me, str(b.instruments, 200), t, sid),
+      ]);
+      return json({ space: { id: sid, name }, me: mid }, 201, h);
+    }
+    if (url.pathname === '/api/spaces' && req.method === 'GET') {
+      const rows = await env.DB.prepare('SELECT id, name FROM spaces ORDER BY created_at').all();
+      return json({ spaces: rows.results, epoch: env.LOGOUT_EPOCH || '' }, 200, h);
+    }
     const key = req.headers.get('X-Band-Key') || url.searchParams.get('k') || '';
-    if (!env.BAND_KEY || key !== env.BAND_KEY) return json({ error: 'wrong passcode' }, 401, h);
+    let space;
+    try { space = await resolveSpace(env, key); } catch { space = null; }
+    if (!space) return json({ error: 'wrong passcode' }, 401, h);
     const member = str(req.headers.get('X-Member') || '', 40) || null;
 
     try {
-      const res = await route(req, env, url, member);
+      const res = await route(req, env, url, member, space);
       if (!res) return json({ error: 'not found' }, 404, h);
       for (const [k, v] of Object.entries(h)) res.headers.set(k, v);
       return res;

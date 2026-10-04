@@ -157,6 +157,81 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .tr-pill.has { border-style: solid; border-color: color-mix(in srgb, var(--brand-yellow) 60%, transparent); }
 .tr-pill.sel { background: var(--brand-yellow); color: #000; border-color: var(--brand-yellow); }
 .tr-pill b { font: 800 10px/1 var(--display); }
+.sheet { position: relative; }
+.sheet-x { position: sticky; top: 0; float: right; z-index: 3; width: 36px; height: 36px; margin: -2px -4px 0 0; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); font-size: 15px; display: grid; place-items: center; }
+.sec-title { cursor: pointer; }
+.sec-title .ren { font-size: 14px; color: var(--faint); margin-left: 8px; vertical-align: 4px; }
+.ms-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.ms-row input { flex: 1; padding: 10px 12px; }
+.ms-row .icon-btn:disabled { opacity: .3; }
+.prod-l { margin-top: 8px; border-radius: 12px; border: 1px solid var(--line); padding: 10px 12px; }
+.prod-l.on { border-color: color-mix(in srgb, var(--c) 60%, var(--line)); }
+.prod-t { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; }
+.prod-t b { font: 800 11px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; color: var(--c); }
+.prod-t .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; flex: none; }
+.prod-l.on .prod-t .check { background: var(--c); border-color: var(--c); color: #000; }
+.prod-what input { margin-top: 8px; padding: 9px 11px; font-size: 16px; }
+.switch-btn { flex: none; height: 40px; padding: 0 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text); font: 800 11px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; display: inline-flex; align-items: center; gap: 6px; }
+.lp { padding-top: 24px; padding-bottom: 60px; }
+.lp-new { margin-top: 12px; border-style: dashed; }
+.lp-new-hint { text-align: center; font-style: italic; margin: 8px 0 0; }
+@media (min-width: 900px) {
+  .wrap.lp { max-width: 1120px; padding-left: 32px; padding-right: 32px; }
+  .lp-grid { display: grid; grid-template-columns: minmax(340px, 420px) 1fr; gap: 40px; align-items: start; }
+  .lp-left { position: sticky; top: 24px; }
+  .lp-hero { padding-top: 8px; }
+  .lp-right { padding-top: 8px; }
+  .lp-right .lp-card { padding: 22px 24px; }
+}
+.lp section { margin-bottom: 18px; }
+.lp-hero { text-align: center; padding: 24px 0 8px; }
+.lp-hero .logo-big { height: 150px; width: auto; display: block; margin: 0 auto 14px; }
+.lp-hero h1 { font: 800 34px/1 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 0; display: flex; align-items: baseline; justify-content: center; gap: 12px; }
+.lp-hero h1 .ar { font-size: 30px; color: var(--muted); text-transform: none; }
+.lp-tag { font: italic 22px/1.3 var(--serif); margin: 14px 0 10px; color: var(--brand-yellow); }
+.lp-lede { font: 18px/1.5 var(--serif); color: color-mix(in srgb, var(--text) 85%, var(--muted)); margin: 0 auto; max-width: 520px; }
+.lp h3 { font: 800 13px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; }
+.lp-open { padding: 16px; border-radius: var(--radius); border: 1px solid color-mix(in srgb, var(--brand-yellow) 40%, var(--line)); background: var(--surface); }
+.lp-open .menu { margin-top: 0; }
+.lp-card { padding: 18px 16px; border-radius: var(--radius); border: 1px solid var(--line); }
+.lp-card p { font: 17px/1.55 var(--serif); color: color-mix(in srgb, var(--text) 85%, var(--muted)); margin: 0 0 10px; }
+.lp-card p:last-child { margin-bottom: 0; }
+.lp-sketch { display: flex; align-items: flex-end; justify-content: center; gap: 10px; padding: 16px 8px 18px; margin-bottom: 8px; border-radius: 14px; background: #000; border: 1px solid var(--line); }
+.lp-sec { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 12px 8px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.lp-sec b { font: 800 11px/1 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.lp-layers { display: flex; align-items: flex-end; gap: 4px; height: 32px; }
+.lp-layers i { width: 9px; border-radius: 3px; background: var(--c); min-height: 3px; }
+.lp-arr { color: var(--brand-yellow); align-self: center; }
+.lp-step { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+.lp-sketch + .lp-step { border-top: 0; }
+.lp-n { width: 28px; height: 28px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--brand-yellow); color: #000; font: 800 13px/1 var(--display); }
+.lp-step b { display: block; font: 800 12px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; margin: 5px 0 4px; }
+.lp-step p { margin: 0; font-size: 16px; }
+.lp-tree { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; margin-bottom: 14px; }
+.lp-tree svg { width: 120px; height: auto; display: block; }
+.lp-layers-list { display: grid; gap: 10px; }
+.lp-layers-list b { display: block; font: 800 11px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--c); }
+.lp-layers-list span { font: italic 15px/1.35 var(--serif); color: var(--muted); }
+.lp-for { display: grid; gap: 10px; }
+.lp-for div { padding: 12px 14px; border-radius: 12px; background: var(--surface); }
+.lp-for b { display: block; font: 800 11px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--brand-yellow); margin-bottom: 4px; }
+.lp-for span { font: 16px/1.45 var(--serif); color: color-mix(in srgb, var(--text) 85%, var(--muted)); }
+.lp-foot { text-align: center; font: 14px/1.4 var(--serif); color: var(--muted); margin-top: 24px; }
+.lp-foot b { font-family: var(--serif); color: var(--text); }
+.gate-space { justify-content: flex-start; text-align: left; gap: 14px; }
+.gs-logo { height: 44px; width: auto; flex: none; }
+.gs-logo.round { width: 44px; height: 44px; border-radius: 50%; }
+.top .logo.round { width: 36px; height: 36px; border-radius: 50%; }
+.gate .logo-big.round { width: 150px; height: 150px; border-radius: 50%; }
+.gate-space b { font-size: 14px !important; }
+.space-btn { font: inherit; color: inherit; text-transform: inherit; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space-btn .caret { font-size: 11px; color: var(--muted); }
+.space-mono { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); font: 800 15px/1 var(--display); flex: none; }
+.guest-tag { font: 700 9px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 7px; vertical-align: 2px; margin-left: 6px; }
+.invite { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid color-mix(in srgb, var(--brand-yellow) 40%, var(--line)); margin: 6px 0 10px; }
+.invite > div { flex: 1; min-width: 0; }
+.invite b { display: block; font: 800 12px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; margin-bottom: 4px; }
+.invite .small { display: block; font-style: italic; }
 .add-pill { flex: none; padding: 11px 14px; border-radius: 14px; border: 1.5px dashed var(--line); color: var(--muted); font: 700 11px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 
 .sec-head { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
@@ -348,6 +423,8 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .lu-row .sugs { margin-top: 10px; }
 .lu-row .sugs.lay .sug { font: 700 10px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; }
 .lu-row.prod { border-style: dashed; background: transparent; }
+.lu-row.guest-add { border-style: dashed; background: transparent; }
+.lu-row.guest-add .row2 input { padding: 9px 11px; font-size: 16px; }
 .energy { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; vertical-align: -1px; }
 .energy i { width: 3px; border-radius: 1px; background: currentColor; opacity: .22; }
 .energy i.on { opacity: 1; background: var(--brand-yellow); }
@@ -731,17 +808,65 @@ async function api(path, opts) {
   if (body && !(body instanceof Blob)) { headers['Content-Type'] = 'application/json'; body = JSON.stringify(body); }
   if (body instanceof Blob) headers['Content-Type'] = body.type || 'application/octet-stream';
   const res = await fetch(API + '/api' + path, { method: opts.method || 'GET', headers, body });
-  if (res.status === 401) { S.key = ''; store.set('key', ''); route(); throw new Error('Wrong passcode'); }
+  if (res.status === 401) { Spaces.forget(S.key); route(); throw new Error('That passcode no longer works'); }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Request failed');
   return data;
 }
+
+// Each passcode opens one space. The phone remembers every space it has joined, and who you are in each.
+const Spaces = {
+  list() {
+    const l = store.get('spaces', null);
+    if (l) return l;
+    const k = store.get('key', '');
+    return k ? [{ key: k, me: store.get('me', ''), id: '', name: '' }] : [];
+  },
+  save(l) { store.set('spaces', l); },
+  current() { return this.list().find(x => x.key === S.key); },
+  setMe(id) {
+    S.me = id; store.set('me', id);
+    const l = this.list(), c = l.find(x => x.key === S.key);
+    if (c) { c.me = id; this.save(l); }
+  },
+  add(key, info) {
+    const l = this.list().filter(x => x.key !== key);
+    const old = this.list().find(x => x.key === key);
+    l.push({ key, me: old ? old.me : '', id: info ? info.id : '', name: info ? info.name : '' });
+    this.save(l);
+  },
+  use(key) {
+    const c = this.list().find(x => x.key === key);
+    S.key = key; S.me = c ? c.me : ''; store.set('key', key); store.set('me', S.me);
+    S.track = null; S.members = []; S.tracks = []; S.space = null;
+  },
+  forget(key) {
+    const l = this.list().filter(x => x.key !== key);
+    this.save(l);
+    if (S.key === key) { if (l.length) this.use(l[0].key); else { S.key = ''; S.me = ''; store.set('key', ''); store.set('me', ''); } }
+  },
+};
+async function peekSpace(key) {
+  const res = await fetch(API + '/api/state', { headers: { 'X-Band-Key': key } });
+  if (!res.ok) throw new Error(res.status === 401 ? 'That passcode doesn’t open a space' : 'Couldn’t reach Shajara');
+  return (await res.json()).space;
+}
+const SPACE_LOGOS = { abba: 'logo.png', ghorab: 'ghorab.png' };
+const logoFor = id => SPACE_LOGOS[id] || '';
+const isBand = () => !S.space || S.space.id === 'abba';
+const spaceName = () => (S.space && S.space.name) || '‘ala bab allah';
 
 async function loadState() {
   const d = await api('/state');
   S.members = d.members;
   S.tracks = d.tracks;
   S.grooves = d.grooves || [];
+  S.space = d.space || null;
+  if (S.space) {
+    const l = Spaces.list(), c = l.find(x => x.key === S.key);
+    if (c && (c.id !== S.space.id || c.name !== S.space.name)) { c.id = S.space.id; c.name = S.space.name; Spaces.save(l); }
+    else if (!c) Spaces.add(S.key, S.space);
+  }
 }
 
 /* ---------- routing ---------- */
@@ -750,7 +875,7 @@ function route() {
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
   if (h === 'band') return viewBand();
-  if (!S.me || (S.members.length && !S.members.some(m => m.id === S.me))) return viewWho();
+  if (!S.me || (S.members.length && !S.members.some(m => m.id === S.me && !m.guest))) return viewWho();
   if (h.startsWith('t/')) return viewTrack(h.slice(2));
   return viewHome();
 }
@@ -763,35 +888,148 @@ function topBar(title, left, right) {
 const backBtn = to => `<button class="icon-btn" aria-label="Back" onclick="go('${to}')">${ICON.back}</button>`;
 
 /* ---------- gate & identity ---------- */
-function viewGate() {
-  $('#app').innerHTML = `<div class="wrap"><div class="gate">
-    <img class="logo-big" src="logo.png" alt="‘ala bab allah">
-    <h2>Shajara</h2><div class="ar ar-sub">شجرة</div>
-    <p class="muted">Where ‘ala bab allah grows tracks, layer by layer. Enter the band passcode.</p>
-    <input id="pc" type="password" autocomplete="current-password" autocapitalize="off" placeholder="Band passcode">
-    <button class="btn primary block" id="enter">Enter</button>
-    <div class="handle">@ala.bab.allah</div>
-  </div></div>`;
+function viewGate(chosen) {
+  const known = Spaces.list();
+  const L = (key, n) => `<i style="--c:${LAYER[key].c};height:${n}px"></i>`;
+  const sketch = `<div class="lp-sketch" aria-hidden="true">
+    ${[['Intro', [10, 0, 6, 0], 1], ['A', [22, 18, 16, 20], 3], ['B', [30, 26, 24, 30], 5]].map(([n, h, e], i) => `${i ? '<span class="lp-arr">→</span>' : ''}<div class="lp-sec"><b>${n}</b>
+      <div class="lp-layers">${['bloom', 'bark', 'ground', 'substrate'].map((k, j) => L(k, h[j])).join('')}</div>${energyBars(e)}</div>`).join('')}
+  </div>`;
+  const step = (n, title, body) => `<div class="lp-step"><span class="lp-n">${n}</span><div><b>${title}</b><p>${body}</p></div></div>`;
+  $('#app').innerHTML = `<div class="wrap lp"><div class="lp-grid"><div class="lp-left">
+    <section class="lp-hero">
+      <img class="logo-big" src="logo.png" alt="‘ala bab allah">
+      <h1>Shajara <span class="ar">شجرة</span></h1>
+      <p class="lp-tag">Sketch a track together, before it’s a track.</p>
+      <p class="lp-lede">A low-fidelity music sketching tool for bands, live projects and solo musicians. Lay out a track’s structure, sketch ideas into it, hear them against each other, and walk into rehearsal knowing where everyone falls in.</p>
+    </section>
+
+    <section class="lp-open">
+      <h3>Open your space</h3>
+      <div class="menu" id="gs"><p class="small faint" style="text-align:center">Loading spaces…</p></div>
+      <div id="gp" class="${chosen ? '' : 'hidden'}">
+        <input id="pc" type="password" autocomplete="current-password" autocapitalize="off" placeholder="Passcode">
+        <button class="btn primary block" id="enter" style="margin-top:10px">Enter</button>
+      </div>
+      <button class="btn block lp-new" id="newSpace">+ Start a new space</button>
+      <p class="small faint lp-new-hint">For your band, a project, or just you. You get its passcode to share.</p>
+    </section>
+    </div><div class="lp-right">
+
+    <section class="lp-card">
+      <h3>Every track is a tree <span class="ar" style="font-size:20px;color:var(--muted);text-transform:none;margin-left:6px">كل تراك شجرة</span></h3>
+      <div class="lp-tree">
+        <svg viewBox="0 0 160 200" aria-hidden="true">
+          <g fill="var(--bloom)"><circle cx="80" cy="52" r="34"/><circle cx="48" cy="70" r="22" opacity=".8"/><circle cx="112" cy="70" r="22" opacity=".8"/><circle cx="80" cy="30" r="18" opacity=".9"/></g>
+          <g fill="#000"><circle cx="70" cy="48" r="3"/><circle cx="92" cy="60" r="3"/><circle cx="58" cy="70" r="2.5"/><circle cx="104" cy="44" r="2.5"/></g>
+          <path d="M72 158V96c0-6 3-10 8-12 5 2 8 6 8 12v62z" fill="var(--bark)"/>
+          <path d="M80 112l-14-12M80 104l13-10" stroke="var(--bark)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M8 158h144v10H8z" fill="var(--ground)"/>
+          <path d="M80 168c-6 8-16 12-26 14M80 168c6 8 16 12 26 14M80 168v18" stroke="var(--ground)" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+          <g fill="var(--substrate)"><circle cx="22" cy="182" r="4"/><circle cx="44" cy="192" r="3"/><circle cx="118" cy="190" r="4"/><circle cx="140" cy="180" r="3"/><circle cx="98" cy="196" r="2.5"/><circle cx="62" cy="186" r="2.5"/></g>
+        </svg>
+        <div class="lp-layers-list">
+          <div style="--c:var(--bloom)"><b>Flowers &amp; Leaves</b><span>melody and ornaments, the part people notice first</span></div>
+          <div style="--c:var(--bark)"><b>Tree Bark</b><span>harmony, the shape everything hangs on</span></div>
+          <div style="--c:var(--ground)"><b>Ground</b><span>the low line that roots it</span></div>
+          <div style="--c:var(--substrate)"><b>Substrate</b><span>the rhythm everything grows out of</span></div>
+        </div>
+      </div>
+      <p>Every section of every track has the same four layers, from the soil up. A layer is a role, not an instrument: the drums can carry the melody, the piano can hold a maqsum, three of you can sit in the rhythm while the harmony stays empty, and production can fill whatever is missing.</p>
+      <p>Thinking in layers instead of instruments is what lets musicians from very different worlds find their place fast, and talk about a track in the same words.</p>
+    </section>
+
+    <section class="lp-card">
+      <h3>Why not just use a DAW?</h3>
+      <p>DAWs are built to finish a record. Every detail, every setting, every plugin is there, and that power comes with a lot of complexity. It pulls you into polishing a sound before anyone agrees on what the track is.</p>
+      <p>Shajara stays rough on purpose. It’s for the stage before that: what the track is about, what it’s built on, how it moves, and who does what. Hum it, loop it, name it, then take it to the room.</p>
+    </section>
+
+    <section class="lp-card">
+      <h3>How a track grows</h3>
+      ${sketch}
+      ${step(1, 'Plant the idea', 'What it’s about, what it’s built on (a chord progression, a rhythm, a melody, a genre you want to celebrate), its maqam, pulse and time.')}
+      ${step(2, 'Shape it in sections', 'Intro, A, B, a taqsim, a build. Each with its own length and energy, and the moves you make there: role swap, unison, silence, a change of feel.')}
+      ${step(3, 'Every section is a tree', `<span style="color:var(--bloom)">Flowers &amp; Leaves</span> for melody, <span style="color:var(--bark)">Tree Bark</span> for harmony, <span style="color:var(--ground)">Ground</span> for the low line, <span style="color:var(--substrate)">Substrate</span> for rhythm. Anyone can hold any layer, on any instrument, and production can fill the gaps.`)}
+      ${step(4, 'Sketch into the layers', 'Hum a line on your phone, record a 4-bar loop, play MIDI from a keyboard or Ableton, drop in a rhythm or a chord progression, or just leave a note.')}
+      ${step(5, 'Hear it together', 'Loop a section with exactly the parts you pick, on the shared pulse, so everyone hears the idea before the next rehearsal.')}
+    </section>
+
+    <section class="lp-card">
+      <h3>Made for</h3>
+      <div class="lp-for">
+        <div><b>Bands</b><span>working out arrangements between rehearsals, when half the structure lives in someone’s memory.</span></div>
+        <div><b>Producers</b><span>sketching a track’s layers alone or with guest musicians before opening the DAW.</span></div>
+        <div><b>Live performers</b><span>deciding who plays what, where it climbs and drops, and how one part hands over to the next.</span></div>
+      </div>
+    </section>
+
+    <p class="lp-foot">Grown by <b>‘ala bab allah</b> in Berlin · <span class="handle">@ala.bab.allah</span></p>
+  </div></div></div>`;
+  $('#newSpace').onclick = newSpaceSheet;
+  let pick = chosen || null;
+  const draw = list => {
+    $('#gs').innerHTML = list.map(x => `<button class="menu-item gate-space${pick === x.id ? ' sel' : ''}" data-id="${esc(x.id)}">${logoFor(x.id) ? `<img class="gs-logo${x.id === 'abba' ? '' : ' round'}" src="${logoFor(x.id)}" alt="">` : ''}<span><b>${esc(x.name)}</b><span class="small muted">${known.some(k => k.id === x.id) ? 'on this phone · tap to open' : 'enter its passcode'}</span></span></button>`).join('');
+    $('#gs').querySelectorAll('[data-id]').forEach(b => b.onclick = async () => {
+      const k = known.find(x => x.id === b.dataset.id);
+      if (k) { Spaces.use(k.key); try { await loadState(); } catch (e) { return toast(e.message); } return route(); }
+      pick = b.dataset.id; draw(list);
+      $('#gp').classList.remove('hidden');
+      $('#pc').placeholder = `${list.find(x => x.id === pick).name} passcode`; $('#pc').focus();
+    });
+  };
+  fetch(API + '/api/spaces').then(r => r.json()).then(d => draw(d.spaces || [])).catch(() => { $('#gs').innerHTML = ''; $('#gp').classList.remove('hidden'); });
   const submit = async () => {
     const v = $('#pc').value.trim();
     if (!v) return;
-    S.key = v;
-    try { await loadState(); store.set('key', v); route(); }
-    catch (e) { S.key = ''; toast(e.message); }
+    try { const sp = await peekSpace(v); Spaces.add(v, sp); Spaces.use(v); await loadState(); route(); }
+    catch (e) { toast(e.message); }
   };
   $('#enter').onclick = submit;
   $('#pc').onkeydown = e => { if (e.key === 'Enter') submit(); };
 }
 
+function newSpaceSheet() {
+  sheet(`<h3>Start a new space</h3><p class="lede">A space has its own people, tracks and passcode. Anyone with the passcode can open it, so pick one you’ll share only with them.</p>
+    <label class="field">Space name</label><input id="ns-name" type="text" placeholder="your band or project">
+    <label class="field">Your name</label><input id="ns-me" type="text" placeholder="how the others know you">
+    <label class="field">What you play (optional)</label><input id="ns-inst" type="text" placeholder="e.g. oud, production">
+    <label class="field">Passcode</label><input id="ns-key" type="password" autocapitalize="off" placeholder="at least 6 characters">
+    <input id="ns-key2" type="password" autocapitalize="off" placeholder="type it again" style="margin-top:8px">
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ns-go">Start it</button></div>`, root => {
+    setTimeout(() => $('#ns-name', root).focus(), 60);
+    $('#ns-go', root).onclick = async () => {
+      const v = id => $('#' + id, root).value.trim();
+      if (v('ns-key') !== v('ns-key2')) return toast('The two passcodes don’t match');
+      const btn = $('#ns-go', root); btn.disabled = true;
+      try {
+        const res = await fetch(API + '/api/spaces', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: v('ns-name'), me: v('ns-me'), instruments: v('ns-inst'), key: v('ns-key') }) });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'Couldn’t start it');
+        Spaces.add(v('ns-key'), d.space); Spaces.use(v('ns-key')); Spaces.setMe(d.me);
+        closeSheet(); await loadState(); go(''); route(); toast(`${d.space.name} is ready. Share its passcode with your people.`);
+      } catch (e) { toast(e.message); btn.disabled = false; }
+    };
+  });
+}
+
 async function viewWho() {
   if (!S.members.length) { try { await loadState(); } catch (e) { return toast(e.message); } }
   $('#app').innerHTML = `<div class="wrap"><div class="gate">
-    <h2>Who's this?</h2>
-    <p class="muted">So the band knows who posted what. You can change it later under Band.</p>
-    <div class="people">${S.members.map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(m.instruments) || '&nbsp;'}</span></button>`).join('')}</div>
-    <button class="btn block" onclick="go('band')">Someone else? Add to the band</button>
+    ${!isBand() && logoFor(S.space && S.space.id) ? `<img class="logo-big round" src="${logoFor(S.space.id)}" alt="">` : ''}
+    <h2>${esc(spaceName())}</h2>
+    <p class="muted">Who’s this? So everyone knows who posted what. You can change it later.</p>
+    <div class="people">${S.members.filter(m => !m.guest).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(m.instruments) || '&nbsp;'}</span></button>`).join('')}</div>
+    <label class="field">Not on the list?</label>
+    <div class="tempo-row"><input id="newMe" type="text" placeholder="Your name"><button class="btn primary" id="joinMe">Add me</button></div>
   </div></div>`;
-  $('#app').querySelectorAll('.person').forEach(b => b.onclick = () => { S.me = b.dataset.id; store.set('me', S.me); route(); });
+  $('#app').querySelectorAll('.person').forEach(b => b.onclick = () => { Spaces.setMe(b.dataset.id); route(); });
+  const join = async () => {
+    const name = $('#newMe').value.trim(); if (!name) return $('#newMe').focus();
+    try { const m = await api('/members', { method: 'POST', body: { name } }); S.members.push(m); Spaces.setMe(m.id); route(); toast(`Welcome, ${name}`); }
+    catch (e) { toast(e.message); }
+  };
+  $('#joinMe').onclick = join; $('#newMe').onkeydown = e => { if (e.key === 'Enter') join(); };
 }
 
 /* ---------- home ---------- */
@@ -812,8 +1050,9 @@ function viewHome() {
         <div class="meta">${meta ? meta + ' · ' : ''}${ago(t.updated_at)}</div>
         ${form}<div class="mini-tree">${mini}</div></div>`;
     }).join('');
-    $('#app').innerHTML = topBar('Shajara', `<img class="logo" src="logo.png" alt="‘ala bab allah">`,
-      `<button class="icon-btn" aria-label="Band" onclick="go('band')">${ICON.people}</button>`) +
+    $('#app').innerHTML = topBar(`<button class="space-btn" onclick="spacesSheet()" aria-label="Switch space">${esc(spaceName())}<span class="caret">▾</span></button>`,
+      isBand() ? `<img class="logo" src="logo.png" alt="‘ala bab allah">` : logoFor(S.space && S.space.id) ? `<img class="logo round" src="${logoFor(S.space.id)}" alt="${esc(spaceName())}">` : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z\u0600-\u06FF]+/, '').slice(0, 1).toUpperCase())}</span>`,
+      `<button class="switch-btn" aria-label="Switch space" onclick="spacesSheet()">⇄ <span>Switch</span></button><button class="icon-btn" aria-label="People" onclick="go('band')">${ICON.people}</button>`) +
       `<div class="wrap">
         <div class="hello"><div><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} growing</div></div><span class="ar">شجرة</span></div>
         ${legend()}
@@ -908,7 +1147,7 @@ function renderTrack() {
     if (i === sections().length - 1) return pill;
     const n = ideasOf(s.id, 'transition').length;
     return pill + `<button class="tr-pill${n ? ' has' : ''}${s.id === sec.id && transition ? ' sel' : ''}" aria-label="Transition" onclick="selectView('${s.id}', true)">→${n ? `<b>${n}</b>` : ''}</button>`;
-  }).join('') + `<button class="add-pill" onclick="newSection()">+ section</button>`;
+  }).join('') + `<button class="add-pill" onclick="newSection()">+ section</button><button class="add-pill" onclick="manageSections()">✎ edit sections</button>`;
 
   let panel;
   if (transition) {
@@ -949,7 +1188,7 @@ function renderTrack() {
     ].join('');
     const movesHtml = MOVES.filter(m => mv[m.k] != null).map(m => `<button class="move" onclick="editSection()"><b>${m.label}</b>${mv[m.k] ? ' · ' + esc(mv[m.k]) : ''}</button>`)
       .concat(Object.keys(mv).filter(k => k.startsWith('x:')).map(k => `<button class="move" onclick="editSection()"><b>${esc(k.slice(2))}</b>${mv[k] ? ' · ' + esc(mv[k]) : ''}</button>`)).join('');
-    panel = `<div class="sec-head"><h2>${esc(sec.name)}</h2><span class="bar-now" id="secBar"></span><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button><button class="icon-btn sm" aria-label="Section options" onclick="sectionMenu()">${ICON.more}</button></div>
+    panel = `<div class="sec-head"><h2 class="sec-title" role="button" tabindex="0" onclick="renameSection()" title="Rename">${esc(sec.name)}<span class="ren">✎</span></h2><span class="bar-now" id="secBar"></span><span class="sp"></span><button class="icon-btn sm" aria-label="Edit section" onclick="editSection()">${ICON.edit}</button><button class="icon-btn sm" aria-label="Section options" onclick="sectionMenu()">${ICON.more}</button></div>
       <div class="chips sec-facts">${facts}</div>
       <div class="moves">${movesHtml || `<button class="move ghost" onclick="editSection()">+ moves · role swap, unison, silence…</button>`}</div>
       ${progBlock(sec)}
@@ -1181,8 +1420,28 @@ function trackMenu(id) {
   menuSheet(esc(t.title), [
     ...(onPage ? [{ label: 'Edit track details', hint: 'title, maqam, pulse, genre, notes', icon: ICON.edit, run: () => editTrack() },
       { label: 'Add a section', icon: ICON.note, run: () => newSection() }] : [{ label: 'Open', icon: ICON.play, run: () => go('t/' + t.id) }]),
+    { label: 'Move to another space', hint: 'with its sections, recordings and credits', icon: ICON.share, run: () => moveTrackSheet(t) },
     { label: 'Delete track', hint: 'every section, idea and recording in it', icon: ICON.trash, danger: true, run: () => deleteTrack(t) },
   ]);
+}
+function moveTrackSheet(t) {
+  const others = Spaces.list().filter(x => x.key !== S.key);
+  sheet(`<h3>Move ${esc(t.title)}</h3><p class="lede">It leaves ${esc(spaceName())} with everything in it. People are matched by name in the new space; anyone missing there is added as a guest.</p>
+    ${others.length ? `<div class="menu">${others.map(x => `<button class="menu-item" data-k="${esc(x.key)}"><span><b>${esc(x.name || 'Space')}</b><span class="small muted">move it here</span></span></button>`).join('')}</div>` : ''}
+    <label class="field">${others.length ? 'Or another space’s passcode' : 'The other space’s passcode'}</label>
+    <div class="tempo-row"><input id="mk" type="password" autocapitalize="off" placeholder="Passcode"><button class="btn" id="mb">Move</button></div>`, root => {
+    const doMove = async key => {
+      let to; try { to = await peekSpace(key); } catch (e) { return toast(e.message); }
+      confirmSheet(`Move to ${esc(to.name)}?`, `${esc(t.title)} disappears from ${esc(spaceName())} for everyone here.`, 'Move it', async () => {
+        const r = await api(`/tracks/${t.id}/move`, { method: 'POST', body: { target_key: key } });
+        Spaces.add(key, r.space);
+        S.tracks = S.tracks.filter(x => x.id !== t.id); if (S.track && S.track.id === t.id) S.track = null;
+        go(''); route(); toast(`Moved to ${r.space.name}`);
+      });
+    };
+    root.querySelectorAll('[data-k]').forEach(b => b.onclick = () => doMove(b.dataset.k));
+    $('#mb', root).onclick = () => { const k = $('#mk', root).value.trim(); if (k) doMove(k); };
+  });
 }
 function deleteTrack(t) {
   const nSec = (t.sections || []).length;
@@ -1231,7 +1490,7 @@ function sheet(html, init) {
   closeSheet();
   const s = document.createElement('div');
   s.className = 'scrim';
-  s.innerHTML = `<div class="sheet"><div class="grab"></div>${html}</div>`;
+  s.innerHTML = `<div class="sheet"><button class="sheet-x" aria-label="Close" onclick="closeSheet()">✕</button><div class="grab"></div>${html}</div>`;
   s.onclick = e => { if (e.target === s) closeSheet(); };
   document.body.appendChild(s);
   if (init) init(s);
@@ -1566,6 +1825,62 @@ function editChords() {
   s._onclose = () => { Beat.stop(); updateTransport(); };
 }
 
+function renameSection(sid) {
+  const sec = sid ? sections().find(x => x.id === sid) : curView().sec;
+  const used = sections().filter(x => x.id !== sec.id).map(x => x.name);
+  sheet(`<h3>Rename section</h3>
+    <input id="rn" type="text" value="${esc(sec.name)}">
+    <div class="sugs">${SECTION_NAMES.filter(n => !used.includes(n) && n !== sec.name).map(n => `<button class="sug">${n}</button>`).join('')}</div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
+    const inp = $('#rn', root); setTimeout(() => { inp.focus(); inp.select(); }, 60);
+    root.querySelectorAll('.sug').forEach(b => b.onclick = () => { inp.value = b.textContent; });
+    const go = async () => {
+      const name = inp.value.trim(); if (!name) return toast('A section needs a name');
+      try { S.track = await api('/sections/' + sec.id, { method: 'PATCH', body: { name } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+    };
+    $('#ok', root).onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+  });
+}
+
+function manageSections() {
+  const list = sections();
+  sheet(`<h3>Sections</h3><p class="lede">Rename, reorder or remove. Changes to names save when you tap Save.</p>
+    <div id="ms">${list.map((x, i) => `<div class="ms-row" data-id="${x.id}">
+      <input type="text" value="${esc(x.name)}">
+      <button class="icon-btn sm" data-mv="-1" ${i === 0 ? 'disabled' : ''} aria-label="Move earlier">↑</button>
+      <button class="icon-btn sm" data-mv="1" ${i === list.length - 1 ? 'disabled' : ''} aria-label="Move later">↓</button>
+      <button class="icon-btn sm" data-del ${list.length < 2 ? 'disabled' : ''} aria-label="Delete">${ICON.trash}</button></div>`).join('')}</div>
+    <div class="sugs" style="margin-top:10px"><button class="sug" id="msAdd">+ Add a section</button></div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Close</button><button class="btn primary" id="msSave">Save</button></div>`, root => {
+    const saveNames = async () => {
+      for (const r of root.querySelectorAll('.ms-row')) {
+        const x = sections().find(y => y.id === r.dataset.id), name = $('input', r).value.trim();
+        if (x && name && name !== x.name) S.track = await api('/sections/' + x.id, { method: 'PATCH', body: { name } });
+      }
+    };
+    root.querySelectorAll('[data-mv]').forEach(b => b.onclick = async () => {
+      const id = b.closest('.ms-row').dataset.id, all = sections(), i = all.findIndex(x => x.id === id), j = i + +b.dataset.mv;
+      try {
+        await saveNames();
+        await api('/sections/' + all[i].id, { method: 'PATCH', body: { position: all[j].position } });
+        S.track = await api('/sections/' + all[j].id, { method: 'PATCH', body: { position: all[i].position } });
+        renderTrack(); manageSections();
+      } catch (e) { toast(e.message); }
+    });
+    root.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+      const x = sections().find(y => y.id === b.closest('.ms-row').dataset.id);
+      const n = S.track.ideas.filter(i => i.section_id === x.id).length;
+      confirmSheet(`Delete ${esc(x.name)}?`, `This removes its line-up, rhythms and ${plural(n, 'idea')}. It can’t be undone.`, 'Delete section', async () => {
+        S.track = await api('/sections/' + x.id, { method: 'DELETE' });
+        if (curView().sec.id === x.id || !sections().some(y => y.id === (S.view[S.track.id] || {}).sid)) S.view[S.track.id] = { sid: sections()[0].id };
+        renderTrack(); setTimeout(manageSections, 0);
+      });
+    });
+    $('#msAdd', root).onclick = async () => { try { await saveNames(); } catch {} closeSheet(); newSection(); };
+    $('#msSave', root).onclick = async () => { try { await saveNames(); closeSheet(); renderTrack(); toast('Sections saved'); } catch (e) { toast(e.message); } };
+  });
+}
+
 function editSection(focusId) {
   const { sec } = curView();
   const t = S.track;
@@ -1641,18 +1956,19 @@ function lineupOf(sid) {
   const hs = S.track.holders.filter(h => h.section_id === sid);
   const people = S.members.map(m => {
     const h = hs.find(x => x.member_id === m.id);
-    return { id: m.id, name: m.name, layer: h ? h.layer : null, instrument: h ? h.instrument : '' };
+    return { id: m.id, name: m.name, guest: !!m.guest, layer: h ? h.layer : null, instrument: h ? h.instrument : '' };
   });
   const prod = hs.filter(h => h.member_id === PRODUCTION);
   return { people, prod };
 }
 function lineupStrip(sec) {
   const { people, prod } = lineupOf(sec.id);
-  const inCount = people.filter(p => p.layer).length;
-  const chips = LAYERS.flatMap(l => people.filter(p => p.layer === l.key).map(p => `<span class="lu" style="--c:${l.c}">${esc(p.name)}${p.instrument ? ' · ' + esc(p.instrument) : ''}</span>`))
+  const members = people.filter(p => !p.guest);
+  const inCount = members.filter(p => p.layer).length, guestsIn = people.filter(p => p.guest && p.layer).length;
+  const chips = LAYERS.flatMap(l => people.filter(p => p.layer === l.key).map(p => `<span class="lu" style="--c:${l.c}">${esc(p.name)}${p.guest ? ' (guest)' : ''}${p.instrument ? ' · ' + esc(p.instrument) : ''}</span>`))
     .concat(prod.map(h => `<span class="lu prod" style="--c:${LAYER[h.layer].c}">Production · ${esc(LAYER[h.layer].short)}${h.instrument ? ' · ' + esc(h.instrument) : ''}</span>`))
-    .concat(people.filter(p => !p.layer).map(p => `<span class="lu out">${esc(p.name)} · out</span>`));
-  return `<button class="lineup" onclick="editLineup()"><div class="lbl"><b>Line-up · ${inCount} of ${people.length} playing</b><span class="ar">مين فين؟</span></div>${chips.join('')}</button>`;
+    .concat(members.filter(p => !p.layer).map(p => `<span class="lu out">${esc(p.name)} · out</span>`));
+  return `<button class="lineup" onclick="editLineup()"><div class="lbl"><b>Line-up · ${inCount} of ${members.length} playing${guestsIn ? ` + ${guestsIn} guest${guestsIn > 1 ? 's' : ''}` : ''}</b><span class="ar">مين فين؟</span></div>${chips.join('')}</button>`;
 }
 
 function editLineup(focusLayer) {
@@ -1660,24 +1976,30 @@ function editLineup(focusLayer) {
   const { people, prod } = lineupOf(sec.id);
   const P = people.map(p => ({ ...p }));
   const prodOn = Object.fromEntries(LAYERS.map(l => [l.key, prod.some(h => h.layer === l.key)]));
-  let prodWhat = (prod[0] && prod[0].instrument) || '';
+  const prodWhat = Object.fromEntries(LAYERS.map(l => [l.key, (prod.find(h => h.layer === l.key) || {}).instrument || '']));
+  const PROD_SUGS = { bloom: ['lead synth', 'samples', 'vocal chop'], bark: ['pad', 'keys', 'strings'], ground: ['bass synth', 'sub', 'drone'], substrate: ['drum loop', 'percussion loop', 'beat'] };
   const choice = (layer, cur) => [...LAYERS.map(l => `<button class="sug${cur === l.key ? ' on' : ''}" data-l="${l.key}" style="--c:${l.c}">${l.short}</button>`),
     `<button class="sug${!cur ? ' on' : ''}" data-l="" style="--c:var(--faint)">Out</button>`].join('');
 
   sheet(`<h3>Line-up · ${esc(sec.name)}<span class="ar">مين فين؟</span></h3>
-    <p class="lede">There are ${P.length} of you. Each of you is in one layer in this section, or out. Layers can stay empty, and production can fill the gaps.</p>
+    <p class="lede">There are ${P.filter(p => !p.guest).length} of you. Each of you is in one layer in this section, or out. Layers can stay empty; production and guests can fill the gaps.</p>
     <div class="lu-sum" id="sum"></div>
-    ${P.map((p, i) => `<div class="lu-row" data-i="${i}"><div class="top-l"><b>${esc(p.name)}</b><input type="text" placeholder="on what?" value="${esc(p.instrument)}"></div>
+    ${P.map((p, i) => `${p.guest && !(P[i - 1] || {}).guest ? '<div class="list-head"><b>Guest performers</b></div>' : ''}<div class="lu-row${p.guest ? ' guest' : ''}" data-i="${i}"><div class="top-l"><b>${esc(p.name)}${p.guest ? '<span class="guest-tag">guest</span>' : ''}</b><input type="text" placeholder="on what?" value="${esc(p.instrument)}"></div>
       <div class="sugs lay">${choice(i, p.layer)}</div><div class="sugs inst"></div></div>`).join('')}
-    <div class="lu-row prod"><div class="top-l"><b>Production</b><input type="text" id="prodWhat" placeholder="e.g. Live pad, backing track" value="${esc(prodWhat)}"></div>
-      <div class="sugs" id="prodSugs">${['Live pad', 'backing track', 'samples', 'drum loop', 'drone'].map(x => `<button class="sug">${x}</button>`).join('')}</div>
-      <div class="sugs" id="prodL">${LAYERS.map(l => `<button class="sug${prodOn[l.key] ? ' on' : ''}" data-l="${l.key}" style="--c:${l.c}">${l.short}</button>`).join('')}</div>
-      <div class="small faint" style="margin-top:8px">Can cover as many layers as needed.</div></div>
+    <div class="lu-row guest-add"><div class="top-l"><b>+ Guest</b><span class="small muted" style="font-style:italic">someone playing or singing on this, who doesn’t use the app</span></div>
+      <div class="row2" style="margin-top:8px"><input id="gName" type="text" placeholder="name, e.g. Layla"><input id="gWhat" type="text" placeholder="what, e.g. vocals"></div>
+      <button class="btn block" id="gAdd" style="margin-top:8px">Add guest performer</button></div>
+    <div class="lu-row prod"><div class="top-l"><b>Production</b><span class="small muted" style="font-style:italic">the one role that can be in every layer at once</span></div>
+      ${LAYERS.map(l => `<div class="prod-l${prodOn[l.key] ? ' on' : ''}" data-l="${l.key}" style="--c:${l.c}">
+        <button type="button" class="prod-t"><span class="check">${prodOn[l.key] ? '✓' : ''}</span><b>${l.name}</b></button>
+        <div class="prod-what${prodOn[l.key] ? '' : ' hidden'}"><input type="text" placeholder="what? e.g. ${PROD_SUGS[l.key][0]}" value="${esc(prodWhat[l.key])}">
+          <div class="sugs">${PROD_SUGS[l.key].map(x => `<button type="button" class="sug">${x}</button>`).join('')}</div></div>
+      </div>`).join('')}</div>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save line-up</button></div>`, root => {
     const sum = () => {
       $('#sum', root).innerHTML = LAYERS.map(l => {
         const names = P.filter(p => p.layer === l.key).map(p => esc(p.name));
-        if (prodOn[l.key]) names.push('<i>production</i>');
+        if (prodOn[l.key]) names.push(`<i>production${prodWhat[l.key] ? ' · ' + esc(prodWhat[l.key]) : ''}</i>`);
         return `<div style="--c:${l.c}"><b>${l.short}</b>${names.length ? names.join(', ') : '<span class="empty-l">empty</span>'}</div>`;
       }).join('');
     };
@@ -1703,15 +2025,27 @@ function editLineup(focusLayer) {
       $('input', r).oninput = e => { p.instrument = e.target.value; p.auto = false; drawInst(); };
       drawInst();
     });
-    root.querySelectorAll('#prodSugs .sug').forEach(b => b.onclick = () => { $('#prodWhat', root).value = b.textContent; });
-    root.querySelectorAll('#prodL .sug').forEach(b => b.onclick = () => { prodOn[b.dataset.l] = !prodOn[b.dataset.l]; b.classList.toggle('on', prodOn[b.dataset.l]); sum(); });
+    root.querySelectorAll('.prod-l').forEach(r => {
+      const k = r.dataset.l;
+      $('.prod-t', r).onclick = () => { prodOn[k] = !prodOn[k]; r.classList.toggle('on', prodOn[k]); $('.check', r).textContent = prodOn[k] ? '✓' : ''; $('.prod-what', r).classList.toggle('hidden', !prodOn[k]); sum(); };
+      $('input', r).oninput = e => { prodWhat[k] = e.target.value; };
+      r.querySelectorAll('.sug').forEach(b => b.onclick = () => { prodWhat[k] = b.textContent; $('input', r).value = b.textContent; });
+    });
+    const holdersNow = () => [
+      ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument })),
+      ...LAYERS.filter(l => prodOn[l.key]).map(l => ({ member_id: PRODUCTION, layer: l.key, instrument: prodWhat[l.key] })),
+    ];
     $('#save', root).onclick = async () => {
-      prodWhat = $('#prodWhat', root).value;
-      const holders = [
-        ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument })),
-        ...LAYERS.filter(l => prodOn[l.key]).map(l => ({ member_id: PRODUCTION, layer: l.key, instrument: prodWhat })),
-      ];
-      try { S.track = await api(`/sections/${sec.id}/lineup`, { method: 'PUT', body: { holders } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+      try { S.track = await api(`/sections/${sec.id}/lineup`, { method: 'PUT', body: { holders: holdersNow() } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+    };
+    $('#gAdd', root).onclick = async () => {
+      const name = $('#gName', root).value.trim(); if (!name) return $('#gName', root).focus();
+      try {
+        const m = await api('/members', { method: 'POST', body: { name, guest: true, instruments: $('#gWhat', root).value.trim() } });
+        S.members.push(m);
+        S.track = await api(`/sections/${sec.id}/lineup`, { method: 'PUT', body: { holders: holdersNow() } });
+        renderTrack(); editLineup(); toast(`${name} added. Pick their layer.`);
+      } catch (e) { toast(e.message); }
     };
     sum();
     if (focusLayer) { const el = root.querySelector('.lu-sum [style*="' + LAYER[focusLayer].c + '"]'); if (el) el.style.outline = '2px solid ' + LAYER[focusLayer].c; }
@@ -2677,34 +3011,84 @@ function midiStack(sid, exceptLayer) {
 function prefetchStack(sid) { stackIdeas(sid).forEach(i => audioBuffer(i).catch(() => null)); }
 
 /* ---------- band ---------- */
+async function spacesSheet() {
+  let l = Spaces.list();
+  if (l.some(x => !x.name)) {
+    await Promise.all(l.filter(x => !x.name).map(x => peekSpace(x.key).then(sp => Spaces.add(x.key, sp)).catch(() => {})));
+    l = Spaces.list();
+  }
+  sheet(`<h3>Spaces</h3><p class="lede">Every passcode opens its own space with its own people and tracks.</p>
+    <div class="menu">${l.map(x => `<button class="menu-item${x.key === S.key ? ' sel' : ''}" data-k="${esc(x.key)}"><span><b>${esc(x.name || 'Space')}</b><span class="small muted">${x.key === S.key ? 'you’re here' : 'switch to it'}</span></span></button>`).join('')}</div>
+    <label class="field">Join another space</label>
+    <div class="tempo-row"><input id="jk" type="password" autocapitalize="off" placeholder="Its passcode"><button class="btn" id="jb">Join</button></div>`, root => {
+    root.querySelectorAll('[data-k]').forEach(b => b.onclick = async () => {
+      if (b.dataset.k === S.key) return closeSheet();
+      Spaces.use(b.dataset.k); closeSheet(); go(''); try { await loadState(); } catch (e) { toast(e.message); } route();
+    });
+    const join = async () => {
+      const k = $('#jk', root).value.trim(); if (!k) return;
+      try { const sp = await peekSpace(k); Spaces.add(k, sp); Spaces.use(k); closeSheet(); go(''); await loadState(); route(); toast(`You’re in ${sp.name}`); }
+      catch (e) { toast(e.message); }
+    };
+    $('#jb', root).onclick = join; $('#jk', root).onkeydown = e => { if (e.key === 'Enter') join(); };
+  });
+}
+function spaceSettings() {
+  sheet(`<h3>${esc(spaceName())} · settings</h3>
+    <label class="field">Name</label><input id="sn" type="text" value="${esc(spaceName())}">
+    <label class="field">New passcode</label><input id="sk" type="password" autocapitalize="off" placeholder="leave empty to keep it">
+    <p class="small faint" style="font-style:italic">Changing the passcode signs everyone else out of this space, and old invite links stop working. Share the new one yourself.</p>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
+    $('#ok', root).onclick = async () => {
+      const name = $('#sn', root).value.trim(), nk = $('#sk', root).value.trim();
+      try {
+        const r = await api('/space', { method: 'PATCH', body: { name, new_key: nk } });
+        if (nk) { const l = Spaces.list(), c = l.find(x => x.key === S.key); if (c) c.key = nk; Spaces.save(l); S.key = nk; store.set('key', nk); }
+        S.space = { ...S.space, name: r.name }; Spaces.add(S.key, S.space);
+        closeSheet(); viewBand(); toast(nk ? 'Passcode changed' : 'Saved');
+      } catch (e) { toast(e.message); }
+    };
+  });
+}
 function viewBand() {
   const render = () => {
-    $('#app').innerHTML = topBar('The band', S.me ? backBtn('') : '') + `<div class="wrap">
-      <p class="muted small">Tap “this is me” to switch who you are on this phone. Everyone’s instruments show up as one-tap choices in the line-up; you can still type anything.</p>
-      ${S.members.map(m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b><span class="nm-act">${m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}<button class="icon-btn sm" aria-label="Remove ${esc(m.name)}" data-rm="${esc(m.id)}">${ICON.trash}</button></span></div>
-        <input type="text" data-inst="${esc(m.id)}" value="${esc(m.instruments)}" placeholder="instruments, comma separated" style="margin-top:8px"></div>`).join('')}
-      <label class="field">Add someone (guest, 5th member…)</label>
-      <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="add">Add</button></div>
-      <div style="margin-top:28px"><button class="btn block" id="logout">Sign out of this phone</button></div>
+    const members = S.members.filter(m => !m.guest), guests = S.members.filter(m => m.guest);
+    const row = m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b><span class="nm-act">${m.guest ? '' : m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}<button class="icon-btn sm" aria-label="Remove ${esc(m.name)}" data-rm="${esc(m.id)}">${ICON.trash}</button></span></div>
+        <input type="text" data-inst="${esc(m.id)}" value="${esc(m.instruments)}" placeholder="${m.guest ? 'what they do, e.g. vocals' : 'instruments, comma separated'}" style="margin-top:8px">
+        ${m.guest ? `<button class="sug" data-promote="${esc(m.id)}" style="margin-top:8px">Make a member</button>` : ''}</div>`;
+    $('#app').innerHTML = topBar(esc(spaceName()), S.me ? backBtn('') : '', `<button class="icon-btn" aria-label="Space settings" onclick="spaceSettings()">${ICON.edit}</button>`) + `<div class="wrap">
+      <div class="list-head"><b>Members</b><span class="small muted" style="font-style:italic">use the app</span></div>
+      ${members.map(row).join('') || '<p class="small faint">Nobody yet.</p>'}
+      <div class="list-head"><b>Guest performers</b><span class="small muted" style="font-style:italic">named in line-ups, don’t use the app</span></div>
+      ${guests.map(row).join('') || '<p class="small faint" style="font-style:italic">None yet. Add one here or straight from a line-up.</p>'}
+      <label class="field">Add someone</label>
+      <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="addG">Guest</button><button class="btn" id="add">Member</button></div>
+      <p class="muted small" style="margin-top:14px">Tap “this is me” to switch who you are on this phone. Instruments show up as one-tap choices in the line-up.</p>
+      <div style="margin-top:24px;display:flex;gap:10px"><button class="btn block" onclick="spacesSheet()">Switch or join a space</button></div>
+      <div style="margin-top:10px"><button class="btn block" id="logout">Leave ${esc(spaceName())} on this phone</button></div>
     </div>`;
-    $('#app').querySelectorAll('[data-me]').forEach(b => b.onclick = () => { S.me = b.dataset.me; store.set('me', S.me); render(); });
+    $('#app').querySelectorAll('[data-me]').forEach(b => b.onclick = () => { Spaces.setMe(b.dataset.me); render(); });
     $('#app').querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
       const m = S.members.find(x => x.id === b.dataset.rm);
-      confirmSheet(`Remove ${esc(m.name)} from the band list?`, 'They come off every line-up. Their ideas and recordings stay, still credited to them.', 'Remove', async () => {
+      confirmSheet(`Remove ${esc(m.name)}?`, 'They come off every line-up. Their ideas and recordings stay, still credited to them.', 'Remove', async () => {
         await api('/members/' + m.id, { method: 'DELETE' });
         S.members = S.members.filter(x => x.id !== m.id);
-        if (S.me === m.id) { S.me = ''; store.set('me', ''); }
+        if (S.me === m.id) Spaces.setMe('');
         render();
       });
+    });
+    $('#app').querySelectorAll('[data-promote]').forEach(b => b.onclick = async () => {
+      try { const m = await api('/members/' + b.dataset.promote, { method: 'PATCH', body: { guest: false } }); Object.assign(S.members.find(x => x.id === m.id), m); render(); } catch (e) { toast(e.message); }
     });
     $('#app').querySelectorAll('[data-inst]').forEach(inp => inp.onchange = async () => {
       try { const m = await api('/members/' + inp.dataset.inst, { method: 'PATCH', body: { instruments: inp.value } }); Object.assign(S.members.find(x => x.id === m.id), m); toast('Saved'); } catch (e) { toast(e.message); }
     });
-    $('#add').onclick = async () => {
-      const name = $('#newName').value.trim(); if (!name) return;
-      try { const m = await api('/members', { method: 'POST', body: { name } }); S.members.push(m); if (!S.me) { S.me = m.id; store.set('me', m.id); } render(); } catch (e) { toast(e.message); }
+    const add = guest => async () => {
+      const name = $('#newName').value.trim(); if (!name) return $('#newName').focus();
+      try { const m = await api('/members', { method: 'POST', body: { name, guest } }); S.members.push(m); if (!S.me) Spaces.setMe(m.id); render(); } catch (e) { toast(e.message); }
     };
-    confirmBtn($('#logout'), 'Tap again to sign out', () => { S.key = ''; S.me = ''; store.set('key', ''); store.set('me', ''); go(''); route(); });
+    $('#add').onclick = add(false); $('#addG').onclick = add(true);
+    confirmBtn($('#logout'), 'Tap again to leave', () => { Spaces.forget(S.key); go(''); (S.key ? loadState().catch(() => {}) : Promise.resolve()).then(route); });
   };
   render();
   loadState().then(render).catch(e => toast(e.message));
@@ -2731,6 +3115,13 @@ document.addEventListener('visibilitychange', () => {
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 
 (async () => {
+  try {
+    const d = await (await fetch(API + '/api/spaces')).json();
+    if (d.epoch && store.get('epoch', '') !== d.epoch) {
+      store.set('epoch', d.epoch);
+      if (S.key) { store.set('spaces', []); S.key = ''; S.me = ''; store.set('key', ''); store.set('me', ''); }
+    }
+  } catch {}
   if (S.key) { try { await loadState(); } catch {} }
   route();
 })();

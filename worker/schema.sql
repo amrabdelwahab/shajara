@@ -1,8 +1,18 @@
+CREATE TABLE IF NOT EXISTS spaces (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  key_hash TEXT,
+  created_at INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS spaces_key ON spaces (key_hash);
+
 CREATE TABLE IF NOT EXISTS members (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   instruments TEXT NOT NULL DEFAULT '',
-  created_at INTEGER NOT NULL
+  created_at INTEGER NOT NULL,
+  space_id TEXT NOT NULL DEFAULT 'abba',
+  guest INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS tracks (
@@ -16,7 +26,8 @@ CREATE TABLE IF NOT EXISTS tracks (
   notes TEXT NOT NULL DEFAULT '',
   created_by TEXT,
   created_at INTEGER NOT NULL,
-  updated_at INTEGER NOT NULL
+  updated_at INTEGER NOT NULL,
+  space_id TEXT NOT NULL DEFAULT 'abba'
 );
 
 CREATE TABLE IF NOT EXISTS sections (
@@ -81,5 +92,6 @@ CREATE TABLE IF NOT EXISTS grooves (
   sub INTEGER NOT NULL DEFAULT 2,
   bar INTEGER NOT NULL DEFAULT 0,
   created_by TEXT,
-  created_at INTEGER NOT NULL
+  created_at INTEGER NOT NULL,
+  space_id TEXT NOT NULL DEFAULT 'abba'
 );
