@@ -1132,6 +1132,21 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
 .stg-bar.sm { margin-top: 2px; }
 .pcard.st-done, .pcard.st-parked, .pcard.st-notadopted, .pcard.st-outside { padding: 14px 16px; }
 .pcard.st-buyin:not(.ask) { border-color: color-mix(in srgb, #ff9f43 30%, var(--line)); }
+
+/* next step: the clear way forward */
+.next { display: block; padding: 16px; }
+.next .nx-k { display: block; margin-bottom: 6px; }
+.next p { margin: 0; }
+.nx-checks { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.nx-checks li { display: flex; align-items: center; gap: 10px; font: 15px/1.3 var(--serif); color: var(--muted); }
+.nx-checks li.done { color: var(--text); }
+.nx-checks i { width: 20px; height: 20px; flex: none; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; font: 800 11px/1 var(--display); font-style: normal; color: #000; }
+.nx-checks li.done i { background: var(--brand-green); border-color: var(--brand-green); }
+.nx-checks .link-btn { color: var(--text); font: 15px/1.3 var(--serif); }
+.nx-go { margin-top: 14px; height: 48px; font-size: 12px; }
+.nx-go[disabled] { opacity: .45; }
+.nx-why { margin: 8px 0 0 !important; text-align: center; font: italic 13px/1.3 var(--serif) !important; color: var(--muted); }
+.nx-other { display: block; margin: 12px auto 0; font: italic 13px/1 var(--serif); color: var(--muted); }
 </style>
 </head>
 <body>
@@ -4544,25 +4559,33 @@ function composerHtml() {
     <div class="c-reply hidden" id="preplying"></div>
     <div class="c-row"><textarea id="ptext" rows="1" placeholder="What do you think?"></textarea><button class="c-send" id="psend" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></div></div>`;
 }
-// What the project needs right now, in one sentence and one button.
+// What the project needs right now: one sentence, a short checklist when it matters, and one clear button that moves it on.
 function nextStep(p) {
-  const b = buyinSum(p), members = bandMembers(), dir = S.members.find(m => m.id === p.director);
-  const waiting = members.filter(m => !answered(voteOf(p, m.id)));
+  const b = buyinSum(p), dir = S.members.find(m => m.id === p.director), prop = (() => { try { return JSON.parse(p.proposal || '{}'); } catch { return {}; } })();
+  const waiting = bandMembers().filter(m => !answered(voteOf(p, m.id)));
+  const band = needsBuyin();
   switch (p.stage) {
-    case 'philosophy': return p.philosophy ? { t: 'The philosophy is written. Turn it into a proposal: what exactly are we taking?', a: 'Write the proposal', go: 'tab:proposal', then: 'proposal' }
-      : { t: 'Start with what it’s actually about, before anyone picks up an instrument.', a: 'Write the philosophy', go: 'edit' };
-    case 'proposal': return needsBuyin() ? { t: dir ? `When it’s worth showing, ask the band: do we want this, and is ${dir.id === S.me ? 'you' : firstName(dir.id)} the right director?` : 'Pick one person to direct it, then ask the band.', a: dir ? 'Ask the band' : 'Pick a director', go: dir ? 'stage:buyin' : 'edit' }
-      : { t: 'When it feels right, start making it.', a: 'Start making it', go: 'stage:development' };
+    case 'philosophy': return p.philosophy
+      ? { t: 'The philosophy is written. Next, the proposal: what exactly are we taking?', a: 'Philosophy’s done · Move to Proposal', go: 'stage:proposal', ready: true }
+      : { t: 'Start with what it’s actually about, before anyone picks up an instrument.', a: 'Write the philosophy', go: 'edit', ready: true };
+    case 'proposal': {
+      const checks = [['Philosophy', !!p.philosophy, 'edit'], ['A director', !!dir, 'edit'], ['What we’re taking (optional)', !!(prop.taking || '').trim(), 'tab:proposal', true]];
+      const ok = checks.every(([, d, , opt]) => d || opt);
+      return band
+        ? { t: ok ? 'Ready when you are. The band answers two things: do we want this, and ' + (dir ? (dir.id === S.me ? 'are you' : 'is ' + firstName(dir.id)) : 'is this') + ' the right director.' : 'Before the band can vote, it needs:', checks, a: 'Ready · Ask the band to vote', go: 'stage:buyin', ready: ok, hot: ok }
+        : { t: 'When it feels right, start making it.', checks: checks.slice(0, 1), a: 'Start making it', go: 'stage:development', ready: !!p.philosophy, hot: !!p.philosophy };
+    }
     case 'buyin':
-      if (waitingOnMe(p)) return { t: 'The band is waiting for your answer.', a: 'Answer below', go: 'scroll:buyin', hot: true };
-      if (b.done === b.n && b.allYes) return { t: 'Everyone’s in. It’s a project now.', a: 'Start making it', go: 'stage:development', hot: true };
-      if (b.anyNo) return { t: 'Someone isn’t in yet. Talk it through in the discussion, or park it.', a: 'Open the discussion', go: 'tab:talk' };
-      return { t: `Waiting on ${waiting.map(m => firstName(m.id)).join(', ')}.`, a: '', go: '' };
-    case 'development': return p.track_ids.length ? { t: `${plural(p.track_ids.length, 'track')} in it. When it’s ready for the room, move it to rehearsing.`, a: 'Start rehearsing', go: 'stage:rehearsing' }
-      : { t: 'Bring in its tracks: pick ones you have, or plant new ones.', a: 'Add tracks', go: 'tab:tracks' };
-    case 'rehearsing': return { t: p.date ? `Aiming at ${fmtDate(p.date)}.` : 'Rehearsing. Set a date to aim at?', a: 'Mark it done', go: 'stage:done' };
-    case 'done': return { t: 'Performed or released. Well done.', a: '', go: '' };
-    default: return { t: 'Set aside for now. Nothing is lost.', a: 'Bring it back', go: 'stage:proposal' };
+      if (waitingOnMe(p)) return { t: 'The band is waiting for your answer.', a: 'Answer now', go: 'scroll:buyin', ready: true, hot: true };
+      if (b.done === b.n && b.allYes) return { t: 'Everyone’s in. It’s a band project now.', a: 'Everyone’s in · Start making it', go: 'stage:development', ready: true, hot: true };
+      if (b.anyNo) return { t: 'Someone isn’t in yet. Talk it through, change the proposal, or park it.', a: 'Open the discussion', go: 'tab:talk', ready: true };
+      return { t: `Waiting on ${waiting.map(m => firstName(m.id)).join(', ')}.`, a: 'Everyone’s in · Start making it', go: 'stage:development', ready: false, why: `${b.done} of ${b.n} have answered` };
+    case 'development': return p.track_ids.length
+      ? { t: `${plural(p.track_ids.length, 'track')} in it. When it’s ready for the room, start rehearsing.`, a: 'Start rehearsing', go: 'stage:rehearsing', ready: true }
+      : { t: 'Bring in its tracks: pick ones you have, or plant new ones.', a: 'Add tracks', go: 'tab:tracks', ready: true };
+    case 'rehearsing': return { t: p.date ? `Aiming at ${fmtDate(p.date)}.` : 'In the room. Set a date to aim at?', a: 'Mark as performed / released', go: 'stage:done', ready: true };
+    case 'done': return { t: 'Performed or released. Well done.' };
+    default: return { t: 'Set aside for now. Nothing is lost.', a: 'Bring it back to Proposal', go: 'stage:proposal', ready: true };
   }
 }
 function viewProject(id) {
@@ -4607,7 +4630,10 @@ function viewProject(id) {
         <div class="pj-dir">${dir ? `${avatar(dir, 'sm')}<span><b>${esc(dir.id === S.me ? 'You' : dir.name)}</b> ${dir.id === S.me ? 'direct' : 'directs'} it</span>` : '<button class="link-btn" id="pjDir">No director yet · pick one person</button>'}</div>
         ${aside ? '' : `<div class="stg-bar">${MAIN_STAGES.map(([k, l, c], i) => `<i class="${i < si ? 'past' : i === si ? 'on' : ''}" style="--c:${c}" title="${esc(l)}"></i>`).join('')}</div>`}
       </div>
-      ${nx.t ? `<div class="next${nx.hot ? ' hot' : ''}"><span class="nx-k">What’s next</span><p>${esc(nx.t)}</p>${nx.a ? `<button class="btn ${nx.hot ? 'primary' : ''} sm" id="pjNext">${esc(nx.a)}</button>` : ''}</div>` : ''}
+      ${nx.t ? `<div class="next${nx.hot ? ' hot' : ''}"><span class="nx-k">Next step</span><p>${esc(nx.t)}</p>
+        ${nx.checks ? `<ul class="nx-checks">${nx.checks.map(([l, d, go], i) => `<li class="${d ? 'done' : ''}"><i>${d ? '✓' : ''}</i>${d ? esc(l) : `<button class="link-btn" data-nxfix="${esc(go)}">${esc(l)}</button>`}</li>`).join('')}</ul>` : ''}
+        ${nx.a ? `<button class="btn ${nx.ready ? 'primary' : ''} block nx-go" id="pjNext"${nx.ready ? '' : ' disabled'}>${esc(nx.a)} →</button>${nx.why ? `<p class="nx-why">${esc(nx.why)}</p>` : ''}` : ''}
+        <button class="link-btn nx-other" id="pjOther">Move to another stage</button></div>` : ''}
       ${showVotes ? `<div class="buyin" id="buyin">
         <div class="bi-h"><b>Is the band in?</b><span class="faint">${b.done} of ${b.n} answered</span></div>
         <div class="faces">${faces}</div>
@@ -4630,6 +4656,8 @@ function viewProject(id) {
     $('#app').querySelectorAll('[data-pt]').forEach(x => x.onclick = () => { S.pjTab = { id, t: x.dataset.pt }; render(); });
     const ed = () => projectEdit(p, render);
     ['#pjPhil', '#pjDir', '#pjEdit2'].forEach(sel => { const el = $(sel); if (el) el.onclick = ed; });
+    const other = $('#pjOther'); if (other) other.onclick = () => $('#pjStage').click();
+    $('#app').querySelectorAll('[data-nxfix]').forEach(x => x.onclick = () => { const [k, v] = x.dataset.nxfix.split(':'); if (k === 'edit') return ed(); if (k === 'tab') { S.pjTab = { id, t: v }; render(); } });
     const nb = $('#pjNext'); if (nb) nb.onclick = () => {
       const [k, v] = (nx.go || '').split(':');
       if (k === 'edit') return ed();
