@@ -38,6 +38,28 @@ const cleanGenres = l => Array.isArray(l) ? [...new Set(l.map(x => typeof x === 
 // Line-ups keep a comma-separated list of sound ids per person; this drops one id from every list.
 const dropSoundFromLineups = (env, sid) => env.DB.prepare("UPDATE holders SET sound_ids = TRIM(REPLACE(',' || sound_ids || ',', ',' || ? || ',', ','), ',') WHERE ',' || sound_ids || ',' LIKE '%,' || ? || ',%'").bind(sid, sid);
 const cleanSoundIds = v => [...new Set((Array.isArray(v) ? v : String(v || '').split(',')).map(x => String(x).trim()).filter(x => /^[a-z0-9]{4,40}$/.test(x)))].slice(0, 12).join(',');
+// A person can be a member of several spaces; their instruments, sounds and shelf belong to the person.
+const PID = 'COALESCE(person_id, id)';
+async function linkPeople(env, keep, drop) {
+  if (keep === drop) return;
+  await env.DB.batch([
+    env.DB.prepare(`UPDATE members SET person_id = ? WHERE ${PID} = ?`).bind(keep, drop),
+    env.DB.prepare('UPDATE instruments SET member_id = ? WHERE member_id = ?').bind(keep, drop),
+    env.DB.prepare('UPDATE shelf SET person_id = ? WHERE person_id = ?').bind(keep, drop),
+  ]);
+  await foldInstruments(env, keep);
+}
+// Same instrument twice (say, oud in both spaces): fold the second into the first.
+async function foldInstruments(env, pid) {
+  const ins = (await env.DB.prepare('SELECT id, name FROM instruments WHERE member_id = ? ORDER BY position, created_at').bind(pid).all()).results;
+  const first = {}, stmts = [];
+  for (const i of ins) {
+    const k = i.name.trim().toLowerCase();
+    if (!first[k]) { first[k] = i.id; continue; }
+    stmts.push(env.DB.prepare('UPDATE sounds SET instrument_id = ? WHERE instrument_id = ?').bind(first[k], i.id), env.DB.prepare('DELETE FROM instruments WHERE id = ?').bind(i.id));
+  }
+  if (stmts.length) await env.DB.batch(stmts);
+}
 async function resolveSpace(env, key) {
   if (!key) return null;
   const row = await env.DB.prepare('SELECT * FROM spaces WHERE key_hash = ?').bind(await sha256(key)).first();
@@ -97,7 +119,7 @@ async function deleteIdeas(env, where, arg) {
 }
 async function dropUnusedAudio(env, ids) {
   for (const aid of ids) {
-    const still = await env.DB.prepare('SELECT 1 FROM ideas WHERE audio_id = ? UNION ALL SELECT 1 FROM sounds WHERE audio_id = ? LIMIT 1').bind(aid, aid).first();
+    const still = await env.DB.prepare('SELECT 1 FROM ideas WHERE audio_id = ? UNION ALL SELECT 1 FROM sounds WHERE audio_id = ? UNION ALL SELECT 1 FROM shelf WHERE audio_id = ? LIMIT 1').bind(aid, aid, aid).first();
     if (!still) await env.AUDIO.delete(aid);
   }
 }
@@ -179,16 +201,19 @@ async function route(req, env, url, member, space) {
       env.DB.prepare(`SELECT track_id, kind, COUNT(*) AS n, MAX(created_at) AS last FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id, kind`).all(),
       env.DB.prepare('SELECT * FROM grooves WHERE space_id = ? ORDER BY name').bind(sp).all(),
     ]);
-    const mem = `SELECT id FROM members WHERE space_id = '${sp.replace(/'/g, '')}'`;
+    const mem = `SELECT ${PID} FROM members WHERE space_id = '${sp.replace(/'/g, '')}'`;
     let ins = await env.DB.prepare(`SELECT * FROM instruments WHERE member_id IN (${mem}) ORDER BY position, created_at`).all();
-    const missing = members.results.filter(mm => mm.instruments && !ins.results.some(i => i.member_id === mm.id));
+    const missing = members.results.filter(mm => mm.instruments && !ins.results.some(i => i.member_id === (mm.person_id || mm.id)));
     if (missing.length) {
       const stmts = [];
       for (const mm of missing) mm.instruments.split(',').map(x => x.trim()).filter(Boolean).forEach((name, k) =>
-        stmts.push(env.DB.prepare('INSERT INTO instruments (id, member_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(uid(), mm.id, name.slice(0, 60), k, now())));
+        stmts.push(env.DB.prepare('INSERT INTO instruments (id, member_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(uid(), mm.person_id || mm.id, name.slice(0, 60), k, now())));
       if (stmts.length) await env.DB.batch(stmts);
       ins = await env.DB.prepare(`SELECT * FROM instruments WHERE member_id IN (${mem}) ORDER BY position, created_at`).all();
     }
+    const seenIns = new Set(), dupes = new Set();
+    for (const i of ins.results) { const k = i.member_id + '|' + i.name.trim().toLowerCase(); if (seenIns.has(k)) dupes.add(i.member_id); seenIns.add(k); }
+    if (dupes.size) { for (const pid of dupes) await foldInstruments(env, pid); ins = await env.DB.prepare(`SELECT * FROM instruments WHERE member_id IN (${mem}) ORDER BY position, created_at`).all(); }
     const snd = await env.DB.prepare(`SELECT * FROM sounds WHERE instrument_id IN (SELECT id FROM instruments WHERE member_id IN (${mem})) ORDER BY position, created_at`).all();
     // Takes that name a sound, so the app can remember who uses what where.
     const takes = await env.DB.prepare(`SELECT track_id, section_id, layer, author_id, sound_id, created_at FROM ideas WHERE sound_id IS NOT NULL AND sound_id != '' AND track_id IN (${inSpace}) ORDER BY created_at DESC LIMIT 2000`).all();
@@ -225,13 +250,16 @@ async function route(req, env, url, member, space) {
   }
 
   const memberInSpace = async mid => !!(await env.DB.prepare('SELECT 1 FROM members WHERE id = ? AND space_id = ?').bind(mid, sp).first());
-  const instInSpace = async iid => { const r = await env.DB.prepare('SELECT member_id FROM instruments WHERE id = ?').bind(iid).first(); return r && (await memberInSpace(r.member_id)) ? r : null; };
+  const pidOf = async mid => { const r = mid && await env.DB.prepare(`SELECT ${PID} AS pid FROM members WHERE id = ? AND space_id = ?`).bind(mid, sp).first(); return r ? r.pid : null; };
+  const personInSpace = async pid => !!(await env.DB.prepare(`SELECT 1 FROM members WHERE ${PID} = ? AND space_id = ?`).bind(pid, sp).first());
+  const instInSpace = async iid => { const r = await env.DB.prepare('SELECT member_id FROM instruments WHERE id = ?').bind(iid).first(); return r && (await personInSpace(r.member_id)) ? r : null; };
   if (a === 'instruments') {
     if (m === 'POST' && !id) {
       const b = await body(req); const name = str(b.name, 60);
-      if (!name || !(await memberInSpace(str(b.member_id, 40)))) return json({ error: 'name and person required' }, 400);
-      const last = await env.DB.prepare('SELECT MAX(position) AS p FROM instruments WHERE member_id = ?').bind(b.member_id).first();
-      const row = { id: uid(), member_id: b.member_id, name, position: (last && last.p != null ? last.p : -1) + 1, created_at: now() };
+      const pid = await pidOf(str(b.member_id, 40));
+      if (!name || !pid) return json({ error: 'name and person required' }, 400);
+      const last = await env.DB.prepare('SELECT MAX(position) AS p FROM instruments WHERE member_id = ?').bind(pid).first();
+      const row = { id: uid(), member_id: pid, name, position: (last && last.p != null ? last.p : -1) + 1, created_at: now() };
       await env.DB.prepare('INSERT INTO instruments (id, member_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(row.id, row.member_id, row.name, row.position, row.created_at).run();
       return json(row, 201);
     }
@@ -287,6 +315,54 @@ async function route(req, env, url, member, space) {
     }
   }
 
+  // Who the caller is across spaces: used by phones holding several spaces to offer linking.
+  if (a === 'me' && m === 'GET') {
+    const r = member && await env.DB.prepare(`SELECT id, name, ${PID} AS person_id FROM members WHERE id = ? AND space_id = ?`).bind(member, sp).first();
+    return r ? json(r) : json({ error: 'not found' }, 404);
+  }
+  // Link me here with me in another space (proved by holding its passcode). Instruments, sounds and shelf merge.
+  if (a === 'people' && id === 'link' && m === 'POST') {
+    const b = await body(req);
+    const here = await pidOf(member);
+    const other = await resolveSpace(env, typeof b.key === 'string' ? b.key.trim() : '');
+    if (!here || !other) return json({ error: 'can’t find you in both spaces' }, 400);
+    const there = await env.DB.prepare(`SELECT ${PID} AS pid FROM members WHERE id = ? AND space_id = ?`).bind(str(b.member_id, 40), other.id).first();
+    if (!there) return json({ error: 'can’t find you in both spaces' }, 400);
+    await linkPeople(env, here, there.pid);
+    return json({ ok: true, person_id: here });
+  }
+  if (a === 'shelf') {
+    const pid = await pidOf(member);
+    if (!pid) return json({ error: 'pick who you are first' }, 400);
+    if (m === 'GET' && !id) {
+      const items = await env.DB.prepare('SELECT * FROM shelf WHERE person_id = ? ORDER BY created_at DESC').bind(pid).all();
+      const uses = await env.DB.prepare(`SELECT i.shelf_id, i.track_id, i.section_id, i.layer, t.title, s.name AS section, t.space_id FROM ideas i JOIN tracks t ON t.id = i.track_id LEFT JOIN sections s ON s.id = i.section_id WHERE i.shelf_id IN (SELECT id FROM shelf WHERE person_id = ?) ORDER BY i.created_at DESC`).bind(pid).all();
+      return json({ items: items.results, uses: uses.results.map(u => u.space_id === sp ? u : { shelf_id: u.shelf_id, elsewhere: true }) });
+    }
+    if (m === 'POST' && !id) {
+      const b = await body(req);
+      const kind = ['audio', 'midi'].includes(b.kind) ? b.kind : null;
+      if (!kind) return json({ error: 'audio or MIDI only' }, 400);
+      if (kind === 'audio' && !str(b.audio_id, 40)) return json({ error: 'no recording' }, 400);
+      const row = { id: uid(), person_id: pid, kind, title: str(b.title, 120), body: str(b.body, 2000), audio_id: str(b.audio_id, 40) || null, audio_mime: str(b.audio_mime, 80) || null,
+        duration: Number(b.duration) || null, data: typeof b.data === 'string' ? b.data.slice(0, 200000) : '', sound_id: str(b.sound_id, 40) || null, created_at: now() };
+      await env.DB.prepare('INSERT INTO shelf (id, person_id, kind, title, body, audio_id, audio_mime, duration, data, sound_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(row.id, row.person_id, row.kind, row.title, row.body, row.audio_id, row.audio_mime, row.duration, row.data, row.sound_id, row.created_at).run();
+      return json(row, 201);
+    }
+    const cur = id ? await env.DB.prepare('SELECT * FROM shelf WHERE id = ? AND person_id = ?').bind(id, pid).first() : null;
+    if (id && !cur) return json({ error: 'not found' }, 404);
+    if (m === 'PATCH' && id) {
+      const b = await body(req);
+      await env.DB.prepare('UPDATE shelf SET title = ?, sound_id = ? WHERE id = ?').bind('title' in b ? str(b.title, 120) : cur.title, 'sound_id' in b ? (str(b.sound_id, 40) || null) : cur.sound_id, id).run();
+      return json(await env.DB.prepare('SELECT * FROM shelf WHERE id = ?').bind(id).first());
+    }
+    if (m === 'DELETE' && id) {
+      await env.DB.prepare('DELETE FROM shelf WHERE id = ?').bind(id).run();
+      if (cur.audio_id) await dropUnusedAudio(env, [cur.audio_id]);
+      return json({ ok: true });
+    }
+  }
   if (a === 'members') {
     if (m === 'POST' && !id) {
       const b = await body(req);
@@ -479,7 +555,7 @@ async function route(req, env, url, member, space) {
         audio_id: kind === 'audio' ? str(b.audio_id, 40) || null : null,
         audio_mime: kind === 'audio' ? str(b.audio_mime, 80) || null : null,
         duration: Number(b.duration) || null, starred: 0,
-        data: typeof b.data === 'string' ? b.data : '', sound_id: str(b.sound_id, 40) || null, created_at: now(),
+        data: typeof b.data === 'string' ? b.data : '', sound_id: str(b.sound_id, 40) || null, shelf_id: str(b.shelf_id, 40) || null, created_at: now(),
       };
       if (kind === 'audio' && !row.audio_id) return json({ error: 'audio_id required' }, 400);
       if (kind === 'link' && !/^https?:\/\//i.test(row.url)) return json({ error: 'url must start with http' }, 400);
@@ -488,8 +564,8 @@ async function route(req, env, url, member, space) {
       if (row.data) { try { JSON.parse(row.data); } catch { return json({ error: 'bad data' }, 400); } }
       if (kind === 'midi') { try { if (!Array.isArray(JSON.parse(row.data).notes)) throw 0; } catch { return json({ error: 'bad midi data' }, 400); } }
       await env.DB.prepare(
-        'INSERT INTO ideas (id, track_id, section_id, layer, author_id, kind, body, url, audio_id, audio_mime, duration, starred, data, sound_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(row.id, row.track_id, row.section_id, row.layer, row.author_id, row.kind, row.body, row.url, row.audio_id, row.audio_mime, row.duration, 0, row.data, row.sound_id, row.created_at).run();
+        'INSERT INTO ideas (id, track_id, section_id, layer, author_id, kind, body, url, audio_id, audio_mime, duration, starred, data, sound_id, shelf_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(row.id, row.track_id, row.section_id, row.layer, row.author_id, row.kind, row.body, row.url, row.audio_id, row.audio_mime, row.duration, 0, row.data, row.sound_id, row.shelf_id, row.created_at).run();
       await touch(env, trackId);
       return json(row, 201);
     }
@@ -532,7 +608,7 @@ async function route(req, env, url, member, space) {
       return json({ id: aid, mime, size: buf.byteLength }, 201);
     }
     if (m === 'GET' && id) {
-      const owned = await env.DB.prepare(`SELECT 1 FROM ideas WHERE audio_id = ? AND track_id IN (${inSpace}) UNION ALL SELECT 1 FROM sounds s JOIN instruments i ON i.id = s.instrument_id JOIN members mm ON mm.id = i.member_id WHERE s.audio_id = ? AND mm.space_id = ? LIMIT 1`).bind(id, id, sp).first();
+      const owned = await env.DB.prepare(`SELECT 1 FROM ideas WHERE audio_id = ? AND track_id IN (${inSpace}) UNION ALL SELECT 1 FROM sounds s JOIN instruments i ON i.id = s.instrument_id JOIN members mm ON COALESCE(mm.person_id, mm.id) = i.member_id WHERE s.audio_id = ? AND mm.space_id = ? UNION ALL SELECT 1 FROM shelf sh JOIN members mm ON COALESCE(mm.person_id, mm.id) = sh.person_id WHERE sh.audio_id = ? AND mm.space_id = ? LIMIT 1`).bind(id, id, sp, id, sp).first();
       if (!owned) return json({ error: 'not found' }, 404);
       const { value, metadata } = await env.AUDIO.getWithMetadata(id, { type: 'arrayBuffer', cacheTtl: 86400 });
       if (!value) return json({ error: 'not found' }, 404);

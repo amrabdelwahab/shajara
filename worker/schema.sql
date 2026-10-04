@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS members (
   created_at INTEGER NOT NULL,
   space_id TEXT NOT NULL DEFAULT 'abba',
   guest INTEGER NOT NULL DEFAULT 0,
-  ready INTEGER NOT NULL DEFAULT 0
+  ready INTEGER NOT NULL DEFAULT 0,
+  person_id TEXT
 );
 
 CREATE TABLE IF NOT EXISTS tracks (
@@ -85,6 +86,7 @@ CREATE TABLE IF NOT EXISTS ideas (
   starred INTEGER NOT NULL DEFAULT 0,
   data TEXT NOT NULL DEFAULT '',
   sound_id TEXT,
+  shelf_id TEXT,
   created_at INTEGER NOT NULL
 );
 
@@ -100,6 +102,7 @@ CREATE TABLE IF NOT EXISTS grooves (
   created_at INTEGER NOT NULL,
   space_id TEXT NOT NULL DEFAULT 'abba'
 );
+-- member_id holds the person id (members.person_id, or the member's own id), so instruments travel across spaces.
 CREATE TABLE IF NOT EXISTS instruments (
   id TEXT PRIMARY KEY,
   member_id TEXT NOT NULL,
@@ -120,3 +123,17 @@ CREATE TABLE IF NOT EXISTS sounds (
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS sounds_instrument ON sounds (instrument_id, position);
+CREATE TABLE IF NOT EXISTS shelf (
+  id TEXT PRIMARY KEY,
+  person_id TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  title TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL DEFAULT '',
+  audio_id TEXT,
+  audio_mime TEXT,
+  duration REAL,
+  data TEXT NOT NULL DEFAULT '',
+  sound_id TEXT,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS shelf_person ON shelf (person_id, created_at);

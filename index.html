@@ -227,7 +227,8 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .top .logo.fit { border-radius: 8px; }
 .gate .logo-big.round, .gate .logo-big.fit { width: 150px; height: 150px; border-radius: 50%; object-fit: contain; }
 .gate .logo-big.fit { border-radius: 20px; }
-.coach { position: fixed; inset: 0; z-index: 60; }
+.coach { position: fixed; inset: 0; z-index: 60; opacity: 0; transition: opacity .18s ease-out; }
+.coach.ready { opacity: 1; }
 .coach-hole { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(0,0,0,.74); pointer-events: none; }
 .coach-hole::after { content: ""; position: absolute; inset: -4px; border-radius: 20px; border: 2px solid var(--brand-yellow); animation: coachPulse 1.4s ease-out infinite; }
 @keyframes coachPulse { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.12); } }
@@ -715,6 +716,36 @@ button.snd-tag.on { background: var(--brand-yellow); color: #000; border-color: 
 .lu-row .sugs.snd { align-items: center; }
 .snd-k { line-height: 32px; }
 .sug-in { padding: 0 12px; }
+
+/* ---------- shelf & linking ---------- */
+.shelf-card { width: 100%; display: flex; align-items: center; gap: 14px; text-align: left; margin: 16px 0 0; padding: 14px; border-radius: var(--radius); border: 1px solid color-mix(in srgb, var(--brand-yellow) 45%, var(--line)); background: color-mix(in srgb, var(--brand-yellow) 7%, var(--surface)); }
+.shelf-card .sc-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--brand-yellow); color: #000; flex: none; }
+.shelf-card .sc-ic svg { width: 22px; height: 22px; }
+.shelf-card b { display: block; font: 800 13px/1.2 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.shelf-card .small { display: block; font: italic 14px/1.3 var(--serif); margin-top: 3px; }
+.shelf-card > span:nth-child(2) { flex: 1; }
+.shelf-card .caret { font-size: 22px; color: var(--muted); }
+.shelf-rec { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 14px; }
+.shelf-cfg { display: grid; grid-template-columns: 48px 1fr; gap: 10px; align-items: center; margin-bottom: 12px; }
+.shelf-cfg .sugs { margin: 0; }
+.shelf-cfg input { width: 90px; }
+.shelf-rec .compose { margin: 0; padding: 0; }
+.shelf-item { --c: var(--brand-yellow); }
+.shelf-item .sh-title { font: 800 13px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.sh-meta { margin-top: 8px; font-style: italic; font-family: var(--serif); }
+.shp { gap: 12px; }
+.shp > span { flex: 1; min-width: 0; }
+.shp-play { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line); display: grid; place-items: center; color: var(--brand-yellow); flex: none; }
+.shp-play svg { width: 14px; height: 14px; }
+.shp-play.on { background: var(--brand-yellow); color: #000; }
+.btn.sm { padding: 8px 14px; font-size: 10px; }
+.link-card { margin-top: 14px; padding: 14px; border-radius: var(--radius); border: 1px dashed var(--brand-green); background: color-mix(in srgb, var(--brand-green) 8%, transparent); }
+.link-card b { font: 800 12px/1.3 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.link-card p { margin: 4px 0 8px; font-style: italic; }
+
+.who-out { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.who-out .faint { font-style: italic; text-align: center; margin: 0; }
+.look-t { font: 800 20px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -744,7 +775,8 @@ const LAYERS = [
 const LAYER = Object.fromEntries(LAYERS.map(l => [l.key, l]));
 const TRANSITION = { key: 'transition', name: 'Transition', short: 'Transition', ar: 'انتقال', c: 'var(--brand-yellow)', k: 1 };
 const STAR = '<svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 1l5.4 6 8-.4-.4 8 6 5.4-6 5.4.4 8-8-.4L20 39l-5.4-6-8 .4.4-8L1 20l6-5.4-.4-8 8 .4z"/></svg>';
-const laneOf = key => LAYER[key] || TRANSITION;
+const SHELF_LANE = { key: 'shelf', name: 'Your shelf', short: 'Shelf', ar: 'رف', c: 'var(--brand-yellow)', k: 1 };
+const laneOf = key => LAYER[key] || (key === 'shelf' ? SHELF_LANE : TRANSITION);
 // Which of the band's own instruments naturally sit in each layer; used to pre-pick and order the chips.
 const LAYER_FIT = {
   bloom: /oud|ney|nay|yarghul|vocal|voice|harmonica|kazoo|electric guitar|violin|qanun/i,
@@ -753,7 +785,9 @@ const LAYER_FIT = {
   substrate: /drum|darbuka|djembe|caj|bandir|bendir|riq|daf|percussion/i,
 };
 // People → instruments → sounds. All optional; line-ups and takes can point at a sound.
-const insOf = mid => (S.instruments || []).filter(i => i.member_id === mid);
+// Instruments, sounds and the shelf belong to the person, who can be in several spaces.
+const pidOf = mid => { const m = (S.members || []).find(x => x.id === mid); return (m && m.person_id) || mid; };
+const insOf = mid => (S.instruments || []).filter(i => i.member_id === pidOf(mid));
 const soundsOf = iid => (S.sounds || []).filter(x => x.instrument_id === iid);
 const soundById = id => (S.sounds || []).find(x => x.id === id);
 const insById = id => (S.instruments || []).find(i => i.id === id);
@@ -888,6 +922,7 @@ const ICON = {
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
   rhythm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="4" height="8" rx="1.2" fill="currentColor"/><rect x="10" y="8" width="4" height="8" rx="1.2"/><rect x="17" y="8" width="4" height="8" rx="1.2" fill="currentColor" fill-opacity=".45"/></svg>',
+  shelf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M3 12h18"/><rect x="5" y="5" width="4" height="7" rx="1"/><rect x="11" y="7" width="3" height="5" rx="1"/><rect x="6" y="15" width="7" height="5" rx="1"/><path d="M16 15l3 5"/></svg>',
   tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-7"/><path d="M12 14c-4 0-7-2.4-7-5.6C5 5.3 8 3 12 3s7 2.3 7 5.4C19 11.6 16 14 12 14Z"/><path d="M8 21h8"/></svg>',
   space: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><path d="M17 14v6M14 17h6"/></svg>',
   metro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 18H5L9 3Z"/><path d="M12 17l5-9"/><path d="M8 13h8"/></svg>',
@@ -1118,6 +1153,18 @@ async function uploadLogo(blob, key) {
   if (!res.ok) throw new Error(d.error || 'Logo upload failed');
   return d;
 }
+// "Just looking": in a space without being one of its members. Everything is visible and the space's
+// settings can be edited, but anything credited to a person asks who you are first.
+const LOOK = 'look';
+const looking = () => S.me === LOOK;
+function needMe() {
+  if (!looking()) return false;
+  sheet(`<h3>Who’s this?</h3><p class="lede">You’re just looking around ${esc(spaceName())}. To add something, pick who you are, so everyone knows who posted it.</p>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Keep looking</button><button class="btn primary" id="pickMe">Pick who I am</button></div>`, root => {
+    $('#pickMe', root).onclick = () => { closeSheet(); Spaces.setMe(''); route(); };
+  });
+  return true;
+}
 const isBand = () => !S.space || S.space.id === 'abba';
 const spaceName = () => (S.space && S.space.name) || '‘ala bab allah';
 
@@ -1143,11 +1190,12 @@ function route() {
   document.body.classList.remove('wide');
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
-  if (!S.me || (S.members.length && !S.members.some(m => m.id === S.me && !m.guest))) return viewWho();
+  if (!S.me || (!looking() && S.members.length && !S.members.some(m => m.id === S.me && !m.guest))) return viewWho();
   const me = S.members.find(m => m.id === S.me);
   if (me && !me.ready) return viewWelcome();
   if (h === 'band') return viewBand();
   if (h === 'me') return viewYou();
+  if (h === 'shelf') return viewShelf();
   if (h === 'space') return viewSpace();
   if (h.startsWith('t/')) return viewTrack(h.slice(2));
   return viewHome();
@@ -1305,31 +1353,38 @@ function coach(name, force) {
   const ov = document.createElement('div'); ov.className = 'coach';
   ov.innerHTML = '<div class="coach-hole"></div><div class="coach-tip"><p></p><div class="coach-act"><button class="coach-skip">Skip</button><span class="coach-n"></span><button class="btn primary coach-next">Next</button></div></div>';
   document.body.appendChild(ov);
-  let k = 0;
-  const end = () => { ov.remove(); window.removeEventListener('resize', place); };
+  let k = 0, raf = 0, last = '';
+  const hole = $('.coach-hole', ov), tip = $('.coach-tip', ov);
+  const end = () => { cancelAnimationFrame(raf); ov.remove(); };
+  // Follow the target every frame: it may move when the page refreshes underneath, or while scrolling.
   const place = () => {
+    raf = requestAnimationFrame(place);
     const el = document.querySelector(steps[k][0]); if (!el) return;
-    const r = el.getBoundingClientRect(), pad = 6, hole = $('.coach-hole', ov), tip = $('.coach-tip', ov);
+    const r = el.getBoundingClientRect(), pad = 6;
+    const sig = [k, r.left, r.top, r.width, r.height, innerWidth, innerHeight].map(Math.round).join();
+    if (sig === last) return; last = sig;
     Object.assign(hole.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
-    $('p', tip).textContent = steps[k][1];
-    $('.coach-n', tip).textContent = `${k + 1} / ${steps.length}`;
-    $('.coach-next', tip).textContent = k === steps.length - 1 ? 'Got it' : 'Next';
     const below = r.top + r.height / 2 < innerHeight / 2;
     tip.classList.toggle('up', !below);
     const tw = Math.min(300, innerWidth - 32), left = Math.max(16, Math.min(innerWidth - tw - 16, r.left + r.width / 2 - tw / 2));
     Object.assign(tip.style, { width: tw + 'px', left: left + 'px', top: below ? r.bottom + pad + 14 + 'px' : '', bottom: below ? '' : innerHeight - r.top + pad + 14 + 'px' });
     tip.style.setProperty('--ax', Math.max(18, Math.min(tw - 18, r.left + r.width / 2 - left)) + 'px');
+    ov.classList.add('ready');
   };
   const show = () => {
     const el = document.querySelector(steps[k][0]);
     if (!el) { if (++k < steps.length) return show(); return end(); }
-    const r = el.getBoundingClientRect();
-    if (r.top < 70 || r.bottom > innerHeight - 90) { el.scrollIntoView({ block: 'center' }); setTimeout(place, 260); } else place();
+    $('p', tip).textContent = steps[k][1];
+    $('.coach-n', tip).textContent = `${k + 1} / ${steps.length}`;
+    $('.coach-next', tip).textContent = k === steps.length - 1 ? 'Got it' : 'Next';
+    // Only scroll things that live in the page; the header and tab bar are always on screen.
+    const r = el.getBoundingClientRect(), fixed = el.closest('.top, .tabbar, .transport');
+    if (!fixed && (r.top < 80 || r.bottom > innerHeight - 100)) scrollTo({ top: scrollY + r.top + r.height / 2 - innerHeight / 2, behavior: 'smooth' });
+    last = '';
   };
   $('.coach-next', ov).onclick = () => { if (++k >= steps.length) return end(); show(); };
   $('.coach-skip', ov).onclick = end;
-  window.addEventListener('resize', place);
-  show();
+  show(); place();
 }
 function openTour() { store.set('coach:track:' + ((S.space && S.space.id) || 'abba'), false); go(''); setTimeout(() => coach('home', true), 400); }
 
@@ -1453,7 +1508,12 @@ async function viewWho() {
     <div class="people">${S.members.filter(m => !m.guest).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(instrumentsOf(m.id).join(', ')) || (m.ready ? '&nbsp;' : 'hasn’t joined yet')}</span></button>`).join('')}</div>
     <label class="field">Not on the list?</label>
     <div class="tempo-row"><input id="newMe" type="text" placeholder="Your name"><button class="btn primary" id="joinMe">Add me</button></div>
+    <div class="who-out"><button class="btn block" id="lookOnly">Just looking</button>
+      <p class="small faint serif">See the tracks, listen, and help with the space’s settings without joining it.</p>
+      ${Spaces.list().length > 1 ? '<button class="sug" id="whoSwitch">⇄ Back to another space</button>' : ''}</div>
   </div></div>`;
+  $('#lookOnly').onclick = () => { Spaces.setMe(LOOK); go(''); route(); };
+  const sw = $('#whoSwitch'); if (sw) sw.onclick = spacesSheet;
   $('#app').querySelectorAll('.person').forEach(b => b.onclick = () => { Spaces.setMe(b.dataset.id); route(); });
   const join = async () => {
     const name = $('#newMe').value.trim(); if (!name) return $('#newMe').focus();
@@ -1751,7 +1811,7 @@ function viewHome() {
     }
     $('#app').innerHTML = spaceTop() +
       `<div class="wrap home">
-        <div class="hello"><div><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} · ${members.length} ${members.length === 1 ? 'person' : 'people'}${guests.length ? ` · ${guests.length} guest${guests.length > 1 ? 's' : ''}` : ''}</div></div><span class="ar">شجرة</span></div>
+        <div class="hello"><div><h2>${looking() ? 'Just looking' : 'Ahlan' + (me ? ', ' + esc(me.name) : '')}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} · ${members.length} ${members.length === 1 ? 'person' : 'people'}${guests.length ? ` · ${guests.length} guest${guests.length > 1 ? 's' : ''}` : ''}</div></div><span class="ar">شجرة</span></div>
         <div class="people-row">${people}</div>
         ${body}
         <div class="concept">
@@ -1769,7 +1829,10 @@ function viewHome() {
     $('#app').querySelectorAll('[data-who]').forEach(b => b.onclick = () => { S.homeFilter = S.homeFilter === b.dataset.who ? null : b.dataset.who; render(); });
   };
   render();
-  loadState().then(() => { render(); if (!$('.scrim')) setTimeout(() => coach('home'), 300); }).catch(e => toast(e.message));
+  loadState().then(() => {
+    render(); if (!$('.scrim')) setTimeout(() => coach('home'), 300);
+    if (!S.linkChecked && Spaces.list().length > 1) { S.linkChecked = true; linkBox(document.createElement('div'), () => { if (location.hash.replace(/^#\/?/, '') === '') render(); }); }
+  }).catch(e => toast(e.message));
   poll(() => loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === '') render(); }));
 }
 
@@ -1816,6 +1879,7 @@ function composeHtml(lane) {
     ${lane !== 'transition' ? `<button onclick="editBeat('${lane}')">${ICON.rhythm}Rhythm</button>` : ''}
     <button onclick="openNote('${lane}')">${ICON.note}Note</button>
     <button onclick="openLink('${lane}')">${ICON.link}Link</button>
+    <button onclick="shelfPicker('${lane}')">${ICON.shelf}Shelf</button>
   </div>`;
 }
 
@@ -2082,8 +2146,18 @@ function ideaMenu(id) {
     <label class="field">Move to</label>
     <div class="sugs">${lanes.map(l => `<button class="sug" style="color:${l.c}" data-move="${l.key}">${l.name}</button>`).join('')}</div>
     <label class="field">${i.kind === 'text' ? 'Note' : 'Caption'}</label><textarea id="cap" rows="2">${esc(i.body)}</textarea>
+    ${i.kind === 'audio' || i.kind === 'midi' ? `<button class="btn block" id="toShelf" style="margin-top:14px">${ICON.shelf} Put on my shelf</button><p class="small faint" style="font-style:italic;margin:6px 0 0">To reuse it in other tracks and spaces. It stays here too.</p>` : ''}
     <div class="actions"><button class="btn danger" id="del">Delete</button><button class="btn primary" id="save">Save</button></div>`, root => {
     wirePlace(root, i);
+    const ts = $('#toShelf', root); if (ts) ts.onclick = async () => {
+      const sec = sections().find(x => x.id === i.section_id);
+      const d = parseData(i), bpm = pulseOf(sec);
+      // Keep the pulse with it, so it can be stretched to another track's pulse later.
+      let data = i.data || '';
+      if (i.kind === 'audio' && !(d.loop && d.loop.bpm)) data = JSON.stringify({ ...d, bpm });
+      try { await api('/shelf', { method: 'POST', body: { kind: i.kind, audio_id: i.audio_id, audio_mime: i.audio_mime, duration: i.duration, data, sound_id: i.sound_id || '', title: i.body || `${S.track.title} · ${sec ? sec.name : ''}` } }); S.shelf = null; closeSheet(); toast('On your shelf'); }
+      catch (e) { toast(e.message); }
+    };
     root.querySelectorAll('[data-move]').forEach(b => b.onclick = async () => {
       closeSheet();
       try { await api('/ideas/' + id, { method: 'PATCH', body: { layer: b.dataset.move } }); i.layer = b.dataset.move; renderTrack(); } catch (e) { toast(e.message); }
@@ -2287,6 +2361,7 @@ const CURVES = [
 ];
 
 function newTrack() {
+  if (needMe()) return;
   const W = { step: 0, vary: { maqam: false, pulse: false, meter: false }, title: '', idea: '', seeds: [], seedText: '', by: S.me ? [S.me] : [], genre: '', maqam: '', tonic: '', tempo: '', meter: [4, 1],
     shape: 'song', secs: SHAPES[2].names.map(n => ({ name: n, energy: 0 })), curve: '' };
   const STEPS = ['The idea', 'What it’s built on', 'Where it lives', 'Its shape', 'Each section', 'Plant it'];
@@ -3202,9 +3277,11 @@ function stopEverything() { Player.stop(); Beat.stop(); stopAll(); Takes.stopAll
 const laneTitle = lane => {
   const { sec } = curView();
   if (lane === 'transition') { const nx = nextSection(sec); return `${esc(sec.name)} → ${esc(nx ? nx.name : '')}`; }
+  if (lane === 'shelf') return 'Your shelf';
   return `${LAYER[lane].name} · ${esc(sec.name)}`;
 };
 function openNote(lane) {
+  if (needMe()) return;
   const l = laneOf(lane);
   sheet(`<h3 style="color:${l.c}">Note · ${laneTitle(lane)}</h3><textarea id="txt" placeholder="${lane === 'transition' ? 'e.g. everyone stops on 4, oud leads back in' : 'e.g. half-time feel, leave space after the 3rd bar'}"></textarea>
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Post</button></div>`, root => {
@@ -3214,6 +3291,7 @@ function openNote(lane) {
 }
 
 function openLink(lane) {
+  if (needMe()) return;
   const l = laneOf(lane);
   sheet(`<h3 style="color:${l.c}">Link · ${laneTitle(lane)}</h3><label class="field">Link</label><input id="url" type="url" inputmode="url" placeholder="https://youtube.com/…">
     <label class="field">What to listen for</label><textarea id="txt" rows="2" placeholder="e.g. the bass under the chorus at 1:20"></textarea>
@@ -3231,6 +3309,13 @@ function openLink(lane) {
 async function postIdea(payload, root) {
   const btn = $('#save', root);
   if (btn) btn.disabled = true;
+  if (S.track && S.track.id === 'shelf') {
+    try {
+      await api('/shelf', { method: 'POST', body: { kind: payload.kind, audio_id: payload.audio_id, audio_mime: payload.audio_mime, duration: payload.duration, data: payload.data || '', sound_id: payload.sound_id || '', title: (payload.body || '').trim() } });
+      closeSheet(); viewShelf(); toast('On your shelf');
+      return true;
+    } catch (e) { toast(e.message); if (btn) btn.disabled = false; return false; }
+  }
   const { sec } = curView();
   try {
     const idea = await api(`/sections/${sec.id}/ideas`, { method: 'POST', body: payload });
@@ -3300,6 +3385,7 @@ function pickMime() {
 }
 
 function openRecorder(lane) {
+  if (needMe()) return;
   const l = laneOf(lane);
   const mime = pickMime();
   if (mime === null) return toast('This browser can’t record audio');
@@ -3522,6 +3608,7 @@ function toggleTake(id) {
 }
 
 function openMidi(lane) {
+  if (needMe()) return;
   const l = laneOf(lane);
   stopEverything();
   const bk = backingHtml(lane);
@@ -3797,6 +3884,132 @@ async function spacesSheet() {
     }).catch(() => { $('#spList', root).innerHTML = ''; toast('Couldn’t load the spaces'); });
   });
 }
+/* ---------- your shelf ---------- */
+// Recordings that belong to you rather than a track. They travel with you across spaces
+// and drop into any layer of any track as a take; the recording itself is shared, not copied.
+async function loadShelf() { const d = await api('/shelf'); S.shelf = d; return d; }
+const shelfIdea = x => ({ ...x, layer: 'shelf', section_id: 'shelf', author_id: S.me, starred: 0, url: '', body: x.title || x.body || '' });
+function shelfMeta(x) {
+  const d = x.kind === 'midi' ? parseTake(x) : parseData(x), lp = x.kind === 'midi' ? d.loop : d.loop && d.loop.bars;
+  const bpm = x.kind === 'midi' ? d.bpm : (d.loop && d.loop.bpm) || d.bpm;
+  return [x.kind === 'midi' ? `MIDI · ${d.notes.length} notes` : fmtTime(x.duration), lp ? `↻ ${plural(lp, 'bar')}` : 'once', bpm ? bpm + ' bpm' : ''].filter(Boolean).join(' · ');
+}
+function shelfTrack(items) {
+  const cfg = store.get('shelfCfg', { bpm: 90, n: 4, sub: 1 });
+  return { id: 'shelf', title: 'Your shelf', tempo: cfg.bpm, chords: '', notes: '', updated_at: 0,
+    sections: [{ id: 'shelf', track_id: 'shelf', name: 'Shelf', position: 0, meter_n: cfg.n, meter_sub: cfg.sub, bars: 8, tempo: null, chords: null, moves: '' }],
+    holders: [], beats: [], ideas: items.map(shelfIdea) };
+}
+function viewShelf() {
+  const render = () => {
+    const d = S.shelf || { items: [], uses: [] }, cfg = store.get('shelfCfg', { bpm: 90, n: 4, sub: 1 });
+    S.track = shelfTrack(d.items); S.view.shelf = { sid: 'shelf' };
+    const usesOf = id => d.uses.filter(u => u.shelf_id === id);
+    $('#app').innerHTML = topBar('Your shelf', backBtn('me')) + `<div class="wrap shelf">
+      <p class="lede serif muted" style="font-style:italic;margin:6px 0 14px">Riffs, loops and lines that aren’t in a track yet. They go wherever you go, in every space, and drop into any track from the Shelf button in a layer.</p>
+      <div class="shelf-rec">
+        <div class="shelf-cfg"><span class="snd-k">pulse</span><div class="tempo-row"><input id="shBpm" type="number" inputmode="numeric" value="${cfg.bpm}"><button class="btn tap" id="shTap" type="button">Tap</button></div>
+          <span class="snd-k">time</span><div class="sugs" id="shMeter">${METERS.slice(0, 6).map(([a, b, l]) => `<button class="sug${a === cfg.n && b === cfg.sub ? ' on' : ''}" data-m="${a}/${b}">${l}</button>`).join('')}</div></div>
+        <div class="compose"><button class="rec" onclick="openRecorder('shelf')">${ICON.mic}Record</button>${HAS_MIDI ? `<button onclick="openMidi('shelf')">${ICON.keys}MIDI</button>` : ''}</div>
+      </div>
+      <div class="list-head"><b>On the shelf</b><span class="small muted">${d.items.length}</span></div>
+      ${d.items.length ? S.track.ideas.map(i => {
+        const u = usesOf(i.id), here = u.filter(x => !x.elsewhere), away = u.length - here.length;
+        const snd = i.sound_id && soundLabel(i.sound_id);
+        return `<div class="idea shelf-item"><div class="idea-top"><b class="sh-title">${esc(i.title || 'Untitled')}</b>${snd ? `<span class="snd-tag">${esc(snd)}</span>` : ''}<span class="sp"></span><button class="kebab" aria-label="More" data-shm="${esc(i.id)}">⋯</button></div>
+          ${i.kind === 'audio' ? `<div class="player" data-audio="${esc(i.id)}"><button class="play" aria-label="Play" onclick="togglePlay('${esc(i.id)}')">${ICON.play}</button><div class="bar"><i></i></div><span class="time">${fmtTime(i.duration)}</span></div>`
+            : `<div class="player" data-take="${esc(i.id)}"><button class="play" aria-label="Play" onclick="toggleTake('${esc(i.id)}')">${ICON.play}</button><span class="small muted">${esc(shelfMeta(i))}</span></div>${rollSvg(parseTake(i), i.id)}`}
+          <div class="sh-meta small muted">${i.kind === 'audio' ? esc(shelfMeta(i)) + ' · ' : ''}${ago(i.created_at)}${u.length ? ` · used in ${here.map(x => `<button class="link-btn" data-go="${esc(x.track_id)}|${esc(x.section_id)}">${esc(x.title)}${x.section ? ' · ' + esc(x.section) : ''}</button>`).join(', ')}${away ? `${here.length ? ', ' : ''}${plural(away, 'place')} in your other spaces` : ''}` : ''}</div></div>`;
+      }).join('') : `<div class="empty small">Nothing yet. Record something, or open any take in a track and choose “Put on my shelf”.</div>`}
+    </div>` + tabBar('me');
+    wireTabs();
+    const saveCfg = c => { store.set('shelfCfg', { ...store.get('shelfCfg', { bpm: 90, n: 4, sub: 1 }), ...c }); };
+    const bi = $('#shBpm'); bi.onchange = () => { const v = Math.max(30, Math.min(300, +bi.value || 90)); saveCfg({ bpm: v }); render(); };
+    tapTempo($('#shTap'), bi); bi.addEventListener('input', () => { if (+bi.value >= 30) saveCfg({ bpm: +bi.value }); S.track.tempo = +bi.value || 90; });
+    $('#app').querySelectorAll('#shMeter .sug').forEach(b => b.onclick = () => { const [n, sub] = b.dataset.m.split('/').map(Number); saveCfg({ n, sub }); render(); });
+    $('#app').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { const [tid, sid] = b.dataset.go.split('|'); S.view[tid] = { sid }; S.track = null; go('t/' + tid); });
+    $('#app').querySelectorAll('[data-shm]').forEach(b => b.onclick = () => shelfMenu(b.dataset.shm, render));
+  };
+  if (S.shelf) render(); else $('#app').innerHTML = topBar('Your shelf', backBtn('me')) + '<div class="wrap"><p class="muted">Loading…</p></div>';
+  loadShelf().then(() => { if (location.hash.replace(/^#\/?/, '') === 'shelf' && !$('.scrim')) render(); }).catch(e => toast(e.message));
+}
+function shelfMenu(id, after) {
+  const x = S.shelf.items.find(y => y.id === id);
+  sheet(`<h3>On your shelf</h3><label class="field">Name</label><input id="shT" type="text" value="${esc(x.title)}" placeholder="e.g. the 7/8 riff">
+    <div class="actions"><button class="btn danger" id="del">Remove</button><button class="btn primary" id="ok">Save</button></div>`, root => {
+    $('#ok', root).onclick = async () => { try { const r = await api('/shelf/' + id, { method: 'PATCH', body: { title: $('#shT', root).value } }); Object.assign(x, r); closeSheet(); after(); } catch (e) { toast(e.message); } };
+    $('#del', root).onclick = () => confirmSheet('Take it off your shelf?', 'Tracks that already use it keep their take.', 'Remove', async () => {
+      await api('/shelf/' + id, { method: 'DELETE' }); S.shelf.items = S.shelf.items.filter(y => y.id !== id); after();
+    });
+  });
+}
+// From a layer in a track: pick something off your shelf and drop it in as a take.
+async function shelfPicker(lane) {
+  if (needMe()) return;
+  const { sec } = curView();
+  let preview = null;
+  const stopPv = () => { if (preview) { preview.pause(); preview = null; } Takes.stopAll(); document.querySelectorAll('.shp-play.on').forEach(b => { b.classList.remove('on'); b.innerHTML = ICON.play; }); };
+  const s = sheet(`<h3 style="color:${laneOf(lane).c}">From your shelf</h3><p class="lede">Into ${laneTitle(lane)}. It plays at this track’s pulse.</p><div class="menu" id="shp"><p class="small faint" style="text-align:center">Loading…</p></div>`, root => {
+    const draw = () => {
+      const items = (S.shelf && S.shelf.items) || [];
+      $('#shp', root).innerHTML = items.length ? items.map(x => `<div class="menu-item shp"><button class="shp-play" data-pv="${esc(x.id)}" aria-label="Hear it">${ICON.play}</button><span><b>${esc(x.title || 'Untitled')}</b><span class="small muted">${esc(shelfMeta(x))}${x.sound_id && soundLabel(x.sound_id) ? ' · ' + esc(soundLabel(x.sound_id)) : ''}</span></span><button class="btn sm primary" data-use="${esc(x.id)}">Use</button></div>`).join('')
+        : `<div class="empty small">Your shelf is empty. Record onto it from You → Your shelf, or put any take there from its ⋯ menu.</div>`;
+      root.querySelectorAll('[data-pv]').forEach(b => b.onclick = async () => {
+        const on = b.classList.contains('on'); stopPv(); if (on) return;
+        const x = items.find(y => y.id === b.dataset.pv); b.classList.add('on'); b.innerHTML = ICON.stop;
+        if (x.kind === 'midi') return Takes.play(shelfIdea(x));
+        try { preview = new Audio(await audioUrl(x)); preview.onended = stopPv; preview.play(); } catch (e) { toast(e.message); }
+      });
+      root.querySelectorAll('[data-use]').forEach(b => b.onclick = async () => {
+        stopPv(); const x = items.find(y => y.id === b.dataset.use);
+        let data = x.data || '';
+        if (x.kind === 'audio') { const d = parseData({ data }); if (d.loop && d.place && d.place.bar > (sec.bars || 8)) { delete d.place; data = JSON.stringify(d); } }
+        b.disabled = true;
+        await postIdea({ layer: lane, kind: x.kind, audio_id: x.audio_id, audio_mime: x.audio_mime, duration: x.duration, data, sound_id: x.sound_id || '', body: x.title || '', shelf_id: x.id }, root);
+      });
+    };
+    draw();
+    loadShelf().then(draw).catch(e => toast(e.message));
+  });
+  s._onclose = stopPv;
+}
+
+// Phones that hold several spaces can tell that you're the same person in each, and bring your things together.
+async function linkCandidates() {
+  const here = S.members.find(m => m.id === S.me); if (!here) return [];
+  const pid = here.person_id || here.id, out = [];
+  for (const c of Spaces.list()) {
+    if (c.key === S.key || !c.me) continue;
+    try {
+      const r = await fetch(`${API}/api/me`, { headers: { 'X-Band-Key': c.key, 'X-Member': c.me } });
+      if (!r.ok) continue;
+      const them = await r.json();
+      if (them.person_id !== pid && !store.get(`nolink:${pid}:${them.person_id}`, false)) out.push({ ...them, key: c.key, space: c.name });
+    } catch {}
+  }
+  return out;
+}
+async function linkBox(el, after) {
+  if (!el) return;
+  const all = await linkCandidates(); if (!all.length) return;
+  const me = S.members.find(m => m.id === S.me);
+  // Same name in both spaces: that's you, link without asking. Only a different name gets the question.
+  const same = all.filter(x => sameName(x.name, me.name)), list = all.filter(x => !sameName(x.name, me.name));
+  if (same.length) {
+    for (const x of same) { try { await api('/people/link', { method: 'POST', body: { key: x.key, member_id: x.id } }); } catch {} }
+    await loadState(); S.shelf = null; toast(`Your instruments, sounds and shelf now show in ${same.map(x => x.space).join(', ')} too`);
+    if (!list.length) return after();
+  }
+  if (!list.length) return;
+  el.innerHTML = list.map((x, k) => `<div class="link-card"><b>Are you ${esc(x.name)} in ${esc(x.space)} too?</b><p class="small muted serif">Then your instruments, sounds and shelf become one set that shows in both spaces.</p>
+    <div class="sugs"><button class="btn sm primary" data-link="${k}">Yes, that’s me</button><button class="btn sm" data-nolink="${k}">No</button></div></div>`).join('');
+  el.querySelectorAll('[data-link]').forEach(b => b.onclick = async () => {
+    const x = list[+b.dataset.link]; b.disabled = true;
+    try { await api('/people/link', { method: 'POST', body: { key: x.key, member_id: x.id } }); await loadState(); S.shelf = null; toast(`Linked with ${x.space}`); after(); } catch (e) { toast(e.message); b.disabled = false; }
+  });
+  el.querySelectorAll('[data-nolink]').forEach(b => b.onclick = () => { const x = list[+b.dataset.nolink]; store.set(`nolink:${(me.person_id || me.id)}:${x.person_id}`, true); b.closest('.link-card').remove(); });
+}
+
 /* ---------- you, people, space ---------- */
 async function patchMe(body) {
   const m = await api('/members/' + S.me, { method: 'PATCH', body });
@@ -3826,7 +4039,8 @@ function viewWelcome() {
     () => `<div class="wel-hero">${logoOf(S.space) ? logoImg(S.space, 'logo-big') : `<div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>`}<h2>Ahlan, ${esc(me.name)}</h2>
         <p class="lede">Welcome to <b>${esc(spaceName())}</b>. Two quick things so the others know what you bring. Both can change any time.</p></div>
       ${others.length ? `<div class="wel-who">${others.map(m => `<span class="wel-p">${avatar(m)}<span>${esc(m.name)}</span></span>`).join('')}</div>` : ''}
-      ${genresOf().length ? `<p class="small muted serif" style="font-style:italic;text-align:center">${esc(genresOf().join(' · '))}</p>` : ''}`,
+      ${genresOf().length ? `<p class="small muted serif" style="font-style:italic;text-align:center">${esc(genresOf().join(' · '))}</p>` : ''}
+      <div id="linkBox"></div>`,
     () => `<h3>What do you play?</h3><p class="lede">Tap to add. They become one-tap choices when you’re in a line-up.</p>
       <div class="wel-ins">${insOf(S.me).map(i => `<button class="sug on" onclick="instrumentSheet('${esc(S.me)}', '${esc(i.id)}')">${esc(i.name)}</button>`).join('') || '<p class="small faint" style="font-style:italic;margin:0">Nothing yet.</p>'}</div>
       ${quickIns(S.me)}`,
@@ -3841,6 +4055,7 @@ function viewWelcome() {
     ${step < steps.length - 1 ? '<div class="sugs" style="justify-content:center;margin-top:12px"><button class="sug wz-skip" id="wl-skip">Skip for now</button></div>' : ''}
   </div>`;
   wireQuickIns($('#app'), S.me, viewWelcome);
+  if (step === 0) linkBox($('#linkBox'), viewWelcome);
   const back = $('#wl-back'); if (back) back.onclick = () => { S.welStep = step - 1; viewWelcome(); };
   const notme = $('#wl-notme'); if (notme) notme.onclick = () => { Spaces.setMe(''); route(); };
   $('#wl-next').onclick = () => { if (step < steps.length - 1) { S.welStep = step + 1; viewWelcome(); scrollTo(0, 0); } else done(); };
@@ -3849,11 +4064,22 @@ function viewWelcome() {
 
 function viewYou() {
   const render = () => {
-    const me = S.members.find(m => m.id === S.me); if (!me) return route();
+    const me = S.members.find(m => m.id === S.me);
+    if (!me) {
+      $('#app').innerHTML = spaceTop() + `<div class="wrap"><div class="you-hero">${avatar(null, 'xl')}<div class="you-name"><b class="look-t">Just looking</b><span class="small muted serif">in ${esc(spaceName())}. You can listen, look around and change the space’s settings.</span></div></div>
+        <div class="menu" style="margin-top:18px">
+          <button class="menu-item" id="y-pick"><span><b>Pick who I am</b><span class="small muted">to record, write and plant tracks here</span></span></button>
+          <button class="menu-item" onclick="spacesSheet()"><span><b>Back to another space</b><span class="small muted">${plural(Spaces.list().length, 'space')} on this phone</span></span></button>
+        </div></div>` + tabBar('me');
+      wireTabs(); $('#y-pick').onclick = () => { Spaces.setMe(''); route(); };
+      return;
+    }
     const mine = S.tracks.filter(t => t.created_by === S.me);
     const n = insOf(S.me).reduce((k, i) => k + soundsOf(i.id).length, 0);
     $('#app').innerHTML = spaceTop() + `<div class="wrap">
       <div class="you-hero">${avatar(me, 'xl')}<div class="you-name"><input id="yname" type="text" value="${esc(me.name)}" aria-label="Your name"><span class="small muted serif">in ${esc(spaceName())} · ${plural(insOf(S.me).length, 'instrument')} · ${plural(n, 'sound')}</span></div></div>
+      <div id="linkBox"></div>
+      <button class="shelf-card" onclick="go('shelf')"><span class="sc-ic">${ICON.shelf}</span><span><b>Your shelf</b><span class="small muted">${S.shelf ? plural(S.shelf.items.length, 'thing') + ' · ' : ''}riffs and loops to reuse in any track, in any space</span></span><span class="caret">›</span></button>
       <div class="list-head"><b>Instruments &amp; sounds</b><span class="small muted" style="font-style:italic">tap to edit</span></div>
       <div class="card-box">${soundsBlock(S.me)}</div>
       ${quickIns(S.me, true)}
@@ -3867,6 +4093,7 @@ function viewYou() {
       </div>
     </div>` + tabBar('me');
     wireTabs(); wireQuickIns($('#app'), S.me, render);
+    linkBox($('#linkBox'), render);
     const nm = $('#yname');
     nm.onchange = async () => { const v = nm.value.trim(); if (!v) { nm.value = me.name; return; } try { await patchMe({ name: v }); toast('Saved'); } catch (e) { toast(e.message); } };
     nm.onkeydown = e => { if (e.key === 'Enter') nm.blur(); };
@@ -3874,7 +4101,7 @@ function viewYou() {
     $('#y-switch').onclick = () => { Spaces.setMe(''); route(); };
   };
   render();
-  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'me' && !$('.scrim') && document.activeElement.id !== 'yname') render(); }).catch(e => toast(e.message));
+  Promise.all([loadState(), loadShelf().catch(() => null)]).then(() => { if (location.hash.replace(/^#\/?/, '') === 'me' && !$('.scrim') && document.activeElement.id !== 'yname') render(); }).catch(e => toast(e.message));
 }
 
 function viewBand() {
@@ -3961,7 +4188,6 @@ function viewSpace() {
     const rm = $('#slRm'); if (rm) rm.onclick = e => { e.preventDefault(); confirmSheet('Remove the logo?', '', 'Remove', async () => { await api('/space/logo', { method: 'DELETE' }); S.space = { ...S.space, logo_v: null }; render(); }); };
     const setG = async list => { try { await saveGenres(list); render(); } catch (e) { toast(e.message); } };
     $('#app').querySelectorAll('[data-gx]').forEach(b => b.onclick = () => setG(g.filter((_, i) => i !== +b.dataset.gx)));
-    $('#app').querySelectorAll('[data-gi]').forEach(b => b.onclick = () => setG([...g, b.dataset.gi]));
     const gn = $('#gnew');
     const addG = async () => { const v = gn.value.trim(); if (!v) return gn.focus(); if (g.some(x => x.toLowerCase() === v.toLowerCase())) return toast('Already there'); await setG([...g, v]); $('#gnew').focus(); };
     $('#gadd').onclick = addG; gn.onkeydown = e => { if (e.key === 'Enter') addG(); };
