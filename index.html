@@ -4207,8 +4207,8 @@ function viewProjects() {
 // Creating one follows the band's template: philosophy first, then its shape, who directs it, how it comes out.
 function newProject(seedTracks, after) {
   if (needMe()) return;
-  const W = { step: 0, name: '', philosophy: '', oneline: '', scale: '', date: '', director: S.me, format: '', production: '' };
-  const STEPS = ['Philosophy', 'Its shape', 'Who directs it', 'How it comes out'];
+  const W = { step: 0, name: '', philosophy: '', oneline: '', scale: '', date: '', director: S.me, genres: [] };
+  const STEPS = needsBuyin() ? ['Philosophy', 'Its shape', 'Who directs it'] : ['Philosophy', 'Its shape'];
   const root = sheet('<div id="npz"></div>');
   const chips = (id, list, cur, attr) => `<div class="sugs" id="${id}">${list.map(([k, l]) => `<button class="sug${cur === k ? ' on' : ''}" data-${attr}="${esc(k)}">${esc(l)}</button>`).join('')}</div>`;
   const stepHtml = () => {
@@ -4219,13 +4219,11 @@ function newProject(seedTracks, after) {
         <label class="field">In one line (optional)</label><input id="np-one" type="text" value="${esc(W.oneline)}" placeholder="how you’d describe it to a friend">`;
       case 1: return `<h3>Its shape</h3><p class="lede">How big is it, and is it aiming at a date?</p>
         ${chips('np-scale', SCALES, W.scale, 'v')}
-        <label class="field">Target date (optional)</label><input id="np-date" type="date" value="${esc(W.date)}">`;
-      case 2: return `<h3>Who directs it</h3><p class="lede">Exactly one person. Not a committee. They draft the decisions, ask the people it affects, then decide and own the result.</p>
+        <label class="field">Target date (optional)</label><input id="np-date" type="date" value="${esc(W.date)}">
+        ${genresOf().length ? `<label class="field">Genres (optional)</label><div class="sugs" id="np-gen">${genresOf().map(g => `<button class="sug${W.genres.includes(g) ? ' on' : ''}" data-g="${esc(g)}">${esc(g)}</button>`).join('')}</div>` : ''}`;
+      default: return `<h3>Who directs it</h3><p class="lede">Exactly one person. Not a committee. They draft the decisions, ask the people it affects, then decide and own the result.</p>
         ${chips('np-dir', bandMembers().map(m => [m.id, m.id === S.me ? 'Me' : m.name]), W.director, 'v')}
-        ${needsBuyin() ? '<p class="small faint serif" style="font-style:italic;margin-top:10px">The band answers two questions before it moves on: do we want to do this, and is this the right director.</p>' : ''}`;
-      default: return `<h3>How it comes out</h3><p class="lede">Decide it early, don’t discover it three rehearsals in.</p>
-        <label class="field">Format</label>${chips('np-fmt', FORMATS, W.format, 'v')}
-        <label class="field">What production does</label>${chips('np-prod', PRODS, W.production, 'v')}`;
+        <p class="small faint serif" style="font-style:italic;margin-top:10px">The band answers two questions before it moves on: do we want to do this, and is this the right director.</p>`;
     }
   };
   const read = () => {
@@ -4239,7 +4237,8 @@ function newProject(seedTracks, after) {
       <div class="actions">${W.step ? '<button class="btn" id="np-back">Back</button>' : '<button class="btn" id="np-cancel">Cancel</button>'}<button class="btn primary" id="np-next">${W.step === STEPS.length - 1 ? 'Create it' : 'Next'}</button></div>
       ${W.step && W.step < STEPS.length - 1 ? '<div class="sugs" style="justify-content:center;margin-top:10px"><button class="sug wz-skip" id="np-skip">Skip the rest, create it</button></div>' : ''}`;
     const tog = (sel, k) => root.querySelectorAll(sel + ' .sug').forEach(b => b.onclick = () => { read(); W[k] = W[k] === b.dataset.v ? '' : b.dataset.v; render(); });
-    tog('#np-scale', 'scale'); tog('#np-dir', 'director'); tog('#np-fmt', 'format'); tog('#np-prod', 'production');
+    tog('#np-scale', 'scale'); tog('#np-dir', 'director');
+    root.querySelectorAll('#np-gen .sug').forEach(b => b.onclick = () => { read(); const g = b.dataset.g; W.genres = W.genres.includes(g) ? W.genres.filter(x => x !== g) : [...W.genres, g]; render(); });
     const back = $('#np-back', root); if (back) back.onclick = () => { read(); W.step--; render(); };
     const cancel = $('#np-cancel', root); if (cancel) cancel.onclick = closeSheet;
     const skip = $('#np-skip', root); if (skip) skip.onclick = () => { read(); create(); };
@@ -4272,18 +4271,16 @@ function projectEdit(p, after) {
     <label class="field">Size</label>${chips('pe-scale', SCALES, P.scale)}
     <label class="field">Target date</label><input id="pe-date" type="date" value="${esc(P.date)}">
     <label class="field">Creative director</label>${chips('pe-dir', bandMembers().map(m => [m.id, m.id === S.me ? 'Me' : m.name]), P.director)}
-    <label class="field">Format</label>${chips('pe-fmt', FORMATS, P.format)}
-    <label class="field">What production does</label>${chips('pe-prod', PRODS, P.production)}
     ${genresOf().length ? `<label class="field">Genres</label>${chips('pe-gen', genresOf().map(g => [g, g]), P.genres)}` : ''}
     <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="pe-ok">Save</button></div>
     <div style="margin-top:18px"><button class="btn danger block" id="pe-del">Delete project</button></div>`, root => {
     const one = (id, k) => root.querySelectorAll(`#${id} .sug`).forEach(b => b.onclick = () => { P[k] = P[k] === b.dataset.v ? '' : b.dataset.v; root.querySelectorAll(`#${id} .sug`).forEach(x => x.classList.toggle('on', x.dataset.v === P[k])); });
-    one('pe-scale', 'scale'); one('pe-dir', 'director'); one('pe-fmt', 'format'); one('pe-prod', 'production');
+    one('pe-scale', 'scale'); one('pe-dir', 'director');
     root.querySelectorAll('#pe-gen .sug').forEach(b => b.onclick = () => { const g = b.dataset.v; P.genres = P.genres.includes(g) ? P.genres.filter(x => x !== g) : [...P.genres, g]; b.classList.toggle('on'); });
     $('#pe-ok', root).onclick = async () => {
       const name = $('#pe-name', root).value.trim(); if (!name) return toast('Give it a name');
       try {
-        const r = await api('/projects/' + p.id, { method: 'PATCH', body: { name, philosophy: $('#pe-phil', root).value.trim(), oneline: $('#pe-one', root).value.trim(), date: $('#pe-date', root).value, scale: P.scale, director: P.director || '', format: P.format, production: P.production, genres: P.genres } });
+        const r = await api('/projects/' + p.id, { method: 'PATCH', body: { name, philosophy: $('#pe-phil', root).value.trim(), oneline: $('#pe-one', root).value.trim(), date: $('#pe-date', root).value, scale: P.scale, director: P.director || '', genres: P.genres } });
         Object.assign(S.projects.find(x => x.id === p.id), r); closeSheet(); after();
       } catch (e) { toast(e.message); }
     };
@@ -4324,8 +4321,7 @@ function viewProject(id) {
         ${p.oneline ? `<p class="pj-one">${esc(p.oneline)}</p>` : ''}</div>
       <div class="pj-facts">
         <div><span class="pf-k">Directed by</span>${dir ? `<b>${avatar(dir, 'xs')} ${esc(dir.id === S.me ? 'You' : dir.name)}</b>` : '<button class="link-btn" id="pjDir">pick one person</button>'}</div>
-        <div><span class="pf-k">Format</span>${p.format ? `<b>${esc(lbl(FORMATS, p.format))}</b>` : '<span class="faint">not decided</span>'}</div>
-        <div><span class="pf-k">Production</span>${p.production ? `<b>${esc(lbl(PRODS, p.production))}</b>` : '<span class="faint">not decided</span>'}</div>
+        <div><span class="pf-k">Tracks</span><b>${list.length}</b></div>
         ${genres.length ? `<div><span class="pf-k">Genres</span><b>${esc(genres.join(', '))}</b></div>` : ''}
       </div>
       <div class="list-head"><b>Stage</b>${aside ? '' : '<span class="small muted">tap to move it</span>'}</div>
