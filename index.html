@@ -982,7 +982,9 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
 @media (min-width: 900px) {
   .pgrid { grid-template-columns: 1fr 1fr; }
   .projects > .pcard.new { max-width: 480px; }
-  .wrap.project > * { max-width: 720px; }
+  .wrap.project { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 36px; align-items: start; }
+  .pj-side { position: sticky; top: 76px; }
+  .pj-main .pj-tabs { margin-top: 4px; }
 }
 
 /* ---------- project conversation ---------- */
@@ -1025,6 +1027,111 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
 
 .pc-more { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); font-size: 18px; }
 .pcard .pc-top { padding-right: 34px; }
+
+/* ---------- project page, collaboration style ---------- */
+.project .pj-hero { margin-top: 4px; padding: 18px; border-radius: 22px; background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--c) 16%, var(--surface)) 0%, var(--surface) 60%); border: 1px solid color-mix(in srgb, var(--c) 30%, var(--line)); }
+.pj-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.stage-btn { display: inline-flex; align-items: center; gap: 4px; padding: 0; }
+.stage-btn .caret { font-size: 10px; color: var(--muted); }
+.pj-title { margin: 12px 0 0; font: 800 26px/1.05 var(--display); font-stretch: 125%; text-transform: uppercase; }
+.pj-quote { margin: 12px 0 0; padding: 0 0 0 14px; border-left: 3px solid var(--c); font: italic 20px/1.38 var(--serif); color: var(--text); }
+.pj-quote.empty { display: block; text-align: left; width: 100%; color: var(--muted); font-size: 17px; border-left-style: dashed; }
+.pj-dir { display: flex; align-items: center; gap: 8px; margin-top: 14px; font: 15px/1.2 var(--serif); color: var(--muted); }
+.pj-dir b { color: var(--text); font-weight: 600; }
+.av.sm { width: 30px; height: 30px; font-size: 11px; }
+.stg-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 16px; }
+.stg-bar i { height: 4px; border-radius: 999px; background: color-mix(in srgb, var(--text) 10%, transparent); }
+.stg-bar i.past { background: color-mix(in srgb, var(--c) 50%, transparent); }
+.stg-bar i.on { background: var(--c); }
+.next { margin-top: 12px; padding: 14px 16px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; }
+.next.hot { border-color: color-mix(in srgb, var(--brand-yellow) 55%, var(--line)); background: color-mix(in srgb, var(--brand-yellow) 7%, var(--surface)); }
+.nx-k { grid-column: 1 / -1; font: 800 9.5px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.next p { margin: 0; font: 16px/1.4 var(--serif); }
+.next .btn { white-space: nowrap; }
+.buyin { margin-top: 12px; padding: 16px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.bi-h { display: flex; align-items: baseline; justify-content: space-between; }
+.bi-h b { font: 800 13px/1 var(--display); font-stretch: 112%; text-transform: uppercase; }
+.bi-h .faint { font: italic 13px/1 var(--serif); }
+.faces { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+.face { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; font: 800 9.5px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+.face .av { width: 40px; height: 40px; font-size: 13px; }
+.face.wait .av { opacity: .45; border-style: dashed; }
+.face i { position: absolute; top: -3px; right: -5px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 800 10px/1 var(--display); font-style: normal; color: #000; }
+.face.yes i { background: var(--brand-green); } .face.no i { background: var(--danger); } .face.unsure i { background: #ff9f43; }
+.face.yes span, .face.no span, .face.unsure span { color: var(--text); }
+.bi-me { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.bi-me p { margin: 0 0 8px; font: 16px/1.3 var(--serif); }
+.bi-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
+.bi-opt { height: 42px; border-radius: 12px; border: 1px solid var(--line); background: #0b0b0b; font: 600 14px/1 var(--serif); color: var(--text); }
+.bi-opt.yes.on { background: var(--brand-green); border-color: var(--brand-green); color: #000; }
+.bi-opt.unsure.on { background: #ff9f43; border-color: #ff9f43; color: #000; }
+.bi-opt.no.on { background: var(--danger); border-color: var(--danger); color: #000; }
+.pj-tabs { display: flex; gap: 22px; margin: 26px 0 14px; border-bottom: 1px solid var(--line); }
+.pj-tab { padding: 0 0 12px; font: 800 11.5px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; color: var(--faint); border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; gap: 6px; }
+.pj-tab span { font: italic 12px/1 var(--serif); text-transform: none; color: var(--faint); }
+.pj-tab.on { color: var(--text); border-color: var(--brand-yellow); }
+/* chat */
+.chat { display: flex; flex-direction: column; gap: 12px; }
+.chat-empty { display: flex; flex-direction: column; gap: 6px; padding: 22px 18px; border-radius: 18px; border: 1px dashed var(--line); text-align: center; }
+.chat-empty b { font: 800 12px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; }
+.chat-empty span { font: italic 16px/1.4 var(--serif); color: var(--muted); }
+.day { text-align: center; margin: 4px 0; }
+.day span { font: 800 9px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); background: var(--bg); padding: 0 10px; }
+.note { align-self: center; text-align: center; max-width: 92%; font: 14px/1.5 var(--serif); color: var(--muted); }
+.note b { font: 800 10px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; color: var(--text); }
+.note .stage-pill { vertical-align: 1px; }
+.thread { display: flex; flex-direction: column; gap: 8px; }
+.msg { display: flex; gap: 10px; align-items: flex-start; }
+.msg.reply { margin-left: 40px; }
+.msg-c { flex: 1; min-width: 0; padding: 10px 14px 8px; border-radius: 4px 18px 18px 18px; background: var(--surface); border: 1px solid var(--line); }
+.msg.mine .msg-c { background: #16140c; border-color: color-mix(in srgb, var(--brand-yellow) 22%, var(--line)); }
+.msg.question .msg-c { border-color: color-mix(in srgb, #3b8bff 50%, var(--line)); }
+.msg.concern .msg-c { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
+.thread.open .msg.question .msg-c { box-shadow: 0 0 0 3px color-mix(in srgb, #3b8bff 14%, transparent); }
+.msg.reply .msg-c { border-radius: 18px; }
+.msg-h { display: flex; align-items: center; gap: 8px; }
+.msg-h b { font: 800 11px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+.msg-h .faint { font: italic 12px/1 var(--serif); margin-left: auto; }
+.msg-k { font: 700 10px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+.msg-k.question { color: #7fb0ff; } .msg-k.concern { color: #ff8a80; }
+.msg-del { color: var(--faint); font-size: 11px; width: 20px; height: 20px; }
+.msg-b { margin: 6px 0 0; font: 16px/1.45 var(--serif); white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg-f { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.agree { height: 26px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; display: inline-flex; align-items: center; gap: 4px; opacity: .7; }
+.agree span { font: 700 11px/1 var(--display); }
+.agree.on { opacity: 1; border-color: var(--brand-yellow); background: color-mix(in srgb, var(--brand-yellow) 15%, transparent); }
+.agree-who { font: italic 12px/1 var(--serif); }
+.msg-reply { margin-left: auto; font: italic 13px/1 var(--serif); color: var(--muted); text-decoration: underline; }
+.composer2 { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom)); margin-top: 16px; padding: 10px; border-radius: 22px; background: color-mix(in srgb, #121212 94%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.5); z-index: 3; }
+.c-kinds { display: flex; gap: 6px; margin-bottom: 8px; }
+.c-kind { height: 28px; padding: 0 10px; border-radius: 999px; font: 600 13px/1 var(--serif); color: var(--muted); border: 1px solid transparent; }
+.c-kind.on { color: var(--text); background: var(--surface-2); border-color: var(--line); }
+.c-reply { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 4px 8px; font: italic 13px/1.3 var(--serif); color: var(--muted); }
+.c-row { display: flex; align-items: flex-end; gap: 8px; }
+.c-row textarea { flex: 1; min-height: 42px; max-height: 160px; resize: none; border-radius: 16px; padding: 10px 14px; font-size: 16px; line-height: 1.35; }
+.c-send { width: 42px; height: 42px; flex: none; border-radius: 50%; background: var(--brand-yellow); color: #000; display: grid; place-items: center; }
+.c-send svg { width: 20px; height: 20px; }
+.c-send[disabled] { opacity: .5; }
+/* project cards */
+.pc-last { display: flex; align-items: center; gap: 4px; padding-top: 10px; border-top: 1px solid var(--line); font: italic 13.5px/1.3 var(--serif); color: var(--muted); }
+.pc-last .av.xs { margin-right: -6px; box-shadow: 0 0 0 2px var(--surface); }
+.pc-last .pl-t { margin-left: 12px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pc-new { font: 800 9px/1 var(--display); font-style: normal; text-transform: uppercase; letter-spacing: .06em; color: #000; background: var(--brand-yellow); padding: 3px 6px; border-radius: 999px; }
+@media (min-width: 900px) { .composer2 { bottom: calc(80px + env(safe-area-inset-bottom)); } }
+
+.pc-quote { margin: 0; padding-left: 12px; border-left: 3px solid var(--c); font: italic 17px/1.4 var(--serif); color: var(--text); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.pc-cta { font: 800 10px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; color: var(--brand-yellow); }
+.pc-faces { display: inline-flex; gap: 3px; }
+.mini { position: relative; }
+.mini.wait .av { opacity: .4; border-style: dashed; }
+.mini.yes .av { box-shadow: 0 0 0 2px var(--brand-green); }
+.mini.no .av { box-shadow: 0 0 0 2px var(--danger); }
+.mini.unsure .av { box-shadow: 0 0 0 2px #ff9f43; }
+.pc-stats { display: flex; gap: 16px; flex-wrap: wrap; font: 14px/1 var(--serif); color: var(--muted); }
+.pc-stats b { font: 800 18px/1 var(--display); color: var(--text); margin-right: 2px; }
+.stg-bar.sm { margin-top: 2px; }
+.pcard.st-done, .pcard.st-parked, .pcard.st-notadopted, .pcard.st-outside { padding: 14px 16px; }
+.pcard.st-buyin:not(.ask) { border-color: color-mix(in srgb, #ff9f43 30%, var(--line)); }
 </style>
 </head>
 <body>
@@ -4231,33 +4338,60 @@ function projectMenu(id) {
     }) },
   ]);
 }
+function lastLine(p) {
+  const l = p.talk.last, who = firstName(l.by), when = ago(l.at);
+  const what = { question: `asked “${l.body}”`, concern: `raised a concern`, answer: `answered “${l.body}”`, opinion: `said “${l.body}”`, vote: 'answered the buy-in', stage: 'moved the stage', director: 'changed the director' }[l.kind] || 'was here';
+  return `${who} ${what} · ${when}`;
+}
+const daysTo = d => { if (!d) return null; const x = new Date(d + 'T12:00:00'); return Math.round((x - new Date()) / 864e5); };
+function facesRow(p) {
+  return `<span class="pc-faces">${bandMembers().map(m => { const v = voteOf(p, m.id), mk = !answered(v) ? 'wait' : v.want === 'yes' && v.director_ok === 'yes' ? 'yes' : (v.want === 'no' || v.director_ok === 'no') ? 'no' : 'unsure';
+    return `<span class="mini ${mk}">${avatar(m, 'xs')}</span>`; }).join('')}</span>`;
+}
+// One card, shaped by where the project is: a proposal reads like a pitch, a vote shows faces, active work shows progress.
 function projectCard(p) {
-  const dir = S.members.find(m => m.id === p.director), b = p.stage === 'buyin' && needsBuyin() ? buyinSum(p) : null;
-  return `<button class="pcard${waitingOnMe(p) ? ' ask' : ''}" onclick="go('p/${esc(p.id)}')">
-    <span class="kebab pc-more" role="button" tabindex="0" aria-label="Project options" onclick="event.stopPropagation(); projectMenu('${esc(p.id)}')">⋯</span>
-    <div class="pc-top">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pc-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
-    <b class="pc-name">${esc(p.name)}</b>
-    ${p.philosophy ? `<p class="pc-phil">${esc(p.philosophy)}</p>` : p.oneline ? `<p class="pc-phil">${esc(p.oneline)}</p>` : '<p class="pc-phil faint">no philosophy yet</p>'}
-    <div class="pc-foot">${dir ? `${avatar(dir, 'xs')}<span>${esc(dir.id === S.me ? 'you direct' : dir.name + ' directs')}</span>` : '<span class="faint">no director yet</span>'}
-      <span class="sp"></span>${p.track_ids.length ? `<span class="faint">${plural(p.track_ids.length, 'track')}</span>` : ''}
-      ${p.talk && p.talk.posts ? `<span class="pc-talk">💬 ${p.talk.posts}${p.talk.open ? ` · ${p.talk.open}?` : ''}</span>` : ''}
-      ${b ? `<span class="pc-votes${b.allYes ? ' ok' : b.anyNo ? ' no' : ''}">${b.done}/${b.n} answered</span>` : ''}</div>
-    ${waitingOnMe(p) ? '<span class="pc-ask">Waiting for your answer</span>' : ''}</button>`;
+  const dir = S.members.find(m => m.id === p.director), st = stageOf(p.stage), si = MAIN_STAGES.findIndex(x => x[0] === p.stage);
+  const unseen = (S.seen['p:' + p.id] || 0) < Math.max(p.created_at || 0, (p.talk && p.talk.last && p.talk.last.by !== S.me) ? p.talk.last.at : 0) && p.created_by !== S.me;
+  const more = `<span class="kebab pc-more" role="button" tabindex="0" aria-label="Project options" onclick="event.stopPropagation(); projectMenu('${esc(p.id)}')">⋯</span>`;
+  const meta = `<div class="pc-top">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pc-date">${esc(fmtDate(p.date))}</span>` : ''}${unseen ? '<i class="pc-new">new</i>' : ''}</div>`;
+  const who = dir ? `${avatar(dir, 'xs')}<span>${esc(dir.id === S.me ? 'You' : firstName(dir.id))} ${['philosophy', 'proposal', 'buyin'].includes(p.stage) ? (dir.id === S.me ? 'propose' : 'proposes') : (dir.id === S.me ? 'direct' : 'directs')}</span>` : '<span class="faint">no director yet</span>';
+  const last = p.talk && p.talk.last ? `<div class="pc-last">${(p.talk.people || []).slice(0, 5).map(id => avatar(S.members.find(m => m.id === id), 'xs')).join('')}<span class="pl-t">${esc(lastLine(p))}</span></div>` : '';
+  const talkN = p.talk && p.talk.posts ? `<span class="pc-talk">💬 ${p.talk.posts}${p.talk.open ? ` · ${plural(p.talk.open, 'open question')}` : ''}</span>` : '';
+  let body;
+  if (['philosophy', 'proposal'].includes(p.stage)) {
+    body = `${p.philosophy ? `<blockquote class="pc-quote" style="--c:${st[2]}">${esc(p.philosophy)}</blockquote>` : '<p class="pc-phil faint">Still finding what it’s about.</p>'}
+      <div class="pc-foot">${who}<span class="sp"></span>${talkN}<span class="pc-cta">${unseen ? 'Read it' : 'Open'} →</span></div>`;
+  } else if (p.stage === 'buyin') {
+    const b = buyinSum(p);
+    body = `${p.philosophy ? `<blockquote class="pc-quote" style="--c:${st[2]}">${esc(p.philosophy)}</blockquote>` : ''}
+      <div class="pc-foot">${facesRow(p)}<span class="pc-votes${b.allYes && b.done === b.n ? ' ok' : b.anyNo ? ' no' : ''}">${b.done === b.n && b.allYes ? 'everyone’s in' : `${b.done} of ${b.n} answered`}</span><span class="sp"></span>${talkN}</div>`;
+  } else if (['development', 'rehearsing'].includes(p.stage)) {
+    const dd = daysTo(p.date);
+    body = `${p.oneline ? `<p class="pc-phil">${esc(p.oneline)}</p>` : p.philosophy ? `<p class="pc-phil">${esc(p.philosophy)}</p>` : ''}
+      <div class="pc-stats"><span><b>${p.track_ids.length}</b> ${p.track_ids.length === 1 ? 'track' : 'tracks'}</span>${dd != null ? `<span><b>${dd >= 0 ? dd : '−' + -dd}</b> ${Math.abs(dd) === 1 ? 'day' : 'days'} ${dd >= 0 ? 'to go' : 'past the date'}</span>` : ''}${p.talk && p.talk.open ? `<span><b>${p.talk.open}</b> open ${p.talk.open === 1 ? 'question' : 'questions'}</span>` : ''}</div>
+      <div class="stg-bar sm">${MAIN_STAGES.map(([k, l, c], i) => `<i class="${i < si ? 'past' : i === si ? 'on' : ''}" style="--c:${c}"></i>`).join('')}</div>
+      <div class="pc-foot">${who}<span class="sp"></span>${talkN}</div>`;
+  } else {
+    body = `<div class="pc-foot">${who}<span class="sp"></span><span class="faint">${plural(p.track_ids.length, 'track')}</span></div>`;
+  }
+  return `<button class="pcard st-${p.stage}${waitingOnMe(p) ? ' ask' : ''}" onclick="go('p/${esc(p.id)}')">${more}${meta}<b class="pc-name">${esc(p.name)}</b>${body}${last}
+    ${waitingOnMe(p) ? '<span class="pc-ask">Your turn</span>' : ''}</button>`;
 }
 function viewProjects() {
   const render = () => {
     const ps = S.projects || [];
     const groups = [
-      ['Waiting for your answer', ps.filter(waitingOnMe)],
-      ['Taking shape', ps.filter(p => ['philosophy', 'proposal', 'buyin'].includes(p.stage) && !waitingOnMe(p))],
-      ['Being made', ps.filter(p => ['development', 'rehearsing'].includes(p.stage))],
-      ['Done', ps.filter(p => p.stage === 'done')],
+      ['Your turn', 'the band is waiting for your answer', ps.filter(waitingOnMe)],
+      ['Up for a vote', 'do we want to do these?', ps.filter(p => p.stage === 'buyin' && !waitingOnMe(p))],
+      ['Proposals to read', 'ideas taking shape', ps.filter(p => ['philosophy', 'proposal'].includes(p.stage))],
+      ['We’re working on', 'in development and rehearsal', ps.filter(p => ['development', 'rehearsing'].includes(p.stage))],
+      ['Done', 'performed or released', ps.filter(p => p.stage === 'done')],
     ];
     const aside = ps.filter(p => ASIDE.includes(p.stage));
     $('#app').innerHTML = spaceTop() + `<div class="wrap projects">
       <p class="sh-lede">The bigger things: an album, a show, a series of events, a collaboration. Each starts with its philosophy and has one person directing it${needsBuyin() ? ', and the band says yes before it moves on' : ''}.</p>
       <button class="pcard new" onclick="newProject()"><span class="pn-plus">+</span><b>New project</b><span class="faint">start with what it’s about</span></button>
-      ${groups.filter(([, l]) => l.length).map(([t, l]) => `<div class="list-head"><b>${t}</b><span class="small muted">${l.length}</span></div><div class="pgrid">${l.map(projectCard).join('')}</div>`).join('')}
+      ${groups.filter(([, , l]) => l.length).map(([t, h, l]) => `<div class="list-head"><b>${t}</b><span class="small muted">${h}</span></div><div class="pgrid">${l.map(projectCard).join('')}</div>`).join('')}
       ${aside.length ? `<details class="aside"><summary><b>Set aside</b><span class="small muted">${aside.length} · parked, not adopted, outside the band</span></summary><div class="pgrid">${aside.map(projectCard).join('')}</div></details>` : ''}
       ${!ps.length ? '<div class="empty small">No projects yet.</div>' : ''}
     </div>` + tabBar('projects');
@@ -4352,36 +4486,6 @@ function projectEdit(p, after) {
     });
   });
 }
-// The conversation on a project: what people think, ask and worry about, with buy-in answers and stage moves woven in.
-const POST_KINDS = [['opinion', 'Opinion'], ['question', 'Question'], ['concern', 'Concern']];
-function postEvent(x, p) {
-  const who = x.member_id === S.me ? 'You' : memberName(x.member_id);
-  try {
-    if (x.kind === 'vote') {
-      const v = JSON.parse(x.body), dir = S.members.find(m => m.id === p.director);
-      const say = { yes: 'yes', no: 'no', unsure: 'not sure' };
-      const bits = [v.want && `${say[v.want]} to doing it`, v.director_ok && `${say[v.director_ok]} to ${dir ? (dir.id === x.member_id ? 'directing it themselves' : dir.name + ' directing') : 'the director'}`].filter(Boolean);
-      return `<b>${esc(who)}</b> answered: ${esc(bits.join(', ') || 'cleared their answer')}${v.needs ? `. Needs first: “${esc(v.needs)}”` : ''}`;
-    }
-    if (x.kind === 'stage') { const v = JSON.parse(x.body); return `<b>${esc(who)}</b> moved it to ${stagePill(v.to)}`; }
-    if (x.kind === 'director') return `<b>${esc(who)}</b> made ${esc(memberName(x.body))} the director`;
-  } catch {}
-  return '';
-}
-function conversationHtml(p) {
-  const posts = p.posts || [], top = posts.filter(x => !x.reply_to);
-  const replies = id => posts.filter(x => x.reply_to === id);
-  const bubble = (x, reply) => `<div class="post ${x.kind}${reply ? ' reply' : ''}"><div class="post-h">${avatar(S.members.find(m => m.id === x.member_id), 'xs')}<b>${esc(x.member_id === S.me ? 'You' : memberName(x.member_id))}</b>${reply ? '' : `<span class="post-k ${x.kind}">${esc(lbl(POST_KINDS, x.kind) || 'Answer')}</span>`}<span class="faint">${ago(x.created_at)}</span><span class="sp"></span>${x.member_id === S.me ? `<button class="post-del" data-pdel="${esc(x.id)}" aria-label="Delete">✕</button>` : ''}</div>
-    <p class="post-b">${esc(x.body)}</p></div>`;
-  const items = top.map(x => ['vote', 'stage', 'director'].includes(x.kind)
-    ? `<div class="post-ev">${postEvent(x, p)}<span class="faint">${ago(x.created_at)}</span></div>`
-    : `<div class="thread">${bubble(x)}${replies(x.id).map(r => bubble(r, true)).join('')}
-        ${x.kind === 'question' || replies(x.id).length ? `<button class="post-reply" data-reply="${esc(x.id)}">${x.kind === 'question' ? (replies(x.id).length ? 'Add an answer' : 'Answer this') : 'Reply'}</button>` : `<button class="post-reply" data-reply="${esc(x.id)}">Reply</button>`}</div>`).join('');
-  return `<div class="convo">${items || '<p class="convo-empty">Nothing said yet. Is this worth doing? What would you ask before saying yes?</p>'}
-    <div class="composer"><div class="sugs" id="pkind">${POST_KINDS.map(([k, l], i) => `<button class="sug${i ? '' : ' on'}" data-k="${k}">${l}</button>`).join('')}</div>
-      <textarea id="ptext" rows="2" placeholder="What do you think?"></textarea>
-      <div class="composer-a"><span class="faint" id="preplying"></span><button class="btn primary sm" id="psend">Post</button></div></div></div>`;
-}
 async function patchProject(p, body) {
   const r = await api('/projects/' + p.id, { method: 'PATCH', body });
   Object.assign(S.projects.find(x => x.id === p.id), r);
@@ -4389,131 +4493,230 @@ async function patchProject(p, body) {
 }
 const setProjectTracks = (p, ids) => patchProject(p, { track_ids: ids });
 
+// The conversation on a project, chat style: what people think, ask and worry about,
+// answers under questions, 👍 to agree, and buy-in answers and stage moves woven in as small notes.
+const POST_KINDS = [['opinion', 'Say', '💬', 'What do you think?'], ['question', 'Ask', '❓', 'What do you want to know before saying yes?'], ['concern', 'Concern', '⚠️', 'What worries you about it?']];
+const firstName = id => id === S.me ? 'You' : (memberName(id) || '').split(/\s+/)[0];
+function postEvent(x, p) {
+  const who = firstName(x.member_id);
+  try {
+    if (x.kind === 'vote') {
+      const v = JSON.parse(x.body), dir = S.members.find(m => m.id === p.director);
+      const say = { yes: 'in', no: 'not for it', unsure: 'not sure' };
+      const you = x.member_id === S.me;
+      const bits = [v.want && (v.want === 'yes' ? (you ? 'are in' : 'is in') : v.want === 'no' ? (you ? 'aren’t for doing it' : 'isn’t for doing it') : (you ? 'aren’t sure about doing it' : 'isn’t sure about doing it')),
+        v.director_ok && `${say[v.director_ok] === 'in' ? 'happy' : say[v.director_ok]} with ${dir ? (dir.id === x.member_id ? 'directing it' : firstName(dir.id) + ' directing') : 'the director'}`].filter(Boolean);
+      return `<b>${esc(who)}</b> ${esc(bits.join(', ') || (you ? 'cleared your answer' : 'cleared their answer'))}${v.needs ? ` · needs “${esc(v.needs)}”` : ''}`;
+    }
+    if (x.kind === 'stage') { const v = JSON.parse(x.body); return `<b>${esc(who)}</b> moved it to ${stagePill(v.to)}`; }
+    if (x.kind === 'director') return `<b>${esc(who)}</b> asked ${esc(firstName(x.body))} to direct it`;
+  } catch {}
+  return '';
+}
+function dayLabel(ts) {
+  const d = new Date(ts), t = new Date(); const same = (a, b) => a.toDateString() === b.toDateString();
+  if (same(d, t)) return 'Today'; const y = new Date(t); y.setDate(t.getDate() - 1); if (same(d, y)) return 'Yesterday';
+  return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function conversationHtml(p) {
+  const posts = p.posts || [], reacts = id => posts.filter(x => x.kind === 'react' && x.reply_to === id);
+  const answers = id => posts.filter(x => x.reply_to === id && x.kind === 'answer');
+  const top = posts.filter(x => !x.reply_to && x.kind !== 'react');
+  const bubble = (x, reply) => {
+    const m = S.members.find(y => y.id === x.member_id), mine = x.member_id === S.me, r = reacts(x.id), iAgree = r.some(y => y.member_id === S.me);
+    const k = POST_KINDS.find(y => y[0] === x.kind);
+    return `<div class="msg${mine ? ' mine' : ''}${reply ? ' reply' : ''} ${x.kind}">${reply ? '' : avatar(m, 'sm')}
+      <div class="msg-c"><div class="msg-h"><b>${esc(firstName(x.member_id))}</b>${k && x.kind !== 'opinion' ? `<span class="msg-k ${x.kind}">${k[2]} ${x.kind === 'question' ? 'asks' : 'concern'}</span>` : ''}<span class="faint">${ago(x.created_at)}</span>${mine ? `<button class="msg-del" data-pdel="${esc(x.id)}" aria-label="Delete">✕</button>` : ''}</div>
+        <p class="msg-b">${esc(x.body)}</p>
+        <div class="msg-f"><button class="agree${iAgree ? ' on' : ''}" data-agree="${esc(x.id)}">👍${r.length ? ` <span>${r.length}</span>` : ''}</button>${r.length ? `<span class="faint agree-who">${esc(r.map(y => firstName(y.member_id)).join(', '))}</span>` : ''}
+          ${reply ? '' : `<button class="msg-reply" data-reply="${esc(x.id)}">${x.kind === 'question' ? (answers(x.id).length ? 'Add an answer' : 'Answer') : 'Reply'}</button>`}</div></div></div>`;
+  };
+  let day = '', out = '';
+  for (const x of top) {
+    const d = dayLabel(x.created_at); if (d !== day) { day = d; out += `<div class="day"><span>${d}</span></div>`; }
+    out += ['vote', 'stage', 'director'].includes(x.kind) ? `<div class="note">${postEvent(x, p)}</div>`
+      : `<div class="thread${x.kind === 'question' && !answers(x.id).length ? ' open' : ''}">${bubble(x)}${answers(x.id).map(a => bubble(a, true)).join('')}</div>`;
+  }
+  return `<div class="chat">${out || `<div class="chat-empty"><b>Start the conversation</b><span>Is it worth doing? What would you want to know before saying yes?</span></div>`}</div>`;
+}
+function composerHtml() {
+  return `<div class="composer2"><div class="c-kinds" id="pkind">${POST_KINDS.map(([k, l, e], i) => `<button class="c-kind${i ? '' : ' on'}" data-k="${k}">${e} ${l}</button>`).join('')}</div>
+    <div class="c-reply hidden" id="preplying"></div>
+    <div class="c-row"><textarea id="ptext" rows="1" placeholder="What do you think?"></textarea><button class="c-send" id="psend" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></div></div>`;
+}
+// What the project needs right now, in one sentence and one button.
+function nextStep(p) {
+  const b = buyinSum(p), members = bandMembers(), dir = S.members.find(m => m.id === p.director);
+  const waiting = members.filter(m => !answered(voteOf(p, m.id)));
+  switch (p.stage) {
+    case 'philosophy': return p.philosophy ? { t: 'The philosophy is written. Turn it into a proposal: what exactly are we taking?', a: 'Write the proposal', go: 'tab:proposal', then: 'proposal' }
+      : { t: 'Start with what it’s actually about, before anyone picks up an instrument.', a: 'Write the philosophy', go: 'edit' };
+    case 'proposal': return needsBuyin() ? { t: dir ? `When it’s worth showing, ask the band: do we want this, and is ${dir.id === S.me ? 'you' : firstName(dir.id)} the right director?` : 'Pick one person to direct it, then ask the band.', a: dir ? 'Ask the band' : 'Pick a director', go: dir ? 'stage:buyin' : 'edit' }
+      : { t: 'When it feels right, start making it.', a: 'Start making it', go: 'stage:development' };
+    case 'buyin':
+      if (waitingOnMe(p)) return { t: 'The band is waiting for your answer.', a: 'Answer below', go: 'scroll:buyin', hot: true };
+      if (b.done === b.n && b.allYes) return { t: 'Everyone’s in. It’s a project now.', a: 'Start making it', go: 'stage:development', hot: true };
+      if (b.anyNo) return { t: 'Someone isn’t in yet. Talk it through in the discussion, or park it.', a: 'Open the discussion', go: 'tab:talk' };
+      return { t: `Waiting on ${waiting.map(m => firstName(m.id)).join(', ')}.`, a: '', go: '' };
+    case 'development': return p.track_ids.length ? { t: `${plural(p.track_ids.length, 'track')} in it. When it’s ready for the room, move it to rehearsing.`, a: 'Start rehearsing', go: 'stage:rehearsing' }
+      : { t: 'Bring in its tracks: pick ones you have, or plant new ones.', a: 'Add tracks', go: 'tab:tracks' };
+    case 'rehearsing': return { t: p.date ? `Aiming at ${fmtDate(p.date)}.` : 'Rehearsing. Set a date to aim at?', a: 'Mark it done', go: 'stage:done' };
+    case 'done': return { t: 'Performed or released. Well done.', a: '', go: '' };
+    default: return { t: 'Set aside for now. Nothing is lost.', a: 'Bring it back', go: 'stage:proposal' };
+  }
+}
 function viewProject(id) {
   const render = () => {
     const p = (S.projects || []).find(x => x.id === id);
     if (!p) { $('#app').innerHTML = topBar('Project', backBtn('projects')) + '<div class="wrap"><p class="muted">Not found. It may have been deleted.</p></div>' + tabBar('projects'); wireTabs(); return; }
+    S.seen['p:' + id] = Date.now(); store.set('seen', S.seen);
     const list = p.track_ids.map(tid => S.tracks.find(t => t.id === tid)).filter(Boolean), ids = list.map(t => t.id);
     const dir = S.members.find(m => m.id === p.director);
     const prop = (() => { try { return JSON.parse(p.proposal || '{}'); } catch { return {}; } })();
     const genres = (() => { try { return JSON.parse(p.genres || '[]'); } catch { return []; } })();
-    const si = MAIN_STAGES.findIndex(x => x[0] === p.stage), aside = ASIDE.includes(p.stage);
+    const si = MAIN_STAGES.findIndex(x => x[0] === p.stage), aside = ASIDE.includes(p.stage), st = stageOf(p.stage);
     const b = buyinSum(p), showVotes = needsBuyin() && (p.stage === 'buyin' || (p.votes || []).length);
     const listName = ['show', 'series'].includes(p.scale) ? 'Setlist' : ['album', 'ep'].includes(p.scale) ? 'Tracklist' : 'Tracks';
-    const voteRow = m => {
-      const v = voteOf(p, m.id), mine = m.id === S.me;
-      const ans = (k, q) => mine ? `<div class="vq"><span>${q}</span><div class="vchips">${ANSWERS.map(([a, l]) => `<button class="vchip ${a}${v[k] === a ? ' on' : ''}" data-vote="${k}" data-a="${a}">${l}</button>`).join('')}</div></div>`
-        : `<div class="vq"><span>${q}</span><b class="vans ${v[k] || 'none'}">${v[k] ? lbl(ANSWERS, v[k]) : '—'}</b></div>`;
-      return `<div class="vrow${mine ? ' mine' : ''}"><div class="vwho">${avatar(m, 'xs')}<b>${esc(mine ? 'You' : m.name)}</b>${answered(v) ? '' : '<span class="faint">hasn’t answered</span>'}</div>
-        ${ans('want', 'Do we want to do this?')}${ans('director_ok', dir ? `${dir.id === m.id ? 'You' : esc(dir.name)} directing?` : 'This director?')}
-        ${mine ? `<input class="vneeds" id="vneeds" type="text" value="${esc(v.needs)}" placeholder="what I need first (optional)">` : v.needs ? `<p class="vneed-t">“${esc(v.needs)}”</p>` : ''}</div>`;
-    };
-    $('#app').innerHTML = topBar(esc(p.name), backBtn('projects'), `<button class="icon-btn" aria-label="Edit project" id="pjEdit">${ICON.edit}</button><button class="icon-btn" aria-label="More" onclick="projectMenu('${esc(p.id)}')">${ICON.more}</button>`) + `<div class="wrap project">
-      <div class="pj-head">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pj-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
-      <div class="pj-phil">${p.philosophy ? `<span class="pp-k">Philosophy</span><p>${esc(p.philosophy)}</p>` : `<button class="pp-empty" id="pjPhil"><span class="pp-k">Philosophy</span><span>What is it actually about? Write this before anything else.</span></button>`}
-        ${p.oneline ? `<p class="pj-one">${esc(p.oneline)}</p>` : ''}</div>
-      <div class="pj-facts">
-        <div><span class="pf-k">Directed by</span>${dir ? `<b>${avatar(dir, 'xs')} ${esc(dir.id === S.me ? 'You' : dir.name)}</b>` : '<button class="link-btn" id="pjDir">pick one person</button>'}</div>
-        <div><span class="pf-k">Tracks</span><b>${list.length}</b></div>
-        ${genres.length ? `<div><span class="pf-k">Genres</span><b>${esc(genres.join(', '))}</b></div>` : ''}
-      </div>
-      <div class="list-head"><b>Stage</b>${aside ? '' : '<span class="small muted">tap to move it</span>'}</div>
-      ${aside ? `<div class="aside-now">${stagePill(p.stage)}<button class="sug" data-stage="${p.director ? 'proposal' : 'philosophy'}">Bring it back</button></div>` : `<div class="stepper">${MAIN_STAGES.map(([k, l, c], i) => `<button class="step${i < si ? ' past' : i === si ? ' on' : ''}" style="--c:${c}" data-stage="${k}" title="${esc(l)}"><i></i><span>${STEP_SHORT[k]}</span></button>`).join('')}</div>`}
-      ${aside ? '' : `<div class="sugs aside-btns">${STAGES.slice(6).map(([k, l]) => `<button class="sug ghost" data-stage="${k}">${l}</button>`).join('')}</div>`}
-      ${showVotes ? `<div class="list-head"><b>Band buy-in</b><span class="small muted">${b.done} of ${b.n} answered${b.allYes && b.done === b.n ? ' · everyone’s in' : ''}</span></div>
-        <div class="votes">${bandMembers().sort((a, c) => (c.id === S.me) - (a.id === S.me)).map(voteRow).join('')}</div>
-        ${p.stage === 'buyin' && b.allYes && b.done === b.n ? '<button class="btn primary block" data-stage="development" style="margin-top:12px">Everyone said yes · move to In development</button>' : ''}` : ''}
-      <div class="list-head"><b>Conversation</b><span class="small muted">${(p.talk && p.talk.open) ? plural(p.talk.open, 'open question') : 'opinions, questions, concerns'}</span></div>
-      ${conversationHtml(p)}
-      <div class="list-head"><b>${listName}</b>${list.length > 1 ? '<span class="small muted">↑ ↓ to reorder</span>' : ''}</div>
-      ${`${list.length ? '' : `<div class="empty small">${['show', 'series'].includes(p.scale) ? 'No setlist yet. Pick the tracks you’ll play.' : ['album', 'ep'].includes(p.scale) ? 'No tracks on it yet.' : 'No tracks in it yet.'}</div>`}
-        ${list.length ? `<div class="pj-list">${list.map((t, i) => `<div class="pj-t"><span class="pj-n">${i + 1}</span>
+    const tab = S.pjTab && S.pjTab.id === id ? S.pjTab.t : 'talk';
+    const nx = nextStep(p), talk = (p.posts || []).filter(x => ['opinion', 'question', 'concern', 'answer'].includes(x.kind)).length;
+    const mineV = voteOf(p, S.me), meIn = S.members.some(m => m.id === S.me && !m.guest);
+    const ansBtns = (k, opts) => `<div class="bi-opts">${opts.map(([a, l]) => `<button class="bi-opt ${a}${mineV[k] === a ? ' on' : ''}" data-vote="${k}" data-a="${a}">${l}</button>`).join('')}</div>`;
+    const faces = bandMembers().map(m => { const v = voteOf(p, m.id), mark = !answered(v) ? '' : v.want === 'yes' && v.director_ok === 'yes' ? 'yes' : (v.want === 'no' || v.director_ok === 'no') ? 'no' : 'unsure';
+      return `<span class="face ${mark || 'wait'}" title="${esc(m.name)}">${avatar(m, 'sm')}<i>${{ yes: '✓', no: '✕', unsure: '?' }[mark] || ''}</i><span>${esc(firstName(m.id))}</span></span>`; }).join('');
+    const body = {
+      talk: () => `${conversationHtml(p)}${composerHtml()}`,
+      tracks: () => `${list.length ? `<div class="pj-list">${list.map((t, i) => `<div class="pj-t"><span class="pj-n">${i + 1}</span>
           <button class="pj-open" data-go="${esc(t.id)}"><b>${esc(t.title)}</b><span class="small muted serif">${esc([t.genre, t.tempo ? t.tempo + ' bpm' : '', t.sections.map(x => x.name).join(' → ')].filter(Boolean).join(' · '))}</span></button>
           <span class="pj-act"><button class="icon-btn sm" data-up="${i}" aria-label="Move up"${i ? '' : ' disabled'}>↑</button><button class="icon-btn sm" data-dn="${i}" aria-label="Move down"${i < list.length - 1 ? '' : ' disabled'}>↓</button><button class="icon-btn sm" data-out="${esc(t.id)}" aria-label="Take out of this project">✕</button></span></div>`).join('')}</div>`
-        : ''}
-        <div class="pj-add"><button class="btn" id="pjAdd">${['show', 'series'].includes(p.scale) ? '+ Pick tracks for the set' : '+ Pick existing tracks'}</button><button class="btn" id="pjPlant">+ Plant a new one</button></div>`}
-
-      <div class="list-head"><b>The proposal</b><span class="small muted">tap to write</span></div>
-      <div class="menu prop">${[['taking', 'What exactly are we taking', 'A rhythm, a time signature, a maqam, a melody, a form… and what we deliberately leave out'], ['scope', 'Scope', 'How many rehearsals, aiming at what, what does done mean'], ['open', 'Open questions', 'What you genuinely don’t know and want the band’s input on']]
-        .map(([k, t, h]) => `<button class="menu-item" data-prop="${k}"><span><b>${t}</b><span class="small ${prop[k] ? '' : 'muted'}" style="white-space:pre-wrap">${esc(prop[k] || h)}</span></span></button>`).join('')}</div>
-    </div>` + tabBar('projects');
+        : `<div class="empty small">${['show', 'series'].includes(p.scale) ? 'No setlist yet. Pick the tracks you’ll play.' : 'No tracks in it yet.'}</div>`}
+        <div class="pj-add"><button class="btn" id="pjAdd">${['show', 'series'].includes(p.scale) ? '+ Pick tracks for the set' : '+ Pick existing tracks'}</button><button class="btn" id="pjPlant">+ Plant a new one</button></div>`,
+      proposal: () => `<div class="menu prop">${[['taking', 'What exactly are we taking', 'A rhythm, a time signature, a maqam, a melody, a form… and what we deliberately leave out'], ['scope', 'Scope', 'How many rehearsals, aiming at what, what does done mean'], ['open', 'Open questions', 'What you genuinely don’t know and want the band’s input on']]
+          .map(([k, t, h]) => `<button class="menu-item" data-prop="${k}"><span><b>${t}</b><span class="small ${prop[k] ? '' : 'muted'}" style="white-space:pre-wrap">${esc(prop[k] || h)}</span></span></button>`).join('')}</div>
+        <div class="list-head"><b>Details</b></div>
+        <div class="pj-facts"><div><span class="pf-k">Size</span>${p.scale ? `<b>${esc(lbl(SCALES, p.scale))}</b>` : '<span class="faint">not set</span>'}</div>
+          <div><span class="pf-k">Target</span>${p.date ? `<b>${esc(fmtDate(p.date))}</b>` : '<span class="faint">no date</span>'}</div>
+          <div><span class="pf-k">Genres</span>${genres.length ? `<b>${esc(genres.join(', '))}</b>` : '<span class="faint">none</span>'}</div>
+          <div><span class="pf-k">In one line</span>${p.oneline ? `<b>${esc(p.oneline)}</b>` : '<span class="faint">—</span>'}</div></div>
+        <button class="btn block" id="pjEdit2" style="margin-top:12px">Edit details</button>`,
+    };
+    $('#app').innerHTML = topBar('', backBtn('projects'), `<button class="icon-btn" aria-label="More" onclick="projectMenu('${esc(p.id)}')">${ICON.more}</button>`) + `<div class="wrap project"><div class="pj-side">
+      <div class="pj-hero" style="--c:${st[2]}">
+        <div class="pj-meta"><button class="stage-btn" id="pjStage">${stagePill(p.stage)}<span class="caret">▾</span></button>${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pj-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
+        <h2 class="pj-title">${esc(p.name)}</h2>
+        ${p.philosophy ? `<blockquote class="pj-quote">${esc(p.philosophy)}</blockquote>` : `<button class="pj-quote empty" id="pjPhil">What is it actually about? Tap to write the philosophy.</button>`}
+        <div class="pj-dir">${dir ? `${avatar(dir, 'sm')}<span><b>${esc(dir.id === S.me ? 'You' : dir.name)}</b> ${dir.id === S.me ? 'direct' : 'directs'} it</span>` : '<button class="link-btn" id="pjDir">No director yet · pick one person</button>'}</div>
+        ${aside ? '' : `<div class="stg-bar">${MAIN_STAGES.map(([k, l, c], i) => `<i class="${i < si ? 'past' : i === si ? 'on' : ''}" style="--c:${c}" title="${esc(l)}"></i>`).join('')}</div>`}
+      </div>
+      ${nx.t ? `<div class="next${nx.hot ? ' hot' : ''}"><span class="nx-k">What’s next</span><p>${esc(nx.t)}</p>${nx.a ? `<button class="btn ${nx.hot ? 'primary' : ''} sm" id="pjNext">${esc(nx.a)}</button>` : ''}</div>` : ''}
+      ${showVotes ? `<div class="buyin" id="buyin">
+        <div class="bi-h"><b>Is the band in?</b><span class="faint">${b.done} of ${b.n} answered</span></div>
+        <div class="faces">${faces}</div>
+        ${meIn && p.stage === 'buyin' ? `<div class="bi-me"><p>Do we want to do this?</p>${ansBtns('want', [['yes', 'I’m in 👍'], ['unsure', 'Not sure 🤔'], ['no', 'Not for me']])}
+          <p>${dir ? (dir.id === S.me ? 'You directing it?' : `${esc(firstName(dir.id))} directing it?`) : 'This director?'}</p>${ansBtns('director_ok', [['yes', 'Yes'], ['unsure', 'Not sure'], ['no', 'No']])}
+          <input class="vneeds" id="vneeds" type="text" value="${esc(mineV.needs)}" placeholder="Anything you need first? (optional)"></div>` : ''}
+      </div>` : ''}</div><div class="pj-main">
+      <div class="pj-tabs">${[['talk', 'Discussion', talk], ['tracks', listName, list.length], ['proposal', 'Proposal', '']].map(([k, l, n]) => `<button class="pj-tab${tab === k ? ' on' : ''}" data-pt="${k}">${l}${n !== '' ? `<span>${n}</span>` : ''}</button>`).join('')}</div>
+      <div class="pj-body">${body[tab]()}</div>
+    </div></div>` + tabBar('projects');
     wireTabs();
-    const save = async body => { try { await patchProject(p, body); render(); } catch (e) { toast(e.message); } };
-    $('#pjEdit').onclick = () => projectEdit(p, render);
-    const ph = $('#pjPhil'); if (ph) ph.onclick = () => projectEdit(p, render);
-    const pd = $('#pjDir'); if (pd) pd.onclick = () => projectEdit(p, render);
-    $('#app').querySelectorAll('[data-stage]').forEach(btn => btn.onclick = () => {
-      const k = btn.dataset.stage, to = MAIN_STAGES.findIndex(x => x[0] === k), past = to > MAIN_STAGES.findIndex(x => x[0] === 'buyin');
-      if (k === p.stage) return;
-      if (past && needsBuyin() && !(b.allYes && b.done === b.n) && !(si > 2)) {
-        return confirmSheet(`Move ${esc(p.name)} past buy-in?`, `${b.done} of ${b.n} have answered${b.anyNo ? ', and someone said no' : ''}. Nothing moves past Seeking buy-in without the band agreeing to the idea and the director.`, 'Move it anyway', () => save({ stage: k }));
-      }
+    const save = async bdy => { try { await patchProject(p, bdy); render(); } catch (e) { toast(e.message); } };
+    const setStage = k => {
+      const to = MAIN_STAGES.findIndex(x => x[0] === k), past = to > 2;
+      if (past && needsBuyin() && si <= 2 && !(b.allYes && b.done === b.n))
+        return confirmSheet(`Move ${esc(p.name)} past buy-in?`, `${b.done} of ${b.n} have answered${b.anyNo ? ', and someone isn’t in' : ''}. Nothing moves past Seeking buy-in without the band agreeing to the idea and the director.`, 'Move it anyway', () => save({ stage: k }));
       save({ stage: k });
-    });
+    };
+    $('#pjStage').onclick = () => menuSheet('Where is it?', STAGES.map(([k, l]) => ({ label: (k === p.stage ? '✓ ' : '') + l, hint: { philosophy: 'what it’s about', proposal: 'what exactly we’re taking', buyin: 'asking the band', development: 'making it', rehearsing: 'in the room', done: 'performed or released', parked: 'set aside for now', notadopted: 'the band said no', outside: 'happening, just not as a band project' }[k], run: () => k !== p.stage && setStage(k) })));
+    $('#app').querySelectorAll('[data-pt]').forEach(x => x.onclick = () => { S.pjTab = { id, t: x.dataset.pt }; render(); });
+    const ed = () => projectEdit(p, render);
+    ['#pjPhil', '#pjDir', '#pjEdit2'].forEach(sel => { const el = $(sel); if (el) el.onclick = ed; });
+    const nb = $('#pjNext'); if (nb) nb.onclick = () => {
+      const [k, v] = (nx.go || '').split(':');
+      if (k === 'edit') return ed();
+      if (k === 'stage') return setStage(v);
+      if (k === 'tab') { S.pjTab = { id, t: v === 'proposal' ? 'proposal' : v }; if (nx.then) return save({ stage: nx.then }).then(() => {}); return render(); }
+      if (k === 'scroll') return $('#buyin').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
     $('#app').querySelectorAll('[data-vote]').forEach(btn => btn.onclick = async () => {
       const v = voteOf(p, S.me), next = { want: v.want, director_ok: v.director_ok, needs: ($('#vneeds') || {}).value || v.needs };
       next[btn.dataset.vote] = v[btn.dataset.vote] === btn.dataset.a ? '' : btn.dataset.a;
       try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: next }); Object.assign(S.projects.find(x => x.id === p.id), r); render(); } catch (e) { toast(e.message); }
     });
-    const vn = $('#vneeds'); if (vn) vn.onchange = async () => { const v = voteOf(p, S.me); try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: { ...v, needs: vn.value.trim() } }); Object.assign(S.projects.find(x => x.id === p.id), r); toast('Saved'); } catch (e) { toast(e.message); } };
-    // The draft lives outside the page so a background refresh never loses it (or what it's replying to).
-    const D = S.pjDraft && S.pjDraft.pid === p.id ? S.pjDraft : (S.pjDraft = { pid: p.id, kind: 'opinion', replyTo: null, text: '' });
-    let kind = D.kind, replyTo = D.replyTo;
-    const keep = () => { D.kind = kind; D.replyTo = replyTo; D.text = $('#ptext').value; };
-    $('#ptext').value = D.text; $('#ptext').oninput = keep;
-    const setKind = k => { kind = k; keep(); $('#app').querySelectorAll('#pkind .sug').forEach(x => x.classList.toggle('on', x.dataset.k === k)); $('#ptext').placeholder = { opinion: 'What do you think?', question: 'What do you want to know before saying yes?', concern: 'What worries you about it?' }[k]; };
-    $('#app').querySelectorAll('#pkind .sug').forEach(x => x.onclick = () => { replyTo = null; $('#preplying').textContent = ''; $('#pkind').classList.remove('hidden'); setKind(x.dataset.k); });
-    const showReply = id => {
-      replyTo = id; keep(); const q = (p.posts || []).find(y => y.id === replyTo); if (!q) { replyTo = null; keep(); return; }
-      $('#pkind').classList.add('hidden'); $('#preplying').innerHTML = `Replying to ${esc(q.member_id === S.me ? 'yourself' : memberName(q.member_id))} · <button class="link-btn" id="pcancel">cancel</button>`;
-      $('#pcancel').onclick = () => { replyTo = null; keep(); $('#preplying').textContent = ''; $('#pkind').classList.remove('hidden'); };
-      const t = $('#ptext'); t.placeholder = q.kind === 'question' ? 'Your answer' : 'Your reply';
-    };
-    if (replyTo) showReply(replyTo); else setKind(kind);
-    $('#app').querySelectorAll('[data-reply]').forEach(x => x.onclick = () => { showReply(x.dataset.reply); const t = $('#ptext'); t.focus(); t.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
-    $('#psend').onclick = async () => {
-      if (needMe()) return;
-      const text = $('#ptext').value.trim(); if (!text) return $('#ptext').focus();
-      $('#psend').disabled = true;
-      try { const r = await api(`/projects/${p.id}/posts`, { method: 'POST', body: { kind, body: text, reply_to: replyTo } }); Object.assign(S.projects.find(x => x.id === p.id), r); S.pjDraft = null; render(); }
-      catch (e) { toast(e.message); $('#psend').disabled = false; }
-    };
-    $('#app').querySelectorAll('[data-pdel]').forEach(x => x.onclick = () => confirmSheet('Delete this?', 'Replies to it go too.', 'Delete', async () => {
-      const r = await api(`/projects/${p.id}/posts/${x.dataset.pdel}`, { method: 'DELETE' }); Object.assign(S.projects.find(y => y.id === p.id), r); render();
-    }));
-    $('#app').querySelectorAll('[data-prop]').forEach(btn => btn.onclick = () => {
+    const vn = $('#vneeds'); if (vn) vn.onchange = async () => { const v = voteOf(p, S.me); try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: { ...v, needs: vn.value.trim() } }); Object.assign(S.projects.find(x => x.id === p.id), r); render(); } catch (e) { toast(e.message); } };
+    // discussion
+    if (tab === 'talk') {
+      const D = S.pjDraft && S.pjDraft.pid === p.id ? S.pjDraft : (S.pjDraft = { pid: p.id, kind: 'opinion', replyTo: null, text: '' });
+      let kind = D.kind, replyTo = D.replyTo;
+      const ta = $('#ptext'), grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(160, ta.scrollHeight) + 'px'; };
+      const keep = () => { D.kind = kind; D.replyTo = replyTo; D.text = ta.value; };
+      ta.value = D.text; ta.oninput = () => { keep(); grow(); }; grow();
+      const setKind = k => { kind = k; keep(); $('#app').querySelectorAll('#pkind .c-kind').forEach(x => x.classList.toggle('on', x.dataset.k === k)); ta.placeholder = POST_KINDS.find(x => x[0] === k)[3]; };
+      const showReply = rid => {
+        replyTo = rid; keep(); const q = (p.posts || []).find(y => y.id === rid); if (!q) { replyTo = null; keep(); return; }
+        $('#pkind').classList.add('hidden'); const r = $('#preplying'); r.classList.remove('hidden');
+        r.innerHTML = `<span>${q.kind === 'question' ? 'Answering' : 'Replying to'} ${esc(firstName(q.member_id))}: “${esc(q.body.slice(0, 60))}${q.body.length > 60 ? '…' : ''}”</span><button class="link-btn" id="pcancel">cancel</button>`;
+        $('#pcancel').onclick = () => { replyTo = null; keep(); r.classList.add('hidden'); $('#pkind').classList.remove('hidden'); setKind(kind); };
+        ta.placeholder = q.kind === 'question' ? 'Your answer' : 'Your reply';
+      };
+      if (replyTo) showReply(replyTo); else setKind(kind);
+      $('#app').querySelectorAll('#pkind .c-kind').forEach(x => x.onclick = () => setKind(x.dataset.k));
+      $('#app').querySelectorAll('[data-reply]').forEach(x => x.onclick = () => { showReply(x.dataset.reply); ta.focus(); });
+      const send = async () => {
+        if (needMe()) return;
+        const text = ta.value.trim(); if (!text) return ta.focus();
+        $('#psend').disabled = true;
+        try { const r = await api(`/projects/${p.id}/posts`, { method: 'POST', body: { kind, body: text, reply_to: replyTo } }); Object.assign(S.projects.find(x => x.id === p.id), r); S.pjDraft = null; render(); const c = $('.chat'); if (c && c.lastElementChild) c.lastElementChild.scrollIntoView({ block: 'center' }); }
+        catch (e) { toast(e.message); $('#psend').disabled = false; }
+      };
+      $('#psend').onclick = send;
+      ta.onkeydown = e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) send(); };
+      $('#app').querySelectorAll('[data-agree]').forEach(x => x.onclick = async () => {
+        if (needMe()) return;
+        try { const r = await api(`/projects/${p.id}/posts`, { method: 'POST', body: { kind: 'react', body: '👍', reply_to: x.dataset.agree } }); Object.assign(S.projects.find(y => y.id === p.id), r); render(); } catch (e) { toast(e.message); }
+      });
+      $('#app').querySelectorAll('[data-pdel]').forEach(x => x.onclick = () => confirmSheet('Delete this?', 'Answers to it go too.', 'Delete', async () => {
+        const r = await api(`/projects/${p.id}/posts/${x.dataset.pdel}`, { method: 'DELETE' }); Object.assign(S.projects.find(y => y.id === p.id), r); render();
+      }));
+    }
+    // tracks
+    if (tab === 'tracks') {
+      $('#app').querySelectorAll('[data-go]').forEach(x => x.onclick = () => go('t/' + x.dataset.go));
+      $('#app').querySelectorAll('[data-up]').forEach(x => x.onclick = () => { const i = +x.dataset.up, n = [...ids]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; save({ track_ids: n }); });
+      $('#app').querySelectorAll('[data-dn]').forEach(x => x.onclick = () => { const i = +x.dataset.dn, n = [...ids]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; save({ track_ids: n }); });
+      $('#app').querySelectorAll('[data-out]').forEach(x => x.onclick = () => save({ track_ids: ids.filter(y => y !== x.dataset.out) }));
+      $('#pjPlant').onclick = () => {
+        const g = genres[0] || '';
+        newTrack({ genre: g }, async t => { try { await setProjectTracks(p, [...ids, t.id]); toast(`Planted in ${p.name}`); } catch (e) { toast(e.message); } });
+      };
+      $('#pjAdd').onclick = () => {
+        const pick = new Set(), others = S.tracks.filter(t => !ids.includes(t.id));
+        sheet(`<h3>Add to ${esc(p.name)}</h3><p class="lede">Tick the tracks. They go to the end; reorder after.</p>
+          <div class="menu" id="pjPick">${others.map(t => `<button class="menu-item" data-t="${esc(t.id)}"><span class="check"></span><span><b>${esc(t.title)}</b><span class="small muted">${esc([t.genre, projectsOf(t.id).map(x => x.name).join(', ')].filter(Boolean).join(' · ') || ago(t.updated_at))}</span></span></button>`).join('') || '<p class="small faint" style="text-align:center">Every track is in it already.</p>'}</div>
+          <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="pjGo">Add</button></div>`, root => {
+          root.querySelectorAll('[data-t]').forEach(x => x.onclick = () => { const k = x.dataset.t; pick.has(k) ? pick.delete(k) : pick.add(k); x.classList.toggle('sel', pick.has(k)); $('.check', x).textContent = pick.has(k) ? '✓' : ''; });
+          $('#pjGo', root).onclick = () => { closeSheet(); if (pick.size) save({ track_ids: [...ids, ...others.filter(t => pick.has(t.id)).map(t => t.id)] }); };
+        });
+      };
+    }
+    // proposal
+    if (tab === 'proposal') $('#app').querySelectorAll('[data-prop]').forEach(btn => btn.onclick = () => {
       const k = btn.dataset.prop, t = btn.querySelector('b').textContent;
       sheet(`<h3>${esc(t)}</h3><textarea id="prt" rows="8">${esc(prop[k] || '')}</textarea><div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
         setTimeout(() => $('#prt', root).focus(), 60);
         $('#ok', root).onclick = async () => { closeSheet(); await save({ proposal: { ...prop, [k]: $('#prt', root).value } }); };
       });
     });
-    $('#app').querySelectorAll('[data-go]').forEach(x => x.onclick = () => go('t/' + x.dataset.go));
-    $('#app').querySelectorAll('[data-up]').forEach(x => x.onclick = () => { const i = +x.dataset.up, n = [...ids]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; save({ track_ids: n }); });
-    $('#app').querySelectorAll('[data-dn]').forEach(x => x.onclick = () => { const i = +x.dataset.dn, n = [...ids]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; save({ track_ids: n }); });
-    $('#app').querySelectorAll('[data-out]').forEach(x => x.onclick = () => save({ track_ids: ids.filter(y => y !== x.dataset.out) }));
-    const plant = $('#pjPlant'); if (plant) plant.onclick = () => {
-      const g = (() => { try { return JSON.parse(p.genres || '[]')[0] || ''; } catch { return ''; } })();
-      newTrack({ genre: g },
-        async t => { try { await setProjectTracks(p, [...ids, t.id]); toast(`Planted in ${p.name}`); } catch (e) { toast(e.message); } });
-    };
-    const addBtn = $('#pjAdd'); if (addBtn) addBtn.onclick = () => {
-      const pick = new Set(), others = S.tracks.filter(t => !ids.includes(t.id));
-      sheet(`<h3>Add to ${esc(p.name)}</h3><p class="lede">Tick the tracks. They go to the end; reorder after.</p>
-        <div class="menu" id="pjPick">${others.map(t => `<button class="menu-item" data-t="${esc(t.id)}"><span class="check"></span><span><b>${esc(t.title)}</b><span class="small muted">${esc([t.genre, projectsOf(t.id).map(x => x.name).join(', ')].filter(Boolean).join(' · ') || ago(t.updated_at))}</span></span></button>`).join('') || '<p class="small faint" style="text-align:center">Every track is in it already.</p>'}</div>
-        <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="pjGo">Add</button></div>`, root => {
-        root.querySelectorAll('[data-t]').forEach(x => x.onclick = () => { const k = x.dataset.t; pick.has(k) ? pick.delete(k) : pick.add(k); x.classList.toggle('sel', pick.has(k)); $('.check', x).textContent = pick.has(k) ? '✓' : ''; });
-        $('#pjGo', root).onclick = () => { closeSheet(); if (pick.size) save({ track_ids: [...ids, ...others.filter(t => pick.has(t.id)).map(t => t.id)] }); };
-      });
-    };
   };
   render();
-  const busy = () => $('.scrim') || ['vneeds', 'ptext'].includes(document.activeElement.id) || ($('#ptext') && $('#ptext').value.trim());
-  loadState().then(() => api('/projects/' + id)).then(full => {
+  const busy = () => $('.scrim') || ['vneeds', 'ptext'].includes(document.activeElement.id);
+  const refresh = () => api('/projects/' + id).then(full => {
     const cur = (S.projects || []).find(x => x.id === id); if (cur) Object.assign(cur, full);
     if (location.hash.replace(/^#\/?/, '') === 'p/' + id && !busy()) render();
-  }).catch(e => toast(e.message));
+  });
+  loadState().then(refresh).catch(e => toast(e.message));
+  poll(() => location.hash.replace(/^#\/?/, '') === 'p/' + id ? refresh() : Promise.resolve());
 }
+
 // From a track: tick the projects it belongs to.
 function trackProjectsSheet(t) {
   const on = new Set(projectsOf(t.id).map(p => p.id));

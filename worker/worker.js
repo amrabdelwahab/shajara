@@ -230,9 +230,14 @@ async function route(req, env, url, member, space) {
     const pr = await env.DB.prepare('SELECT * FROM projects WHERE space_id = ? ORDER BY CASE WHEN date = \'\' THEN 1 ELSE 0 END, date, created_at').bind(sp).all();
     const pt = await env.DB.prepare('SELECT pt.project_id, pt.track_id FROM project_tracks pt JOIN projects p ON p.id = pt.project_id WHERE p.space_id = ? ORDER BY pt.position').bind(sp).all();
     const pv = await env.DB.prepare('SELECT v.* FROM project_votes v JOIN projects p ON p.id = v.project_id WHERE p.space_id = ?').bind(sp).all();
-    const pp = await env.DB.prepare('SELECT x.project_id, x.id, x.kind, x.reply_to, x.member_id, x.created_at FROM project_posts x JOIN projects p ON p.id = x.project_id WHERE p.space_id = ?').bind(sp).all();
-    const talk = pid => { const l = pp.results.filter(x => x.project_id === pid), said = l.filter(x => ['opinion', 'question', 'concern', 'answer'].includes(x.kind));
-      return { posts: said.length, open: l.filter(x => x.kind === 'question' && !l.some(y => y.reply_to === x.id)).length, last: l.reduce((m, x) => Math.max(m, x.created_at), 0) }; };
+    const pp = await env.DB.prepare('SELECT x.project_id, x.id, x.kind, x.reply_to, x.member_id, x.created_at, substr(x.body, 1, 140) AS body FROM project_posts x JOIN projects p ON p.id = x.project_id WHERE p.space_id = ? ORDER BY x.created_at').bind(sp).all();
+    const talk = pid => {
+      const l = pp.results.filter(x => x.project_id === pid && x.kind !== 'react'), said = l.filter(x => ['opinion', 'question', 'concern', 'answer'].includes(x.kind));
+      const last = l[l.length - 1];
+      return { posts: said.length, open: l.filter(x => x.kind === 'question' && !l.some(y => y.reply_to === x.id && y.kind === 'answer')).length,
+        last: last ? { at: last.created_at, by: last.member_id, kind: last.kind, body: ['opinion', 'question', 'concern', 'answer'].includes(last.kind) ? last.body : '' } : null,
+        people: [...new Set(l.map(x => x.member_id).filter(Boolean))] };
+    };
     const projects = pr.results.map(p => ({ ...p, track_ids: pt.results.filter(x => x.project_id === p.id).map(x => x.track_id), votes: pv.results.filter(v => v.project_id === p.id), talk: talk(p.id) }));
     return json({ projects, space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
@@ -440,8 +445,15 @@ async function route(req, env, url, member, space) {
       const b = await body(req), text = str(b.body, 4000);
       if (!text) return json({ error: 'write something first' }, 400);
       if (!member || !(await memberInSpace(member))) return json({ error: 'pick who you are first' }, 400);
-      const kind = ['opinion', 'question', 'concern', 'answer'].includes(b.kind) ? b.kind : 'opinion';
+      const kind = ['opinion', 'question', 'concern', 'answer', 'react'].includes(b.kind) ? b.kind : 'opinion';
       const replyTo = b.reply_to && cur.posts.some(x => x.id === b.reply_to) ? b.reply_to : null;
+      if (kind === 'react') {
+        // A reaction toggles: tapping 👍 again takes it back.
+        if (!replyTo) return json({ error: 'react to a post' }, 400);
+        const had = cur.posts.find(x => x.kind === 'react' && x.reply_to === replyTo && x.member_id === member && x.body === text);
+        if (had) await env.DB.prepare('DELETE FROM project_posts WHERE id = ?').bind(had.id).run(); else await post(id, member, 'react', text.slice(0, 8), replyTo);
+        return json(await read(id));
+      }
       await post(id, member, replyTo ? 'answer' : kind, text, replyTo);
       await env.DB.prepare('UPDATE projects SET updated_at = ? WHERE id = ?').bind(now(), id).run();
       return json(await read(id));
