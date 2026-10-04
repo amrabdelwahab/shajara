@@ -185,7 +185,7 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 }
 .lp section { margin-bottom: 18px; }
 .lp-hero { text-align: center; padding: 24px 0 8px; }
-.lp-hero .logo-big { height: 150px; width: auto; display: block; margin: 0 auto 14px; }
+.lp-logo { width: 240px; max-width: 70%; height: auto; display: block; margin: 0 auto 18px; }
 .lp-hero h1 { font: 800 34px/1 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 0; display: flex; align-items: baseline; justify-content: center; gap: 12px; }
 .lp-hero h1 .ar { font-size: 30px; color: var(--muted); text-transform: none; }
 .lp-tag { font: italic 22px/1.3 var(--serif); margin: 14px 0 10px; color: var(--brand-yellow); }
@@ -898,8 +898,8 @@ function viewGate(chosen) {
   const step = (n, title, body) => `<div class="lp-step"><span class="lp-n">${n}</span><div><b>${title}</b><p>${body}</p></div></div>`;
   $('#app').innerHTML = `<div class="wrap lp"><div class="lp-grid"><div class="lp-left">
     <section class="lp-hero">
-      <img class="logo-big" src="logo.png" alt="‘ala bab allah">
-      <h1>Shajara <span class="ar">شجرة</span></h1>
+      <img class="lp-logo" src="shajara.png" alt="Shajara · شجرة">
+      <h1>Shajara</h1>
       <p class="lp-tag">Sketch a track together, before it’s a track.</p>
       <p class="lp-lede">A low-fidelity music sketching tool for bands, live projects and solo musicians. Lay out a track’s structure, sketch ideas into it, hear them against each other, and walk into rehearsal knowing where everyone falls in.</p>
     </section>
