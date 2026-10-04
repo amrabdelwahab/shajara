@@ -33,6 +33,11 @@ async function sha256(text) {
   return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 // A passcode opens exactly one space. The band's original passcode (BAND_KEY secret) opens 'abba' until that space sets its own.
+const parseGenres = g => { try { const l = JSON.parse(g || '[]'); return Array.isArray(l) ? l : []; } catch { return []; } };
+const cleanGenres = l => Array.isArray(l) ? [...new Set(l.map(x => typeof x === 'string' ? x.trim().slice(0, 60) : '').filter(Boolean))].slice(0, 40) : null;
+// Line-ups keep a comma-separated list of sound ids per person; this drops one id from every list.
+const dropSoundFromLineups = (env, sid) => env.DB.prepare("UPDATE holders SET sound_ids = TRIM(REPLACE(',' || sound_ids || ',', ',' || ? || ',', ','), ',') WHERE ',' || sound_ids || ',' LIKE '%,' || ? || ',%'").bind(sid, sid);
+const cleanSoundIds = v => [...new Set((Array.isArray(v) ? v : String(v || '').split(',')).map(x => String(x).trim()).filter(x => /^[a-z0-9]{4,40}$/.test(x)))].slice(0, 12).join(',');
 async function resolveSpace(env, key) {
   if (!key) return null;
   const row = await env.DB.prepare('SELECT * FROM spaces WHERE key_hash = ?').bind(await sha256(key)).first();
@@ -77,7 +82,7 @@ async function addSection(env, trackId, name, copyFrom) {
   ];
   if (src) {
     stmts.push(
-      env.DB.prepare('INSERT INTO holders (section_id, layer, member_id, instrument) SELECT ?, layer, member_id, instrument FROM holders WHERE section_id = ?').bind(sid, src.id),
+      env.DB.prepare('INSERT INTO holders (section_id, layer, member_id, instrument, sound_ids) SELECT ?, layer, member_id, instrument, sound_ids FROM holders WHERE section_id = ?').bind(sid, src.id),
       env.DB.prepare('INSERT INTO beats (section_id, layer, name, pattern, sub, bar) SELECT ?, layer, name, pattern, sub, bar FROM beats WHERE section_id = ?').bind(sid, src.id),
     );
   }
@@ -92,7 +97,7 @@ async function deleteIdeas(env, where, arg) {
 }
 async function dropUnusedAudio(env, ids) {
   for (const aid of ids) {
-    const still = await env.DB.prepare('SELECT 1 FROM ideas WHERE audio_id = ? LIMIT 1').bind(aid).first();
+    const still = await env.DB.prepare('SELECT 1 FROM ideas WHERE audio_id = ? UNION ALL SELECT 1 FROM sounds WHERE audio_id = ? LIMIT 1').bind(aid, aid).first();
     if (!still) await env.AUDIO.delete(aid);
   }
 }
@@ -157,8 +162,10 @@ async function route(req, env, url, member, space) {
         await env.DB.prepare('UPDATE spaces SET key_hash = ? WHERE id = ?').bind(h, sp).run();
       }
       if (name) await env.DB.prepare('UPDATE spaces SET name = ? WHERE id = ?').bind(name, sp).run();
-      const row = await env.DB.prepare('SELECT id, name FROM spaces WHERE id = ?').bind(sp).first();
-      return json(row);
+      const genres = cleanGenres(b.genres);
+      if (genres) await env.DB.prepare('UPDATE spaces SET genres = ? WHERE id = ?').bind(JSON.stringify(genres), sp).run();
+      const row = await env.DB.prepare('SELECT id, name, genres FROM spaces WHERE id = ?').bind(sp).first();
+      return json({ id: row.id, name: row.name, genres: parseGenres(row.genres) });
     }
   }
 
@@ -172,6 +179,19 @@ async function route(req, env, url, member, space) {
       env.DB.prepare(`SELECT track_id, kind, COUNT(*) AS n, MAX(created_at) AS last FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id, kind`).all(),
       env.DB.prepare('SELECT * FROM grooves WHERE space_id = ? ORDER BY name').bind(sp).all(),
     ]);
+    const mem = `SELECT id FROM members WHERE space_id = '${sp.replace(/'/g, '')}'`;
+    let ins = await env.DB.prepare(`SELECT * FROM instruments WHERE member_id IN (${mem}) ORDER BY position, created_at`).all();
+    const missing = members.results.filter(mm => mm.instruments && !ins.results.some(i => i.member_id === mm.id));
+    if (missing.length) {
+      const stmts = [];
+      for (const mm of missing) mm.instruments.split(',').map(x => x.trim()).filter(Boolean).forEach((name, k) =>
+        stmts.push(env.DB.prepare('INSERT INTO instruments (id, member_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(uid(), mm.id, name.slice(0, 60), k, now())));
+      if (stmts.length) await env.DB.batch(stmts);
+      ins = await env.DB.prepare(`SELECT * FROM instruments WHERE member_id IN (${mem}) ORDER BY position, created_at`).all();
+    }
+    const snd = await env.DB.prepare(`SELECT * FROM sounds WHERE instrument_id IN (SELECT id FROM instruments WHERE member_id IN (${mem})) ORDER BY position, created_at`).all();
+    // Takes that name a sound, so the app can remember who uses what where.
+    const takes = await env.DB.prepare(`SELECT track_id, section_id, layer, author_id, sound_id, created_at FROM ideas WHERE sound_id IS NOT NULL AND sound_id != '' AND track_id IN (${inSpace}) ORDER BY created_at DESC LIMIT 2000`).all();
     const byTrack = {};
     for (const t of tracks.results) byTrack[t.id] = { ...t, notes: (t.notes || '').slice(0, 280), sections: [], holders: [], beats: [], ideas: 0, kinds: {}, last: null };
     for (const s of sections.results) byTrack[s.track_id]?.sections.push(s);
@@ -180,7 +200,7 @@ async function route(req, env, url, member, space) {
     for (const c of counts.results) { const t = byTrack[c.track_id]; if (!t) continue; t.ideas += c.n; t.kinds[c.kind] = c.n; }
     const lasts = await env.DB.prepare(`SELECT i.track_id, i.author_id, i.kind, i.created_at FROM ideas i JOIN (SELECT track_id, MAX(created_at) AS m FROM ideas WHERE track_id IN (${inSpace}) GROUP BY track_id) x ON x.track_id = i.track_id AND x.m = i.created_at`).all();
     for (const l of lasts.results) if (byTrack[l.track_id]) byTrack[l.track_id].last = { by: l.author_id, kind: l.kind, at: l.created_at };
-    return json({ space: { id: space.id, name: space.name, logo_v: space.logo_v || null }, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
+    return json({ space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
   if (a === 'grooves') {
@@ -204,6 +224,69 @@ async function route(req, env, url, member, space) {
     }
   }
 
+  const memberInSpace = async mid => !!(await env.DB.prepare('SELECT 1 FROM members WHERE id = ? AND space_id = ?').bind(mid, sp).first());
+  const instInSpace = async iid => { const r = await env.DB.prepare('SELECT member_id FROM instruments WHERE id = ?').bind(iid).first(); return r && (await memberInSpace(r.member_id)) ? r : null; };
+  if (a === 'instruments') {
+    if (m === 'POST' && !id) {
+      const b = await body(req); const name = str(b.name, 60);
+      if (!name || !(await memberInSpace(str(b.member_id, 40)))) return json({ error: 'name and person required' }, 400);
+      const last = await env.DB.prepare('SELECT MAX(position) AS p FROM instruments WHERE member_id = ?').bind(b.member_id).first();
+      const row = { id: uid(), member_id: b.member_id, name, position: (last && last.p != null ? last.p : -1) + 1, created_at: now() };
+      await env.DB.prepare('INSERT INTO instruments (id, member_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(row.id, row.member_id, row.name, row.position, row.created_at).run();
+      return json(row, 201);
+    }
+    if (id && !(await instInSpace(id))) return json({ error: 'not found' }, 404);
+    if (m === 'PATCH' && id) {
+      const b = await body(req); const name = str(b.name, 60);
+      if (name) await env.DB.prepare('UPDATE instruments SET name = ? WHERE id = ?').bind(name, id).run();
+      return json(await env.DB.prepare('SELECT * FROM instruments WHERE id = ?').bind(id).first());
+    }
+    if (m === 'DELETE' && id) {
+      const au = await env.DB.prepare('SELECT audio_id FROM sounds WHERE instrument_id = ? AND audio_id IS NOT NULL').bind(id).all();
+      const sids = await env.DB.prepare('SELECT id FROM sounds WHERE instrument_id = ?').bind(id).all();
+      await env.DB.batch([
+        ...sids.results.map(r => dropSoundFromLineups(env, r.id)),
+        env.DB.prepare('UPDATE ideas SET sound_id = NULL WHERE sound_id IN (SELECT id FROM sounds WHERE instrument_id = ?)').bind(id),
+        env.DB.prepare('DELETE FROM sounds WHERE instrument_id = ?').bind(id),
+        env.DB.prepare('DELETE FROM instruments WHERE id = ?').bind(id),
+      ]);
+      await dropUnusedAudio(env, au.results.map(r => r.audio_id));
+      return json({ ok: true });
+    }
+  }
+  if (a === 'sounds') {
+    if (m === 'POST' && !id) {
+      const b = await body(req); const name = str(b.name, 60);
+      if (!name || !(await instInSpace(str(b.instrument_id, 40)))) return json({ error: 'name and instrument required' }, 400);
+      const last = await env.DB.prepare('SELECT MAX(position) AS p FROM sounds WHERE instrument_id = ?').bind(b.instrument_id).first();
+      const row = { id: uid(), instrument_id: b.instrument_id, name, notes: str(b.notes, 500), audio_id: str(b.audio_id, 40) || null, audio_mime: str(b.audio_mime, 80) || null,
+        duration: Number(b.duration) || null, position: (last && last.p != null ? last.p : -1) + 1, created_at: now() };
+      await env.DB.prepare('INSERT INTO sounds (id, instrument_id, name, notes, audio_id, audio_mime, duration, position, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(row.id, row.instrument_id, row.name, row.notes, row.audio_id, row.audio_mime, row.duration, row.position, row.created_at).run();
+      return json(row, 201);
+    }
+    const cur = id ? await env.DB.prepare('SELECT * FROM sounds WHERE id = ?').bind(id).first() : null;
+    if (id && (!cur || !(await instInSpace(cur.instrument_id)))) return json({ error: 'not found' }, 404);
+    if (m === 'PATCH' && id) {
+      const b = await body(req);
+      const audio = 'audio_id' in b ? (str(b.audio_id, 40) || null) : cur.audio_id;
+      await env.DB.prepare('UPDATE sounds SET name = ?, notes = ?, audio_id = ?, audio_mime = ?, duration = ? WHERE id = ?').bind(
+        str(b.name, 60) || cur.name, 'notes' in b ? str(b.notes, 500) : cur.notes, audio,
+        'audio_id' in b ? (str(b.audio_mime, 80) || null) : cur.audio_mime, 'audio_id' in b ? (Number(b.duration) || null) : cur.duration, id).run();
+      if (cur.audio_id && cur.audio_id !== audio) await dropUnusedAudio(env, [cur.audio_id]);
+      return json(await env.DB.prepare('SELECT * FROM sounds WHERE id = ?').bind(id).first());
+    }
+    if (m === 'DELETE' && id) {
+      await env.DB.batch([
+        dropSoundFromLineups(env, id),
+        env.DB.prepare('UPDATE ideas SET sound_id = NULL WHERE sound_id = ?').bind(id),
+        env.DB.prepare('DELETE FROM sounds WHERE id = ?').bind(id),
+      ]);
+      if (cur.audio_id) await dropUnusedAudio(env, [cur.audio_id]);
+      return json({ ok: true });
+    }
+  }
+
   if (a === 'members') {
     if (m === 'POST' && !id) {
       const b = await body(req);
@@ -218,8 +301,8 @@ async function route(req, env, url, member, space) {
       const b = await body(req);
       const cur = await env.DB.prepare('SELECT * FROM members WHERE id = ? AND space_id = ?').bind(id, sp).first();
       if (!cur) return json({ error: 'not found' }, 404);
-      await env.DB.prepare('UPDATE members SET name = COALESCE(NULLIF(?, \'\'), name), instruments = ?, guest = ? WHERE id = ?')
-        .bind(str(b.name, 60), 'instruments' in b ? str(b.instruments, 200) : cur.instruments, 'guest' in b ? (b.guest ? 1 : 0) : cur.guest, id).run();
+      await env.DB.prepare('UPDATE members SET name = COALESCE(NULLIF(?, \'\'), name), instruments = ?, guest = ?, ready = ? WHERE id = ?')
+        .bind(str(b.name, 60), 'instruments' in b ? str(b.instruments, 200) : cur.instruments, 'guest' in b ? (b.guest ? 1 : 0) : cur.guest, 'ready' in b ? (b.ready ? 1 : 0) : cur.ready, id).run();
       return json(await env.DB.prepare('SELECT * FROM members WHERE id = ?').bind(id).first());
     }
     if (m === 'DELETE' && id) {
@@ -365,8 +448,8 @@ async function route(req, env, url, member, space) {
         .slice(0, 24);
       await env.DB.batch([
         env.DB.prepare('DELETE FROM holders WHERE section_id = ?').bind(id),
-        ...list.map(h => env.DB.prepare('INSERT OR REPLACE INTO holders (section_id, layer, member_id, instrument) VALUES (?, ?, ?, ?)')
-          .bind(id, h.layer, str(h.member_id, 40), str(h.instrument, 60))),
+        ...list.map(h => env.DB.prepare('INSERT OR REPLACE INTO holders (section_id, layer, member_id, instrument, sound_ids) VALUES (?, ?, ?, ?, ?)')
+          .bind(id, h.layer, str(h.member_id, 40), str(h.instrument, 60), cleanSoundIds(h.sound_ids))),
       ]);
       await touch(env, trackId);
       return json(await loadTrack(env, trackId));
@@ -396,7 +479,7 @@ async function route(req, env, url, member, space) {
         audio_id: kind === 'audio' ? str(b.audio_id, 40) || null : null,
         audio_mime: kind === 'audio' ? str(b.audio_mime, 80) || null : null,
         duration: Number(b.duration) || null, starred: 0,
-        data: typeof b.data === 'string' ? b.data : '', created_at: now(),
+        data: typeof b.data === 'string' ? b.data : '', sound_id: str(b.sound_id, 40) || null, created_at: now(),
       };
       if (kind === 'audio' && !row.audio_id) return json({ error: 'audio_id required' }, 400);
       if (kind === 'link' && !/^https?:\/\//i.test(row.url)) return json({ error: 'url must start with http' }, 400);
@@ -405,8 +488,8 @@ async function route(req, env, url, member, space) {
       if (row.data) { try { JSON.parse(row.data); } catch { return json({ error: 'bad data' }, 400); } }
       if (kind === 'midi') { try { if (!Array.isArray(JSON.parse(row.data).notes)) throw 0; } catch { return json({ error: 'bad midi data' }, 400); } }
       await env.DB.prepare(
-        'INSERT INTO ideas (id, track_id, section_id, layer, author_id, kind, body, url, audio_id, audio_mime, duration, starred, data, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(row.id, row.track_id, row.section_id, row.layer, row.author_id, row.kind, row.body, row.url, row.audio_id, row.audio_mime, row.duration, 0, row.data, row.created_at).run();
+        'INSERT INTO ideas (id, track_id, section_id, layer, author_id, kind, body, url, audio_id, audio_mime, duration, starred, data, sound_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(row.id, row.track_id, row.section_id, row.layer, row.author_id, row.kind, row.body, row.url, row.audio_id, row.audio_mime, row.duration, 0, row.data, row.sound_id, row.created_at).run();
       await touch(env, trackId);
       return json(row, 201);
     }
@@ -427,8 +510,9 @@ async function route(req, env, url, member, space) {
         if (pl) d.place = pl; else delete d.place;
         data = JSON.stringify(d);
       }
-      await env.DB.prepare('UPDATE ideas SET starred = ?, body = ?, layer = ?, data = ? WHERE id = ?').bind(starred, text, layer, data, id).run();
-      return json({ ...idea, starred, body: text, layer, data });
+      const soundId = 'sound_id' in b ? (str(b.sound_id, 40) || null) : idea.sound_id;
+      await env.DB.prepare('UPDATE ideas SET starred = ?, body = ?, layer = ?, data = ?, sound_id = ? WHERE id = ?').bind(starred, text, layer, data, soundId, id).run();
+      return json({ ...idea, starred, body: text, layer, data, sound_id: soundId });
     }
     if (m === 'DELETE') {
       await env.DB.prepare('DELETE FROM ideas WHERE id = ?').bind(id).run();
@@ -448,7 +532,7 @@ async function route(req, env, url, member, space) {
       return json({ id: aid, mime, size: buf.byteLength }, 201);
     }
     if (m === 'GET' && id) {
-      const owned = await env.DB.prepare(`SELECT 1 FROM ideas WHERE audio_id = ? AND track_id IN (${inSpace}) LIMIT 1`).bind(id).first();
+      const owned = await env.DB.prepare(`SELECT 1 FROM ideas WHERE audio_id = ? AND track_id IN (${inSpace}) UNION ALL SELECT 1 FROM sounds s JOIN instruments i ON i.id = s.instrument_id JOIN members mm ON mm.id = i.member_id WHERE s.audio_id = ? AND mm.space_id = ? LIMIT 1`).bind(id, id, sp).first();
       if (!owned) return json({ error: 'not found' }, 404);
       const { value, metadata } = await env.AUDIO.getWithMetadata(id, { type: 'arrayBuffer', cacheTtl: 86400 });
       if (!value) return json({ error: 'not found' }, 404);
@@ -477,9 +561,16 @@ export default {
       if ((await env.DB.prepare('SELECT 1 FROM spaces WHERE key_hash = ?').bind(kh).first()) || (env.BAND_KEY && key === env.BAND_KEY)) return json({ error: 'pick a different passcode' }, 400, h);
       if (await env.DB.prepare('SELECT 1 FROM spaces WHERE lower(name) = lower(?)').bind(name).first()) return json({ error: 'a space with that name exists already' }, 400, h);
       const sid = uid(), mid = uid(), t = now();
+      const people = (Array.isArray(b.people) ? b.people : []).slice(0, 40)
+        .map(x => ({ name: str(x && x.name, 60), guest: x && x.guest ? 1 : 0 }))
+        .filter((x, i, l) => x.name && x.name.toLowerCase() !== me.toLowerCase() && l.findIndex(y => y.name.toLowerCase() === x.name.toLowerCase()) === i);
+      const ins = (Array.isArray(b.instruments) ? b.instruments : String(b.instruments || '').split(','))
+        .map(x => str(x, 60)).filter(Boolean).slice(0, 12);
       await env.DB.batch([
-        env.DB.prepare('INSERT INTO spaces (id, name, key_hash, created_at) VALUES (?, ?, ?, ?)').bind(sid, name, kh, t),
-        env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest) VALUES (?, ?, ?, ?, ?, 0)').bind(mid, me, str(b.instruments, 200), t, sid),
+        env.DB.prepare('INSERT INTO spaces (id, name, key_hash, genres, created_at) VALUES (?, ?, ?, ?, ?)').bind(sid, name, kh, JSON.stringify(cleanGenres(b.genres) || []), t),
+        env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest, ready) VALUES (?, ?, ?, ?, ?, 0, 1)').bind(mid, me, ins.join(', '), t, sid),
+        ...ins.map((x, i) => env.DB.prepare('INSERT INTO instruments (id, member_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(uid(), mid, x, i, t)),
+        ...people.map((x, i) => env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest) VALUES (?, ?, \'\', ?, ?, ?)').bind(uid(), x.name, t + 1 + i, sid, x.guest)),
       ]);
       return json({ space: { id: sid, name }, me: mid }, 201, h);
     }

@@ -335,6 +335,32 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
   .tlist .tcard { margin-bottom: 0; }
   .home .list-head { margin-top: 26px; }
 }
+.your-sounds { margin: 2px 0 6px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 0 14px; }
+.your-sounds summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 12px 0; }
+.your-sounds summary::-webkit-details-marker { display: none; }
+.your-sounds summary b { font: 800 12px/1 var(--display); font-stretch: 125%; text-transform: uppercase; letter-spacing: .03em; }
+.your-sounds summary b::after { content: " ▾"; color: var(--muted); font-size: 10px; }
+.your-sounds[open] summary b::after { content: " ▴"; }
+.your-sounds .faint { font-style: italic; }
+.your-sounds .snd-block { padding-bottom: 12px; }
+.snd-block { display: grid; gap: 8px; margin-top: 8px; }
+.snd-row { display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 10px; align-items: start; }
+.snd-ins { text-align: left; font: 800 11px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .03em; padding: 8px 0; color: var(--text); }
+.snd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.snd-chip { display: inline-flex; align-items: center; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.snd-name { font: 15px/1 var(--serif); padding: 7px 10px; color: var(--text); }
+.snd-play { width: 30px; align-self: stretch; display: grid; place-items: center; border-left: 1px solid var(--line); color: var(--brand-yellow); }
+.snd-play svg { width: 12px; height: 12px; }
+.snd-play.on { background: var(--brand-yellow); color: #000; }
+.snd-add { font: italic 14px/1 var(--serif); color: var(--muted); padding: 7px 10px; border-radius: 999px; border: 1px dashed var(--line); }
+.snd-add.ins { justify-self: start; font-style: normal; font: 700 10px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; padding: 9px 12px; }
+.snd-k { font: 700 9px/1 var(--display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); align-self: center; margin-right: 2px; }
+.snd-tag { font: italic 12px/1 var(--serif); color: var(--text); padding: 3px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.snd-rec { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rec-big.sm { width: 52px; height: 52px; }
+.rec-big.sm i { width: 18px; height: 18px; }
+.rec-big.sm.on i { width: 16px; height: 16px; border-radius: 4px; }
+.member-row .snd-block { margin-top: 10px; }
 .logo-pick { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .lp-prev { width: 64px; height: 64px; flex: none; border-radius: 14px; border: 1.5px dashed var(--line); display: grid; place-items: center; font-size: 24px; color: var(--muted); overflow: hidden; background: var(--surface); }
 .lp-prev img { width: 100%; height: 100%; object-fit: contain; }
@@ -607,6 +633,88 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .help summary { cursor: pointer; color: var(--text); font: 800 11px/1.3 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .04em; }
 .help ol { margin: 8px 0 0; padding-left: 18px; }
 .help li { margin: 5px 0; }
+
+/* ---------- tabs, you, space, welcome ---------- */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, #000 90%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); }
+.tabbar-in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); padding: 0 8px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: var(--faint); border-radius: 12px; }
+.tab svg { width: 22px; height: 22px; }
+.tab .av.xs { width: 22px; height: 22px; font-size: 9px; }
+.tab span:not(.av) { font: 800 9.5px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .05em; }
+.tab.on { color: var(--text); }
+.tab.on .av { border-color: var(--brand-yellow); color: var(--brand-yellow); }
+.av.xl { width: 68px; height: 68px; font-size: 22px; }
+.you-hero, .sp-hero { display: flex; align-items: center; gap: 14px; margin: 14px 0 4px; }
+.you-name, .sp-name { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.you-name input, .sp-name input { font: 800 20px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; background: transparent; border: 0; border-bottom: 1px dashed var(--line); border-radius: 0; padding: 4px 0; }
+.you-name input:focus, .sp-name input:focus { border-bottom-color: var(--text); outline: none; }
+.sp-logo { width: 68px; height: 68px; flex: none; border-radius: 16px; border: 1.5px dashed var(--line); display: grid; place-items: center; overflow: hidden; background: var(--surface); cursor: pointer; }
+.sp-logo img { width: 100%; height: 100%; object-fit: contain; }
+.sp-logo span { font: 800 10px/1 var(--display); text-transform: uppercase; color: var(--muted); }
+.link-btn { font: inherit; color: var(--muted); text-decoration: underline; padding: 0; }
+.card-box { border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); padding: 12px 14px; }
+.qi { margin-top: 10px; }
+.qi .sug, .sug.ghost { background: transparent; border-style: dashed; color: var(--muted); }
+.sug.gen { display: inline-flex; align-items: center; gap: 6px; padding-right: 6px; }
+.sug.gen button { width: 20px; height: 20px; border-radius: 50%; background: var(--surface); color: var(--muted); font-size: 14px; line-height: 1; display: grid; place-items: center; }
+.sug.danger { color: var(--danger); }
+.gen-ideas { margin-top: 10px; }
+.sug-in { font: 15px/1.1 var(--serif); padding: 7px 12px; border-radius: 999px; border: 1px dashed var(--line); background: transparent; width: 130px; }
+.member-row .nm { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; }
+.nm-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nm-txt .small { font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.member-row .caret { color: var(--muted); font-size: 15px; padding-left: 4px; }
+.nm-body { margin-top: 4px; }
+.wel { padding-top: 24px; }
+.wel h3 { font: 800 20px/1.15 var(--display); font-stretch: 125%; text-transform: uppercase; margin: 14px 0 6px; }
+.wel .lede { color: var(--muted); font: 17px/1.45 var(--serif); margin: 0 0 14px; }
+.wel-hero { text-align: center; margin-top: 18px; }
+.wel-hero h2 { margin: 10px 0 6px; }
+.wel-who { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin: 18px 0; }
+.wel-p { display: flex; flex-direction: column; align-items: center; gap: 5px; font: 800 10px/1 var(--display); text-transform: uppercase; }
+.wel-ins { display: flex; flex-wrap: wrap; gap: 6px; min-height: 34px; }
+.wel .actions { display: flex; gap: 10px; margin-top: 26px; }
+.wel .actions .btn { flex: 1; }
+.ns-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.ns-row b { flex: 1; min-width: 0; font: 600 16px/1.2 var(--serif); }
+.ns-row .av { width: 34px; height: 34px; font-size: 12px; }
+.seg.sm .seg-b { padding: 6px 9px; font-size: 9px; }
+.ns-sum { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.ns-sum .field { display: block; margin: 0 0 6px; }
+.ns-p { display: inline-block; margin-right: 10px; font: 16px/1.4 var(--serif); }
+.ns-p i { color: var(--faint); font-size: 13px; }
+.ns-done { text-align: center; padding-top: 10px; }
+.ns-done .pe-tree { margin: 0 auto 12px; }
+.ns-msg { text-align: left; white-space: pre-wrap; word-break: break-all; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font: 14px/1.5 ui-monospace, Menlo, monospace; color: var(--muted); }
+
+/* ---------- smart sounds ---------- */
+.sp-groups { display: grid; gap: 8px; margin-top: 8px; }
+.sp-g { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sp-g .snd-k { min-width: 74px; }
+.sp-why { font: italic 13px/1.3 var(--serif); color: var(--brand-yellow); margin: 8px 0 0; }
+.sp-sync { display: flex; align-items: center; gap: 10px; margin-top: 10px; font: 15px/1.3 var(--serif); color: var(--text); }
+.sp-sync input { width: 18px; height: 18px; accent-color: var(--brand-yellow); flex: none; }
+.sp-none { float: right; font: italic 13px/1 var(--serif); text-transform: none; letter-spacing: 0; color: var(--muted); text-decoration: underline; }
+button.snd-tag { cursor: pointer; }
+button.snd-tag.on { background: var(--brand-yellow); color: #000; border-color: var(--brand-yellow); }
+.lu-copy { margin-top: 10px; border-style: dashed; }
+.sp-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.lu-row .sp-why { margin-top: 8px; }
+
+/* sound pills: one height, one rhythm */
+.snd-block { gap: 10px; }
+.snd-row { grid-template-columns: 92px 1fr; align-items: start; column-gap: 12px; }
+.snd-ins { padding: 10px 0 0; line-height: 1.15; min-height: 32px; overflow-wrap: anywhere; }
+.snd-chips { gap: 6px; align-items: center; }
+.snd-chip, .snd-add, .sp-g .sug, .lu-row .sugs.snd .sug, .sug-in { height: 32px; box-sizing: border-box; }
+.snd-name { padding: 0 12px; line-height: 30px; font-size: 15px; }
+.snd-add { display: inline-flex; align-items: center; padding: 0 12px; font-size: 14px; }
+.snd-add.ins { height: 32px; padding: 0 12px; margin-top: 2px; }
+.snd-play { width: 32px; }
+.sp-g .sug, .lu-row .sugs.snd .sug { display: inline-flex; align-items: center; padding: 0 12px; }
+.lu-row .sugs.snd { align-items: center; }
+.snd-k { line-height: 32px; }
+.sug-in { padding: 0 12px; }
 </style>
 </head>
 <body>
@@ -644,7 +752,14 @@ const LAYER_FIT = {
   ground: /bass/i,
   substrate: /drum|darbuka|djembe|caj|bandir|bendir|riq|daf|percussion/i,
 };
-const instrumentsOf = id => ((S.members.find(m => m.id === id) || {}).instruments || '').split(',').map(x => x.trim()).filter(Boolean);
+// People → instruments → sounds. All optional; line-ups and takes can point at a sound.
+const insOf = mid => (S.instruments || []).filter(i => i.member_id === mid);
+const soundsOf = iid => (S.sounds || []).filter(x => x.instrument_id === iid);
+const soundById = id => (S.sounds || []).find(x => x.id === id);
+const insById = id => (S.instruments || []).find(i => i.id === id);
+const instrumentsOf = id => { const l = insOf(id).map(i => i.name); return l.length ? l : ((S.members.find(m => m.id === id) || {}).instruments || '').split(',').map(x => x.trim()).filter(Boolean); };
+const insByName = (mid, name) => insOf(mid).find(i => i.name.toLowerCase() === (name || '').trim().toLowerCase());
+const soundLabel = id => { const x = soundById(id); return x ? x.name : ''; };
 const fitFirst = (list, layer) => layer ? [...list.filter(i => LAYER_FIT[layer].test(i)), ...list.filter(i => !LAYER_FIT[layer].test(i))] : list;
 const SECTION_NAMES = ['Intro', 'A', 'B', 'C', 'Chorus', 'Bridge', 'Taqsim', 'Solo', 'Break', 'Outro'];
 // The band's arrangement vocabulary, from "The underground band sound" in Notion.
@@ -658,7 +773,17 @@ const MOVES = [
   { k: 'feel', label: 'Rhythmic feel', hint: 'what the groove sits on, and moving it' },
 ];
 // The band's genres, from "Our Sound" in Notion.
-const GENRES = ['The underground band sound', 'Ambient + jazz', 'Motseklat rock', 'Electrosha3by', 'Techno / House', 'West African', 'Cinematic', 'Classical sha3by'];
+// Genres belong to the space. These are only suggestions for a new space.
+const GENRE_IDEAS = ['Rock', 'Jazz', 'Ambient', 'Electronic', 'Techno / House', 'Hip hop', 'Folk', 'Tarab', 'Sha3by', 'Mahraganat', 'Cinematic', 'Experimental', 'Pop', 'Afrobeat', 'Dub', 'Noise'];
+const INSTRUMENTS = ['voice', 'oud', 'electric guitar', 'acoustic guitar', 'bass', 'drums', 'percussion', 'darbuka', 'riq', 'keys', 'synth', 'violin', 'nay', 'qanun', 'production', 'samples'];
+const genresOf = () => (S.space && S.space.genres) || [];
+async function saveGenres(list) {
+  const r = await api('/space', { method: 'PATCH', body: { genres: list } });
+  S.space = { ...S.space, genres: r.genres };
+  return r.genres;
+}
+// Picking a genre the space doesn't know yet adds it to the space's list.
+async function keepGenre(g) { g = (g || '').trim(); if (g && !genresOf().some(x => x.toLowerCase() === g.toLowerCase())) { try { await saveGenres([...genresOf(), g]); } catch {} } }
 const ENERGY = ['', 'whisper', 'low', 'medium', 'high', 'peak'];
 
 // D = dum / kick, T = tak / snare, K = ka / hi-hat or light stroke. One string per bar.
@@ -763,6 +888,8 @@ const ICON = {
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>',
   rhythm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="8" width="4" height="8" rx="1.2" fill="currentColor"/><rect x="10" y="8" width="4" height="8" rx="1.2"/><rect x="17" y="8" width="4" height="8" rx="1.2" fill="currentColor" fill-opacity=".45"/></svg>',
+  tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-7"/><path d="M12 14c-4 0-7-2.4-7-5.6C5 5.3 8 3 12 3s7 2.3 7 5.4C19 11.6 16 14 12 14Z"/><path d="M8 21h8"/></svg>',
+  space: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><path d="M17 14v6M14 17h6"/></svg>',
   metro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 18H5L9 3Z"/><path d="M12 17l5-9"/><path d="M8 13h8"/></svg>',
 };
 
@@ -999,6 +1126,9 @@ async function loadState() {
   S.members = d.members;
   S.tracks = d.tracks;
   S.grooves = d.grooves || [];
+  S.instruments = d.instruments || [];
+  S.sounds = d.sounds || [];
+  S.soundTakes = d.sound_takes || [];
   S.space = d.space || null;
   if (S.space) {
     const l = Spaces.list(), c = l.find(x => x.key === S.key);
@@ -1013,8 +1143,12 @@ function route() {
   document.body.classList.remove('wide');
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
-  if (h === 'band') return viewBand();
   if (!S.me || (S.members.length && !S.members.some(m => m.id === S.me && !m.guest))) return viewWho();
+  const me = S.members.find(m => m.id === S.me);
+  if (me && !me.ready) return viewWelcome();
+  if (h === 'band') return viewBand();
+  if (h === 'me') return viewYou();
+  if (h === 'space') return viewSpace();
   if (h.startsWith('t/')) return viewTrack(h.slice(2));
   return viewHome();
 }
@@ -1025,6 +1159,19 @@ function topBar(title, left, right) {
   return `<div class="top"><div class="top-in">${left || ''}<h1>${title}</h1>${right || ''}</div></div>`;
 }
 const backBtn = to => `<button class="icon-btn" aria-label="Back" onclick="go('${to}')">${ICON.back}</button>`;
+const TABS = [['', 'Tracks', 'tree'], ['band', 'People', 'people'], ['me', 'You', 'you'], ['space', 'Space', 'space']];
+function tabBar(cur) {
+  const me = S.members.find(m => m.id === S.me);
+  return `<nav class="tabbar" aria-label="Sections"><div class="tabbar-in">${TABS.map(([h, label, ic]) => `<button class="tab${cur === h ? ' on' : ''}" data-tab-go="${h}" aria-label="${label}"${cur === h ? ' aria-current="page"' : ''}>${ic === 'you' ? avatar(me, 'xs') : ICON[ic]}<span>${label}</span></button>`).join('')}</div></nav>`;
+}
+function wireTabs() { document.querySelectorAll('[data-tab-go]').forEach(b => b.onclick = () => { if (location.hash.replace(/^#\/?/, '') !== b.dataset.tabGo) go(b.dataset.tabGo); else scrollTo({ top: 0, behavior: 'smooth' }); }); }
+// The space's header: logo + name ▾ (switch) on every tab.
+function spaceTop(right) {
+  const sp = S.space || { id: 'abba' };
+  return topBar(`<button class="space-btn" onclick="spacesSheet()" aria-label="Switch space">${esc(spaceName())}<span class="caret">▾</span></button>`,
+    logoOf(sp) ? logoImg(sp, 'logo', spaceName()) : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z؀-ۿ]+/, '').slice(0, 1).toUpperCase())}</span>`,
+    right == null ? `<button class="switch-btn" aria-label="Switch space" onclick="spacesSheet()">⇄ <span>Switch</span></button>` : right);
+}
 
 /* ---------- gate & identity ---------- */
 function viewGate(chosen) {
@@ -1131,11 +1278,13 @@ function viewGate(chosen) {
 // Spotlight tips: dim the screen, light up the real button, say what it does in a few words.
 const TOURS = {
   home: [
-    ['.switch-btn', 'Switch between your spaces'],
-    ['[aria-label="People"]', 'Who’s here, guest performers, the logo'],
-    ['.people-row', 'Everyone in this space. Tap someone to see what they planted'],
+    ['.space-btn', 'Switch between your spaces'],
+    ['.people-row', 'Tap someone to see what they planted'],
     ['.tcard.new', 'Plant a new track. It walks you through it.'],
     ['.tcard:not(.new)', 'Open a track to sketch into it'],
+    ['[data-tab-go="band"]', 'Everyone here, their instruments and sounds'],
+    ['[data-tab-go="me"]', 'Your instruments and sounds. Edit them any time'],
+    ['[data-tab-go="space"]', 'The space itself: genres, logo, passcode'],
   ],
   track: [
     ['.form', 'The sections. Tap one to open it, → for the transition'],
@@ -1185,35 +1334,114 @@ function coach(name, force) {
 function openTour() { store.set('coach:track:' + ((S.space && S.space.id) || 'abba'), false); go(''); setTimeout(() => coach('home', true), 400); }
 
 function newSpaceSheet() {
-  sheet(`<h3>Start a new space</h3><p class="lede">A space has its own people, tracks and passcode. Anyone with the passcode can open it, so pick one you’ll share only with them.</p>
-    <label class="field">Space name</label><input id="ns-name" type="text" placeholder="your band or project">
-    <label class="field">Your name</label><input id="ns-me" type="text" placeholder="how the others know you">
-    <label class="field">What you play (optional)</label><input id="ns-inst" type="text" placeholder="e.g. oud, production">
-    <label class="field">Logo (optional)</label>
-    <label class="logo-pick"><input id="ns-logo" type="file" accept="image/png,image/jpeg,image/webp" hidden><span class="lp-prev" id="ns-prev">+</span><span class="small muted">Pick an image. Square or round works best.</span></label>
-    <label class="field">Passcode</label><input id="ns-key" type="password" autocapitalize="off" placeholder="at least 6 characters">
-    <input id="ns-key2" type="password" autocapitalize="off" placeholder="type it again" style="margin-top:8px">
-    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ns-go">Start it</button></div>`, root => {
-    setTimeout(() => $('#ns-name', root).focus(), 60);
-    let logo = null;
-    $('#ns-logo', root).onchange = async e => {
+  const W = { step: 0, name: '', me: '', ins: [], genres: [], people: [], key: '', key2: '', logo: null };
+  const STEPS = ['Name it', 'You', 'Its sound', 'Its people', 'Passcode', 'Ready'];
+  const root = sheet('<div id="nsz"></div>');
+  const custom = (id, ph) => `<div class="tempo-row" style="margin-top:8px"><input id="${id}" type="text" placeholder="${ph}"><button class="btn" data-add="${id}">Add</button></div>`;
+  const pick = (list, on, attr) => list.map(x => `<button class="sug${on(x) ? ' on' : ''}" data-${attr}="${esc(x)}">${on(x) ? '✓ ' : ''}${esc(x)}</button>`).join('');
+  const stepHtml = () => {
+    switch (W.step) {
+      case 0: return `<h3>A new space</h3><p class="lede">For a band, a project, or just you. It gets its own people, tracks, genres and passcode.</p>
+        <label class="field">What’s it called?</label><input id="n-name" type="text" value="${esc(W.name)}" placeholder="your band or project">
+        <label class="field">Logo (optional)</label>
+        <label class="logo-pick"><input id="n-logo" type="file" accept="image/png,image/jpeg,image/webp" hidden><span class="lp-prev" id="n-prev">${W.logo ? `<img src="${URL.createObjectURL(W.logo)}" alt="">` : '+'}</span><span class="small muted">Square or round works best.</span></label>`;
+      case 1: return `<h3>You</h3><p class="lede">How the others know you, and what you bring. You can add your sounds once you’re in.</p>
+        <label class="field">Your name</label><input id="n-me" type="text" value="${esc(W.me)}" placeholder="e.g. Marwan">
+        <label class="field">What you play</label>
+        <div class="sugs" id="n-ins">${pick([...new Set([...INSTRUMENTS, ...W.ins])], x => W.ins.includes(x), 'v')}</div>${custom('n-insx', 'something else')}`;
+      case 2: return `<h3>Its sound</h3><p class="lede">The genres this space moves between. They show up when someone plants a track. Change them any time.</p>
+        <div class="sugs" id="n-gen">${pick([...new Set([...W.genres, ...GENRE_IDEAS])], x => W.genres.includes(x), 'v')}</div>${custom('n-genx', 'your own, e.g. Motseklat rock')}`;
+      case 3: return `<h3>Its people</h3><p class="lede">Who’s in it? Members use the app and pick their name the first time they open it. Guest performers are named in line-ups but don’t use the app.</p>
+        <div id="n-ppl">${W.people.map((x, i) => `<div class="ns-row"><span class="av${x.guest ? ' guest' : ''}">${esc(initials(x.name))}</span><b>${esc(x.name)}</b>
+          <div class="seg sm"><button class="seg-b${x.guest ? '' : ' on'}" data-kind="${i}" data-g="0">Member</button><button class="seg-b${x.guest ? ' on' : ''}" data-kind="${i}" data-g="1">Guest</button></div>
+          <button class="icon-btn sm" data-rmp="${i}" aria-label="Remove ${esc(x.name)}">${ICON.trash}</button></div>`).join('') || '<p class="small faint" style="font-style:italic">Just you so far. That’s fine too.</p>'}</div>
+        <div class="tempo-row" style="margin-top:10px"><input id="n-pp" type="text" placeholder="a name"><button class="btn" id="n-ppadd">Add</button></div>`;
+      case 4: return `<h3>Passcode</h3><p class="lede">Anyone with it can open the space, so share it only with your people.</p>
+        <input id="n-key" type="password" autocapitalize="off" value="${esc(W.key)}" placeholder="at least 6 characters">
+        <input id="n-key2" type="password" autocapitalize="off" value="${esc(W.key2)}" placeholder="type it again" style="margin-top:8px">`;
+      default: return `<h3>${esc(W.name || 'Your space')}</h3>
+        <div class="ns-sum">
+          <div><span class="field">You</span><b>${esc(W.me || '—')}</b>${W.ins.length ? `<span class="muted serif"> · ${esc(W.ins.join(', '))}</span>` : ''}</div>
+          <div><span class="field">Genres</span>${W.genres.length ? `<div class="chips">${W.genres.map(g => `<span class="chip">${esc(g)}</span>`).join('')}</div>` : '<span class="faint serif">none yet</span>'}</div>
+          <div><span class="field">People</span>${W.people.length ? W.people.map(x => `<span class="ns-p">${esc(x.name)}${x.guest ? ' <i>guest</i>' : ''}</span>`).join('') : '<span class="faint serif">just you</span>'}</div>
+        </div>`;
+    }
+  };
+  const read = () => {
+    const v = id => { const el = $('#' + id, root); return el ? el.value.trim() : null; };
+    if (W.step === 0) W.name = v('n-name');
+    if (W.step === 1) W.me = v('n-me');
+    if (W.step === 4) { W.key = v('n-key'); W.key2 = v('n-key2'); }
+  };
+  const check = () => {
+    if (W.step === 0 && !W.name) return 'Give the space a name';
+    if (W.step === 1 && !W.me) return 'What should the others call you?';
+    if (W.step === 4 && W.key.length < 6) return 'The passcode needs at least 6 characters';
+    if (W.step === 4 && W.key !== W.key2) return 'The two passcodes don’t match';
+  };
+  const render = () => {
+    $('#nsz', root).innerHTML = `<div class="wz-dots">${STEPS.map((x, i) => `<i class="${i < W.step ? 'done' : i === W.step ? 'on' : ''}"></i>`).join('')}<span>${STEPS[W.step]}</span></div>
+      ${stepHtml()}
+      <div class="actions">${W.step ? '<button class="btn" id="n-back">Back</button>' : '<button class="btn" id="n-cancel">Cancel</button>'}
+      <button class="btn primary" id="n-next">${W.step === STEPS.length - 1 ? 'Start it' : 'Next'}</button></div>`;
+    wire();
+    const first = $('#nsz input[type=text], #nsz input[type=password]', root);
+    if (first && !first.value && W.step !== 1 && W.step !== 2) setTimeout(() => first.focus(), 60);
+    if (W.step === 1 && !W.me) setTimeout(() => $('#n-me', root).focus(), 60);
+    $('.sheet', root).scrollTop = 0;
+  };
+  const wire = () => {
+    const toggle = (list, v) => list.includes(v) ? list.filter(x => x !== v) : [...list, v];
+    root.querySelectorAll('#n-ins .sug').forEach(b => b.onclick = () => { read(); W.ins = toggle(W.ins, b.dataset.v); render(); });
+    root.querySelectorAll('#n-gen .sug').forEach(b => b.onclick = () => { W.genres = toggle(W.genres, b.dataset.v); render(); });
+    root.querySelectorAll('[data-add]').forEach(b => {
+      const inp = $('#' + b.dataset.add, root);
+      const add = () => { const v = inp.value.trim(); if (!v) return inp.focus(); read(); const k = b.dataset.add === 'n-insx' ? 'ins' : 'genres'; if (!W[k].includes(v)) W[k].push(v); render(); $('#' + b.dataset.add, root).focus(); };
+      b.onclick = add; inp.onkeydown = e => { if (e.key === 'Enter') add(); };
+    });
+    const pp = $('#n-pp', root);
+    if (pp) {
+      const add = () => { const v = pp.value.trim(); if (!v) return pp.focus(); if (!W.people.some(x => x.name.toLowerCase() === v.toLowerCase())) W.people.push({ name: v, guest: false }); render(); $('#n-pp', root).focus(); };
+      $('#n-ppadd', root).onclick = add; pp.onkeydown = e => { if (e.key === 'Enter') add(); };
+    }
+    root.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { W.people[+b.dataset.kind].guest = b.dataset.g === '1'; render(); });
+    root.querySelectorAll('[data-rmp]').forEach(b => b.onclick = () => { W.people.splice(+b.dataset.rmp, 1); render(); });
+    const lf = $('#n-logo', root); if (lf) lf.onchange = async e => {
       const f = e.target.files[0]; if (!f) return;
-      try { logo = await shrinkImage(f); $('#ns-prev', root).innerHTML = `<img src="${URL.createObjectURL(logo)}" alt="">`; } catch { toast('Couldn’t read that image'); }
+      try { W.logo = await shrinkImage(f); read(); render(); } catch { toast('Couldn’t read that image'); }
     };
-    $('#ns-go', root).onclick = async () => {
-      const v = id => $('#' + id, root).value.trim();
-      if (v('ns-key') !== v('ns-key2')) return toast('The two passcodes don’t match');
-      const btn = $('#ns-go', root); btn.disabled = true;
-      try {
-        const res = await fetch(API + '/api/spaces', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: v('ns-name'), me: v('ns-me'), instruments: v('ns-inst'), key: v('ns-key') }) });
-        const d = await res.json();
-        if (!res.ok) throw new Error(d.error || 'Couldn’t start it');
-        Spaces.add(v('ns-key'), d.space); Spaces.use(v('ns-key')); Spaces.setMe(d.me);
-        if (logo) { try { await uploadLogo(logo, v('ns-key')); } catch (e) { toast(e.message); } }
-        closeSheet(); await loadState(); go(''); route(); toast(`${d.space.name} is ready. Share its passcode with your people.`);
-      } catch (e) { toast(e.message); btn.disabled = false; }
+    const back = $('#n-back', root); if (back) back.onclick = () => { read(); W.step--; render(); };
+    const cancel = $('#n-cancel', root); if (cancel) cancel.onclick = closeSheet;
+    $('#n-next', root).onclick = () => {
+      read(); const bad = check(); if (bad) return toast(bad);
+      if (W.step === 3 && pp && pp.value.trim()) { $('#n-ppadd', root).click(); }
+      if (W.step < STEPS.length - 1) { W.step++; return render(); }
+      create();
     };
-  });
+  };
+  const create = async () => {
+    const btn = $('#n-next', root); btn.disabled = true; btn.textContent = 'Starting…';
+    try {
+      const res = await fetch(API + '/api/spaces', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: W.name, me: W.me, instruments: W.ins, genres: W.genres, people: W.people, key: W.key }) });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Couldn’t start it');
+      Spaces.add(W.key, d.space); Spaces.use(W.key); Spaces.setMe(d.me);
+      if (W.logo) { try { await uploadLogo(W.logo, W.key); } catch (e) { toast(e.message); } }
+      await loadState();
+      const members = W.people.filter(x => !x.guest);
+      const link = location.origin + location.pathname.replace(/index\.html$/, '');
+      const msg = `${W.name} is on Shajara 🌳\n${link}\nPasscode: ${W.key}`;
+      $('#nsz', root).innerHTML = `<div class="ns-done"><div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>
+        <h3>${esc(W.name)} is planted</h3>
+        <p class="lede">${members.length ? `Send ${esc(members.map(x => x.name).join(', '))} the link and the passcode. They pick their name and add their sounds.` : 'Send the link and passcode to whoever should be in it.'}</p>
+        <pre class="ns-msg">${esc(msg)}</pre>
+        <div class="actions"><button class="btn" id="n-copy">Copy</button>${navigator.share ? '<button class="btn" id="n-share">Share</button>' : ''}<button class="btn primary" id="n-in">Go in</button></div></div>`;
+      $('#n-copy', root).onclick = () => navigator.clipboard.writeText(msg).then(() => toast('Copied'), () => toast('Couldn’t copy'));
+      const sh = $('#n-share', root); if (sh) sh.onclick = () => navigator.share({ text: msg }).catch(() => {});
+      $('#n-in', root).onclick = () => { closeSheet(); go(''); route(); };
+    } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Start it'; }
+  };
+  render();
 }
 
 async function viewWho() {
@@ -1221,8 +1449,8 @@ async function viewWho() {
   $('#app').innerHTML = `<div class="wrap"><div class="gate">
     ${isBand() && !(S.space && S.space.logo_v) ? '' : logoImg(S.space, 'logo-big')}
     <h2>${esc(spaceName())}</h2>
-    <p class="muted">Who’s this? So everyone knows who posted what. You can change it later.</p>
-    <div class="people">${S.members.filter(m => !m.guest).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(m.instruments) || '&nbsp;'}</span></button>`).join('')}</div>
+    <p class="muted">Which one is you? So everyone knows who posted what.</p>
+    <div class="people">${S.members.filter(m => !m.guest).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(instrumentsOf(m.id).join(', ')) || (m.ready ? '&nbsp;' : 'hasn’t joined yet')}</span></button>`).join('')}</div>
     <label class="field">Not on the list?</label>
     <div class="tempo-row"><input id="newMe" type="text" placeholder="Your name"><button class="btn primary" id="joinMe">Add me</button></div>
   </div></div>`;
@@ -1239,6 +1467,225 @@ async function viewWho() {
 // Initials for an avatar: first letters of the first two words.
 const initials = n => (n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 const avatar = (m, cls) => `<span class="av${m && m.guest ? ' guest' : ''}${m && m.id === S.me ? ' me' : ''}${cls ? ' ' + cls : ''}">${esc(initials(m ? m.name : '?'))}</span>`;
+
+function soundsBlock(mid, compact) {
+  const ins = insOf(mid);
+  const rows = ins.map(i => `<div class="snd-row"><button class="snd-ins" onclick="instrumentSheet('${esc(mid)}', '${esc(i.id)}')">${esc(i.name)}</button>
+      <div class="snd-chips">${soundsOf(i.id).map(x => `<span class="snd-chip"><button class="snd-name" onclick="soundSheet('${esc(i.id)}', '${esc(x.id)}')">${esc(x.name)}</button>${x.audio_id ? `<button class="snd-play" aria-label="Hear ${esc(x.name)}" onclick="playSample('${esc(x.id)}', this)">${ICON.play}</button>` : ''}</span>`).join('')}
+      <button class="snd-add" onclick="soundSheet('${esc(i.id)}')">+ sound</button></div></div>`).join('');
+  return `<div class="snd-block${compact ? ' compact' : ''}">${rows || `<p class="small faint" style="font-style:italic;margin:0">No instruments yet.</p>`}
+    <button class="snd-add ins" onclick="instrumentSheet('${esc(mid)}')">+ instrument</button></div>`;
+}
+let sampleAudio = null;
+async function playSample(sid, btn) {
+  const x = soundById(sid); if (!x || !x.audio_id) return;
+  if (sampleAudio) { sampleAudio.pause(); const was = sampleAudio._sid; sampleAudio = null; document.querySelectorAll('.snd-play.on').forEach(b => { b.classList.remove('on'); b.innerHTML = ICON.play; }); if (was === sid) return; }
+  try {
+    const a = new Audio(await audioUrl({ audio_id: x.audio_id })); a._sid = sid; sampleAudio = a;
+    btn.classList.add('on'); btn.innerHTML = ICON.stop;
+    a.onended = () => { btn.classList.remove('on'); btn.innerHTML = ICON.play; sampleAudio = null; };
+    a.play();
+  } catch (e) { toast(e.message); }
+}
+async function refreshSounds() { try { await loadState(); } catch {} route(); }
+function instrumentSheet(mid, iid) {
+  const cur = iid ? insById(iid) : null, who = S.members.find(m => m.id === mid);
+  sheet(`<h3>${cur ? 'Instrument' : 'Add an instrument'}</h3><p class="lede">${esc(who ? (who.id === S.me ? 'Yours' : who.name + '’s') : '')}</p>
+    <input id="iname" type="text" value="${esc(cur ? cur.name : '')}" placeholder="e.g. electric guitar, oud, synth">
+    ${cur ? '' : `<div class="sugs">${INSTRUMENTS.filter(x => !insOf(mid).some(i => i.name.toLowerCase() === x)).slice(0, 10).map(x => `<button class="sug">${x}</button>`).join('')}</div>`}
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>
+    ${cur ? '<div style="margin-top:18px"><button class="btn danger block" id="del">Remove instrument</button></div>' : ''}`, root => {
+    const inp = $('#iname', root); setTimeout(() => inp.focus(), 60);
+    root.querySelectorAll('.sugs .sug').forEach(b => b.onclick = () => { inp.value = b.textContent; });
+    $('#ok', root).onclick = async () => {
+      const name = inp.value.trim(); if (!name) return toast('Give it a name');
+      try { await api(cur ? '/instruments/' + cur.id : '/instruments', { method: cur ? 'PATCH' : 'POST', body: { member_id: mid, name } }); closeSheet(); refreshSounds(); } catch (e) { toast(e.message); }
+    };
+    const del = $('#del', root); if (del) del.onclick = () => confirmSheet(`Remove ${esc(cur.name)}?`, `Its ${plural(soundsOf(cur.id).length, 'sound')} go too. Takes and line-ups that used them keep everything else.`, 'Remove', async () => {
+      await api('/instruments/' + cur.id, { method: 'DELETE' }); refreshSounds();
+    });
+  });
+}
+function soundSheet(iid, sid) {
+  const ins = insById(iid), cur = sid ? soundById(sid) : null;
+  const R = { blob: null, secs: 0, rec: null, stream: null, chunks: [], removed: false };
+  const s = sheet(`<h3>${cur ? esc(cur.name) : 'New sound'}<span class="ar">صوت</span></h3><p class="lede">${esc(ins ? ins.name : '')}</p>
+    <label class="field">Name</label><input id="sname" type="text" value="${esc(cur ? cur.name : '')}" placeholder="e.g. ebow, warm pad, through the delay">
+    <label class="field">Note (optional)</label><input id="snote" type="text" value="${esc(cur ? cur.notes : '')}" placeholder="e.g. Juno-60, patch 34, chorus II">
+    <label class="field">Let the others hear it (optional)</label>
+    <div class="snd-rec"><button class="rec-big sm" id="srec" aria-label="Record a sample"><i></i></button>
+      <span class="small muted" id="shint">${cur && cur.audio_id ? 'Has a sample. Record again to replace it.' : 'Play a few seconds of it.'}</span>
+      ${cur && cur.audio_id ? `<button class="sug" id="sold">${ICON.play} hear it</button><button class="sug" id="srm">remove</button>` : ''}</div>
+    ${cur ? (() => { const u = usesOfSound(cur.id); return `<label class="field">Where it’s used</label>${u.length ? `<div class="menu sp-uses">${u.slice(0, 12).map(x => { const n = secNameOf(x.track_id, x.section_id); return `<button class="menu-item" data-go="${esc(x.track_id)}|${esc(x.section_id)}"><span class="sp-dot" style="--c:${laneOf(x.layer).c}"></span><span><b>${esc(n.track)}</b><span class="small muted">${esc([n.section, laneOf(x.layer).short, x.line ? 'line-up' : '', x.takes ? plural(x.takes, 'take') : ''].filter(Boolean).join(' · '))}</span></span></button>`; }).join('')}</div>` : '<p class="small faint" style="font-style:italic;margin:4px 0 0">Not used yet. Pick it in a line-up or when recording.</p>'}`; })() : ''}
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>
+    ${cur ? '<div style="margin-top:18px"><button class="btn danger block" id="del">Delete sound</button></div>' : ''}`, root => {
+    if (!cur) setTimeout(() => $('#sname', root).focus(), 60);
+    root.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { const [tid, sid] = b.dataset.go.split('|'); closeSheet(); S.view[tid] = { sid }; if (location.hash.replace(/^#\/?/, '') === 't/' + tid && S.track) renderTrack(); else go('t/' + tid); });
+    const stopRec = () => { if (R.rec && R.rec.state !== 'inactive') R.rec.stop(); };
+    $('#srec', root).onclick = async () => {
+      if (R.rec && R.rec.state === 'recording') return stopRec();
+      const mime = pickMime(); if (mime === null) return toast('This browser can’t record audio');
+      try { R.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); } catch { return toast('Microphone blocked'); }
+      R.chunks = []; R.rec = new MediaRecorder(R.stream, mime ? { mimeType: mime } : {});
+      R.rec.ondataavailable = e => { if (e.data.size) R.chunks.push(e.data); };
+      R.rec.onstop = () => { R.blob = new Blob(R.chunks, { type: (R.rec.mimeType || mime || 'audio/mp4').split(';')[0] }); R.stream.getTracks().forEach(t => t.stop()); $('#srec', root).classList.remove('on'); $('#shint', root).textContent = `Got ${fmtTime(R.secs)}. Save to keep it.`; };
+      R.rec.start(); R.t0 = performance.now(); $('#srec', root).classList.add('on');
+      R.timer = setInterval(() => { R.secs = (performance.now() - R.t0) / 1000; $('#shint', root).textContent = `Recording ${fmtTime(R.secs)}… tap to stop`; if (R.secs > 30) { clearInterval(R.timer); stopRec(); } }, 200);
+    };
+    const old = $('#sold', root); if (old) old.onclick = () => playSample(cur.id, old);
+    const rm = $('#srm', root); if (rm) rm.onclick = () => { R.removed = true; rm.remove(); if (old) old.remove(); $('#shint', root).textContent = 'Sample will be removed when you save.'; };
+    $('#ok', root).onclick = async () => {
+      clearInterval(R.timer); stopRec();
+      const name = $('#sname', root).value.trim(); if (!name) return toast('Give the sound a name');
+      const btn = $('#ok', root); btn.disabled = true;
+      try {
+        await new Promise(r => setTimeout(r, R.rec && R.rec.state !== 'inactive' ? 300 : 0));
+        let audio = {};
+        if (R.blob) { const up = await api('/audio', { method: 'POST', body: R.blob }); audio = { audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10 }; }
+        else if (R.removed) audio = { audio_id: '' };
+        const body = { instrument_id: iid, name, notes: $('#snote', root).value.trim(), ...audio };
+        await api(cur ? '/sounds/' + cur.id : '/sounds', { method: cur ? 'PATCH' : 'POST', body });
+        closeSheet(); refreshSounds();
+      } catch (e) { toast(e.message); btn.disabled = false; }
+    };
+    const del = $('#del', root); if (del) del.onclick = () => confirmSheet(`Delete ${esc(cur.name)}?`, 'Line-ups and takes that named it just lose the label.', 'Delete', async () => {
+      await api('/sounds/' + cur.id, { method: 'DELETE' }); refreshSounds();
+    });
+  });
+  s._onclose = () => { clearInterval(R.timer); if (R.rec && R.rec.state === 'recording') { R.rec.onstop = null; R.rec.stop(); } if (R.stream) R.stream.getTracks().forEach(t => t.stop()); };
+}
+
+/* ---------- sound memory ---------- */
+// A line-up lists the sounds someone plays in a section, comma-separated; ids of deleted sounds are skipped.
+const sidsOf = h => (h && h.sound_ids ? String(h.sound_ids).split(',') : []).filter(id => soundById(id));
+const soundsLabel = ids => ids.map(soundLabel).filter(Boolean).join(' + ');
+const sameName = (a, b) => (a || '').trim().toLowerCase() === (b || '').trim().toLowerCase();
+const insNameOfSound = id => { const x = soundById(id); return x ? (insById(x.instrument_id) || {}).name || '' : ''; };
+// Everywhere instruments and sounds have been used: every line-up in the space, plus takes tagged with a sound.
+// The open track uses its live data, so a change shows up before the next refresh.
+function soundUses() {
+  const out = [], open = S.track && S.track.id;
+  const line = (t, h) => { const ids = sidsOf(h); (ids.length ? ids : ['']).forEach(sound_id => out.push({ kind: 'line', track_id: t.id, section_id: h.section_id, layer: h.layer, member_id: h.member_id, instrument: h.instrument || '', sound_id, at: t.updated_at || 0 })); };
+  const take = (tid, x, by) => out.push({ kind: 'take', track_id: tid, section_id: x.section_id, layer: x.layer, member_id: by, instrument: '', sound_id: x.sound_id, at: x.created_at || 0 });
+  for (const t of S.tracks || []) if (t.id !== open) (t.holders || []).forEach(h => line(t, h));
+  for (const x of S.soundTakes || []) if (x.track_id !== open) take(x.track_id, x, x.author_id);
+  if (open) { S.track.holders.forEach(h => line(S.track, h)); S.track.ideas.forEach(i => { if (i.sound_id) take(open, i, i.author_id); }); }
+  return out.filter(u => {
+    if (!u.sound_id) return true;
+    if (!soundById(u.sound_id)) { u.sound_id = ''; return u.kind === 'line'; }
+    if (!u.instrument) u.instrument = insNameOfSound(u.sound_id);
+    return true;
+  });
+}
+const secNameOf = (tid, sid) => {
+  const t = S.track && S.track.id === tid ? S.track : (S.tracks || []).find(x => x.id === tid);
+  return { track: t ? t.title : '', section: t ? ((t.sections || []).find(x => x.id === sid) || {}).name || '' : '' };
+};
+// Best guess at the instrument and sound someone uses in a layer, with the reason:
+// the nearest section of this track first, then what they usually do in that layer elsewhere.
+function recall(mid, layer, sid, onIns) {
+  if (!LAYER[layer]) return null;
+  const uses = soundUses().filter(u => u.member_id === mid && u.layer === layer && u.section_id !== sid && (!onIns || sameName(u.instrument, onIns)) && (u.instrument || u.sound_id));
+  if (!uses.length) return null;
+  const secs = S.track ? sections() : [], at = secs.findIndex(x => x.id === sid);
+  const here = uses.filter(u => S.track && u.track_id === S.track.id)
+    .map(u => ({ u, d: Math.abs(secs.findIndex(x => x.id === u.section_id) - at) + (secs.findIndex(x => x.id === u.section_id) > at ? .5 : 0) }))
+    .sort((a, b) => a.d - b.d || !!b.u.sound_id - !!a.u.sound_id);
+  if (here.length) {
+    const sec0 = here[0].u.section_id, best = here.filter(x => x.u.section_id === sec0).map(x => x.u).sort((a, b) => !!b.sound_id - !!a.sound_id)[0];
+    const insN = best.instrument || insNameOfSound(best.sound_id);
+    const ids = [...new Set(here.filter(x => x.u.section_id === sec0 && x.u.sound_id && sameName(x.u.instrument, insN)).map(x => x.u.sound_id))];
+    return { instrument: insN, sound_id: best.sound_id, sound_ids: ids, why: 'like in ' + secNameOf(best.track_id, sec0).section };
+  }
+  const top = (list, key) => { const m = new Map(); list.forEach(u => { if (u[key]) { const k = key === 'instrument' ? u[key].toLowerCase() : u[key]; const c = m.get(k) || { n: 0, at: 0, v: u[key] }; c.n++; c.at = Math.max(c.at, u.at); m.set(k, c); } }); return [...m.values()].sort((a, b) => b.n - a.n || b.at - a.at)[0]; };
+  const ins = top(uses, 'instrument'), instrument = onIns || (ins ? ins.v : '');
+  const snd = top(uses.filter(u => !instrument || sameName(u.instrument, instrument)), 'sound_id');
+  const n = new Set(uses.map(u => u.track_id)).size;
+  return { instrument, sound_id: snd ? snd.v : '', sound_ids: snd ? [snd.v] : [], why: `your usual ${LAYER[layer].short.toLowerCase()}${n > 1 ? `, ${n} tracks` : ''}` };
+}
+// Where one sound has been used, grouped by track and section.
+function usesOfSound(id) {
+  const g = new Map();
+  soundUses().filter(u => u.sound_id === id).forEach(u => {
+    const k = u.track_id + '|' + u.section_id, c = g.get(k) || { ...u, line: false, takes: 0 };
+    if (u.kind === 'line') c.line = true; else c.takes++;
+    g.set(k, c);
+  });
+  return [...g.values()].sort((a, b) => b.at - a.at);
+}
+async function newSoundFor(mid, insName, name) {
+  let ins = insByName(mid, insName);
+  if (!ins) ins = await api('/instruments', { method: 'POST', body: { member_id: mid, name: insName } });
+  const x = await api('/sounds', { method: 'POST', body: { instrument_id: ins.id, name } });
+  await loadState();
+  return x;
+}
+
+// A sound chooser for the recorders. It defaults to your sound in this section's line-up, else what you used
+// in the nearest section or usually use in this layer, and offers to keep the line-up in step with the take.
+function soundPicker(lane) {
+  const { sec } = curView();
+  const layer = LAYER[lane] ? lane : null;
+  const mineH = S.track.holders.filter(x => x.section_id === sec.id && x.member_id === S.me);
+  const h = layer && mineH.find(x => x.layer === lane), elsewhere = mineH.find(x => x.layer !== lane);
+  const held = sidsOf(h);
+  // Several sounds in the line-up: start from the one you last recorded with here.
+  const lastHere = held.length > 1 ? S.track.ideas.filter(i => i.author_id === S.me && i.layer === lane && held.includes(i.sound_id)).sort((a, b) => b.created_at - a.created_at)[0] : null;
+  let heldIns = h && h.instrument || '', pick = lastHere ? lastHere.sound_id : held[0] || '';
+  let why = !pick ? '' : held.length > 1 ? `one of your ${held.length} sounds in the ${sec.name} line-up${lastHere ? ', the one you used last' : ''}` : `your sound in the ${sec.name} line-up`;
+  if (!pick && layer) { const rc = recall(S.me, lane, sec.id, heldIns || null); if (rc && rc.sound_id) { pick = rc.sound_id; why = rc.why; } }
+  const S0 = { pick, why, sync: null };
+  const order = () => {
+    const list = insOf(S.me), first = heldIns || insNameOfSound(S0.pick);
+    const fit = fitFirst(list.map(i => i.name), layer);
+    return [...list].sort((a, b) => (sameName(b.name, first) - sameName(a.name, first)) || fit.indexOf(a.name) - fit.indexOf(b.name));
+  };
+  const syncHtml = () => {
+    S0.sync = null;
+    if (!layer || !S0.pick) return '';
+    const insN = insNameOfSound(S0.pick);
+    if (h && !held.includes(S0.pick)) { S0.sync = { mode: 'add', on: true }; return `<label class="sp-sync"><input type="checkbox" id="spSync" checked> Add it to my sounds in the ${esc(sec.name)} line-up</label>`; }
+    if (!h && !elsewhere) { S0.sync = { mode: 'join', on: true }; return `<label class="sp-sync"><input type="checkbox" id="spSync" checked> Put me in ${esc(LAYER[lane].short)} for ${esc(sec.name)}, on ${esc(insN)}</label>`; }
+    if (!h && elsewhere) return `<p class="sp-why">You’re in ${esc(LAYER[elsewhere.layer].short)} in this section, so the line-up stays as it is.</p>`;
+    return '';
+  };
+  const body = () => {
+    const groups = order();
+    return groups.length ? `<div class="sp-groups">${groups.map(i => `<div class="sp-g"><span class="snd-k">${esc(i.name)}</span>${soundsOf(i.id).map(x => `<button class="sug${S0.pick === x.id ? ' on' : ''}" data-s="${esc(x.id)}">${esc(x.name)}</button>`).join('')}<button class="sug ghost" data-new="${esc(i.name)}">+ new</button></div>`).join('')}</div>
+      ${S0.why && S0.pick ? `<p class="sp-why">✦ ${esc(S0.why)}</p>` : ''}${syncHtml()}`
+      : `<p class="small faint" style="font-style:italic;margin:4px 0 0">Add your instruments and sounds under You to tag takes with them.</p>`;
+  };
+  const html = `<label class="field">Sound${S0.pick ? '' : ' (optional)'}<button class="sp-none" id="spNone" type="button">${S0.pick ? 'none' : ''}</button></label><div id="spick">${body()}</div>`;
+  let rootEl = null;
+  const redraw = () => { $('#spick', rootEl).innerHTML = body(); const n = $('#spNone', rootEl); if (n) n.textContent = S0.pick ? 'none' : ''; wire(rootEl); };
+  const wire = root => {
+    rootEl = root;
+    root.querySelectorAll('#spick [data-s]').forEach(b => b.onclick = () => { S0.pick = S0.pick === b.dataset.s ? '' : b.dataset.s; S0.why = ''; redraw(); });
+    root.querySelectorAll('#spick [data-new]').forEach(b => b.onclick = () => {
+      const g = b.parentElement; b.outerHTML = `<input class="sug-in" type="text" placeholder="name it, e.g. ebow">`;
+      const inp = $('input.sug-in', g); inp.focus();
+      const done = async () => { const v = inp.value.trim(); if (!v) return redraw(); try { const x = await newSoundFor(S.me, b.dataset.new, v); S0.pick = x.id; S0.why = ''; redraw(); } catch (e) { toast(e.message); } };
+      inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); done(); } if (e.key === 'Escape') redraw(); };
+      inp.onblur = done;
+    });
+    const n = $('#spNone', root); if (n) n.onclick = () => { S0.pick = ''; redraw(); };
+    const c = $('#spSync', root); if (c) c.onchange = () => { if (S0.sync) S0.sync.on = c.checked; };
+  };
+  // After the take is posted: bring the line-up in step if asked.
+  const apply = async () => {
+    if (!S0.sync || !S0.sync.on || !S0.pick) return;
+    const cur = S.track.holders.filter(x => x.section_id === sec.id);
+    const insN = insNameOfSound(S0.pick);
+    const next = S0.sync.mode === 'add'
+      ? cur.map(x => x.member_id === S.me && x.layer === lane ? { ...x, sound_ids: [...sidsOf(x), S0.pick].join(','), instrument: x.instrument || insN } : x)
+      : [...cur, { member_id: S.me, layer: lane, instrument: insN, sound_ids: S0.pick }];
+    try {
+      S.track = await api(`/sections/${sec.id}/lineup`, { method: 'PUT', body: { holders: next.map(x => ({ member_id: x.member_id, layer: x.layer, instrument: x.instrument || '', sound_ids: x.sound_ids || '' })) } });
+      renderTrack(); toast(S0.sync.mode === 'join' ? `You’re in ${LAYER[lane].short} for ${sec.name}` : 'Line-up updated');
+    } catch (e) { toast(e.message); }
+  };
+  return { html, wire, get: () => S0.pick, apply };
+}
 
 function trackCard(t, mine) {
   const unseen = (S.seen[t.id] || 0) < t.updated_at;
@@ -1284,7 +1731,7 @@ function viewHome() {
     const people = [...members.sort((a, b) => (b.id === S.me) - (a.id === S.me)), ...guests].map(m => {
       const n = S.tracks.filter(t => t.created_by === m.id).length;
       return `<button class="pp${f === m.id ? ' on' : ''}" data-who="${esc(m.id)}">${avatar(m)}<span class="pp-n">${esc(m.id === S.me ? 'You' : m.name)}</span><span class="pp-c">${m.guest ? 'guest' : n ? n + ' track' + (n > 1 ? 's' : '') : ''}</span></button>`;
-    }).join('') + `<button class="pp add" onclick="go('band')"><span class="av">+</span><span class="pp-n">People</span></button>`;
+    }).join('') + `<button class="pp add" onclick="go('band')"><span class="av">+</span><span class="pp-n">Add</span></button>`;
     let body;
     if (f) {
       const who = S.members.find(m => m.id === f), list = S.tracks.filter(t => t.created_by === f);
@@ -1302,9 +1749,7 @@ function viewHome() {
       body = `<div class="list-head"><b>Tracks</b><div class="seg">${seg}</div></div>
         ${tab === 'others' && !list.length ? '<div class="empty small">Nothing from the others yet.</div>' : `<div class="tlist">${tab !== 'others' ? newCard() : ''}${list.map(t => trackCard(t, t.created_by === S.me)).join('')}</div>`}`;
     }
-    $('#app').innerHTML = topBar(`<button class="space-btn" onclick="spacesSheet()" aria-label="Switch space">${esc(spaceName())}<span class="caret">▾</span></button>`,
-      logoOf(S.space || { id: 'abba' }) ? logoImg(S.space || { id: 'abba' }, 'logo', spaceName()) : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z؀-ۿ]+/, '').slice(0, 1).toUpperCase())}</span>`,
-      `<button class="switch-btn" aria-label="Switch space" onclick="spacesSheet()">⇄ <span>Switch</span></button><button class="icon-btn" aria-label="People" onclick="go('band')">${ICON.people}</button>`) +
+    $('#app').innerHTML = spaceTop() +
       `<div class="wrap home">
         <div class="hello"><div><h2>Ahlan${me ? ', ' + esc(me.name) : ''}</h2><div class="muted serif" style="font-style:italic">${S.tracks.length} track${S.tracks.length === 1 ? '' : 's'} · ${members.length} ${members.length === 1 ? 'person' : 'people'}${guests.length ? ` · ${guests.length} guest${guests.length > 1 ? 's' : ''}` : ''}</div></div><span class="ar">شجرة</span></div>
         <div class="people-row">${people}</div>
@@ -1317,7 +1762,8 @@ function viewHome() {
           <div class="cc-step"><span class="cc-art cc-tree">${LAYERS.map(l => `<i style="--c:${l.c}" title="${l.name}"></i>`).join('')}</span><b>Each a tree</b><span>${LAYERS.map(l => `<em style="color:${l.c}">${l.short}</em>`).join(' · ')}</span></div>
           <button class="sug cc-btn" onclick="openTour()">Show me around</button>
         </div>
-      </div>`;
+      </div>` + tabBar('');
+    wireTabs();
     document.body.classList.add('wide');
     $('#app').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.homeTab = b.dataset.tab; render(); });
     $('#app').querySelectorAll('[data-who]').forEach(b => b.onclick = () => { S.homeFilter = S.homeFilter === b.dataset.who ? null : b.dataset.who; render(); });
@@ -1426,7 +1872,7 @@ function renderTrack() {
       return `<section class="layer" style="--c:${l.c};--pc:${pc}" id="L-${l.key}">
         <div class="layer-head"><div class="layer-glyph">${STAR}<svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
           <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div><span class="layer-ar ar">${l.ar}</span></div>
-        <div class="holders">${hs.length ? hs.map(h => `<button class="holder" onclick="editLineup('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}</button>`).join('')
+        <div class="holders">${hs.length ? hs.map(h => `<button class="holder" onclick="editLineup('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}${sidsOf(h).length ? ' · ' + esc(soundsLabel(sidsOf(h))) : ''}</button>`).join('')
           : `<button class="holder empty" onclick="editLineup('${l.key}')">empty · open for one of you, or production</button>`}</div>
         ${beatHtml}
         ${ideasHtml(sec.id, l.key, prevSeen)}
@@ -1588,7 +2034,7 @@ function ideaHtml(i, prevSeen) {
   }
   else if (i.kind === 'link') body = `<div class="idea-body"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(prettyUrl(i.url))}</a>${i.body ? '\n' + esc(i.body) : ''}</div>`;
   else body = `<div class="idea-body">${esc(i.body)}</div>`;
-  return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span><span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
+  return `<div class="idea"><div class="idea-top"><span class="by">${esc(memberName(i.author_id))}</span>${i.sound_id && soundLabel(i.sound_id) ? (soundById(i.sound_id).audio_id ? `<button class="snd-tag" onclick="playSample('${esc(i.sound_id)}', this)" aria-label="Hear ${esc(soundLabel(i.sound_id))}">${esc(soundLabel(i.sound_id))} ▸</button>` : `<span class="snd-tag">${esc(soundLabel(i.sound_id))}</span>`) : ''}<span>${ago(i.created_at)}</span>${isNew ? '<span class="new-tag">new</span>' : ''}<span class="sp"></span>
     ${i.starred && i.layer !== 'transition' ? '<span class="part-tag">the part</span>' : ''}
     ${i.kind === 'audio' || i.kind === 'midi' ? `<button class="pick${inMix(i.id) ? ' on' : ''}" aria-label="${inMix(i.id) ? 'Take out of the mix' : 'Add to the mix'}" onclick="togglePick('${esc(i.id)}')">${ICON.stack}<span>${inMix(i.id) ? 'in mix' : 'mix'}</span></button>` : ''}
     <button class="star${i.starred ? ' on' : ''}" aria-label="Make this the part" onclick="toggleStar('${esc(i.id)}')">${i.starred ? '✦' : '✧'}</button>
@@ -1778,13 +2224,13 @@ function trackForm(t) {
   return `<label class="field">Title</label><input id="f-title" type="text" value="${esc(t.title)}" placeholder="Working title is fine">
     <div class="row2"><div><label class="field">Maqam / scale</label><input id="f-maqam" type="text" list="maqamat" value="${esc(t.maqam)}" placeholder="e.g. Bayati"></div>
     <div><label class="field">On (tonic)</label><input id="f-tonic" type="text" value="${esc(t.tonic)}" placeholder="e.g. D"></div></div>
-    <label class="field">Genre</label><div class="sugs" id="f-genre">${GENRES.map(g => `<button type="button" class="sug${t.genre === g ? ' on' : ''}">${esc(g)}</button>`).join('')}</div>
+    <label class="field">Genre</label><div class="sugs" id="f-genre">${[...new Set([...genresOf(), ...(t.genre ? [t.genre] : [])])].map(g => `<button type="button" class="sug${t.genre === g ? ' on' : ''}">${esc(g)}</button>`).join('')}<input class="sug-in" id="f-genrex" type="text" placeholder="+ another"></div>
     <label class="field">Pulse (bpm) · tap along on the beat · sections can override it</label><div class="tempo-row"><input id="f-tempo" type="number" inputmode="numeric" value="${t.tempo || ''}" placeholder="e.g. 96"><button class="btn tap" id="tap" type="button">Tap</button></div>
     <label class="field">Notes on the whole track</label><textarea id="f-notes" placeholder="Form, feel, references, who brought it…">${esc(t.notes)}</textarea>`;
 }
 function readTrackForm(root) {
   return { title: $('#f-title', root).value, maqam: $('#f-maqam', root).value, tonic: $('#f-tonic', root).value,
-    tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value, genre: ($('#f-genre .sug.on', root) || {}).textContent || '' };
+    tempo: $('#f-tempo', root).value, notes: $('#f-notes', root).value, genre: $('#f-genrex', root).value.trim() || ($('#f-genre .sug.on', root) || {}).textContent || '' };
 }
 function wireTap(root) {
   root.querySelectorAll('#f-genre .sug').forEach(b => b.onclick = () => { const was = b.classList.contains('on'); root.querySelectorAll('#f-genre .sug').forEach(x => x.classList.remove('on')); if (!was) b.classList.add('on'); });
@@ -1864,7 +2310,8 @@ function newTrack() {
         <label class="field">Who brings it</label>
         ${chipRow('w-by', S.members.map(m => [m.id, m.name]), v => W.by.includes(v), 'v')}
         <label class="field">Genre</label>
-        ${chipRow('w-genre', [['', 'Unclear yet'], ...GENRES.map(g => [g, g])], v => W.genre === v, 'v')}`;
+        ${chipRow('w-genre', [['', 'Unclear yet'], ...[...new Set([...genresOf(), ...(W.genre ? [W.genre] : [])])].map(g => [g, g])], v => W.genre === v, 'v')}
+        <div class="tempo-row" style="margin-top:8px"><input id="w-genrex" type="text" placeholder="another genre"><button class="btn" id="w-genreadd" type="button">Add</button></div>`;
       case 2: return `<h3>Where it lives</h3><p class="lede">The frame for the whole track. Leave blank if you don’t know yet, or say it changes per section.</p>
         <div class="wz-lbl"><label class="field">Maqam / scale · root</label>${varyBtn('maqam')}</div>
         ${W.vary.maqam ? perSec() : `<div class="row2"><input id="w-maqam" type="text" list="maqamat" value="${esc(W.maqam)}" placeholder="e.g. Bayati"><input id="w-tonic" type="text" value="${esc(W.tonic)}" placeholder="root, e.g. D"></div>`}
@@ -1952,6 +2399,10 @@ function newTrack() {
       const ins = root.querySelectorAll('#w-secs input'); ins[ins.length - 1].select();
     };
     const tap = $('#w-tap', root); if (tap) tapTempo(tap, $('#w-tempo', root));
+    const gx = $('#w-genrex', root); if (gx) {
+      const add = () => { const v = gx.value.trim(); if (!v) return gx.focus(); read(); W.genre = v; render(); };
+      $('#w-genreadd', root).onclick = add; gx.onkeydown = e => { if (e.key === 'Enter') add(); };
+    }
     const back = $('#w-back', root); if (back) back.onclick = () => { read(); W.step--; render(); };
     const cancel = $('#w-cancel', root); if (cancel) cancel.onclick = closeSheet;
     const skip = $('#w-skip', root); if (skip) skip.onclick = () => { read(); W.step = STEPS.length - 1; render(); };
@@ -1976,6 +2427,7 @@ function newTrack() {
           ...(W.vary.pulse ? { tempo: x.tempo || '' } : {}),
           ...(W.vary.meter && x.meter ? { meter_n: x.meter[0], meter_sub: x.meter[1] } : {}) })),
       } });
+      keepGenre(W.genre);
       S.track = t; closeSheet(); go('t/' + t.id);
       toast(`${t.sections.length} section${t.sections.length > 1 ? 's' : ''} planted`);
     } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Plant it'; }
@@ -1993,7 +2445,7 @@ function editTrack(focusId) {
     $('#save', root).onclick = async () => {
       const f = readTrackForm(root);
       if (!f.title.trim()) return toast('Title can’t be empty');
-      try { S.track = await api('/tracks/' + t.id, { method: 'PATCH', body: f }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
+      try { S.track = await api('/tracks/' + t.id, { method: 'PATCH', body: f }); keepGenre(f.genre); closeSheet(); renderTrack(); } catch (e) { toast(e.message); }
     };
     $('#del', root).onclick = () => deleteTrack(t);
   });
@@ -2225,7 +2677,7 @@ function lineupOf(sid) {
   const hs = S.track.holders.filter(h => h.section_id === sid);
   const people = S.members.map(m => {
     const h = hs.find(x => x.member_id === m.id);
-    return { id: m.id, name: m.name, guest: !!m.guest, layer: h ? h.layer : null, instrument: h ? h.instrument : '' };
+    return { id: m.id, name: m.name, guest: !!m.guest, layer: h ? h.layer : null, instrument: h ? h.instrument : '', sound_ids: sidsOf(h) };
   });
   const prod = hs.filter(h => h.member_id === PRODUCTION);
   return { people, prod };
@@ -2234,7 +2686,7 @@ function lineupStrip(sec) {
   const { people, prod } = lineupOf(sec.id);
   const members = people.filter(p => !p.guest);
   const inCount = members.filter(p => p.layer).length, guestsIn = people.filter(p => p.guest && p.layer).length;
-  const chips = LAYERS.flatMap(l => people.filter(p => p.layer === l.key).map(p => `<span class="lu" style="--c:${l.c}">${esc(p.name)}${p.guest ? ' (guest)' : ''}${p.instrument ? ' · ' + esc(p.instrument) : ''}</span>`))
+  const chips = LAYERS.flatMap(l => people.filter(p => p.layer === l.key).map(p => `<span class="lu" style="--c:${l.c}">${esc(p.name)}${p.guest ? ' (guest)' : ''}${p.instrument ? ' · ' + esc(p.instrument) : ''}${p.sound_ids.length ? ' · ' + esc(soundsLabel(p.sound_ids)) : ''}</span>`))
     .concat(prod.map(h => `<span class="lu prod" style="--c:${LAYER[h.layer].c}">Production · ${esc(LAYER[h.layer].short)}${h.instrument ? ' · ' + esc(h.instrument) : ''}</span>`))
     .concat(members.filter(p => !p.layer).map(p => `<span class="lu out">${esc(p.name)} · out</span>`));
   return `<button class="lineup" onclick="editLineup()"><div class="lbl"><b>Line-up · ${inCount} of ${members.length} playing${guestsIn ? ` + ${guestsIn} guest${guestsIn > 1 ? 's' : ''}` : ''}</b><span class="ar">مين فين؟</span></div>${chips.join('')}</button>`;
@@ -2253,8 +2705,9 @@ function editLineup(focusLayer) {
   sheet(`<h3>Line-up · ${esc(sec.name)}<span class="ar">مين فين؟</span></h3>
     <p class="lede">There are ${P.filter(p => !p.guest).length} of you. Each of you is in one layer in this section, or out. Layers can stay empty; production and guests can fill the gaps.</p>
     <div class="lu-sum" id="sum"></div>
+    ${(() => { const pv = sections()[sections().indexOf(sec) - 1]; return pv && S.track.holders.some(h => h.section_id === pv.id) ? `<button class="btn block lu-copy" id="luCopy">Same as ${esc(pv.name)}</button>` : ''; })()}
     ${P.map((p, i) => `${p.guest && !(P[i - 1] || {}).guest ? '<div class="list-head"><b>Guest performers</b></div>' : ''}<div class="lu-row${p.guest ? ' guest' : ''}" data-i="${i}"><div class="top-l"><b>${esc(p.name)}${p.guest ? '<span class="guest-tag">guest</span>' : ''}</b><input type="text" placeholder="on what?" value="${esc(p.instrument)}"></div>
-      <div class="sugs lay">${choice(i, p.layer)}</div><div class="sugs inst"></div></div>`).join('')}
+      <div class="sugs lay">${choice(i, p.layer)}</div><div class="sugs inst"></div><div class="sugs snd hidden"></div><p class="sp-why hidden"></p></div>`).join('')}
     <div class="lu-row guest-add"><div class="top-l"><b>+ Guest</b><span class="small muted" style="font-style:italic">someone playing or singing on this, who doesn’t use the app</span></div>
       <div class="row2" style="margin-top:8px"><input id="gName" type="text" placeholder="name, e.g. Layla"><input id="gWhat" type="text" placeholder="what, e.g. vocals"></div>
       <button class="btn block" id="gAdd" style="margin-top:8px">Add guest performer</button></div>
@@ -2272,28 +2725,57 @@ function editLineup(focusLayer) {
         return `<div style="--c:${l.c}"><b>${l.short}</b>${names.length ? names.join(', ') : '<span class="empty-l">empty</span>'}</div>`;
       }).join('');
     };
+    const rowsDraw = {};
     root.querySelectorAll('.lu-row[data-i]').forEach(r => {
       const p = P[+r.dataset.i];
-      const own = instrumentsOf(p.id);
-      p.auto = !p.instrument || own.includes(p.instrument);
-      const drawInst = () => {
-        const box = $('.inst', r);
-        box.classList.toggle('hidden', !p.layer || !own.length);
-        box.innerHTML = fitFirst(own, p.layer).map(x => `<button class="sug${x === p.instrument ? ' on' : ''}" style="--c:${p.layer ? LAYER[p.layer].c : 'var(--accent)'}">${esc(x)}</button>`).join('');
-        box.querySelectorAll('.sug').forEach(b => b.onclick = () => { p.instrument = b.textContent; p.auto = false; $('input', r).value = p.instrument; drawInst(); });
+      const own = () => instrumentsOf(p.id);
+      p.auto = !p.instrument || own().includes(p.instrument);
+      p.sAuto = !p.sound_ids.length;
+      // Fill in instrument and sound from memory, unless the person already chose them by hand.
+      const guess = onIns => {
+        const rc = p.layer ? recall(p.id, p.layer, sec.id, onIns || null) : null;
+        if (!onIns && p.auto) { p.instrument = (rc && rc.instrument) || fitFirst(own(), p.layer)[0] || ''; $('input', r).value = p.instrument; }
+        if (p.sAuto) { const ins = insByName(p.id, p.instrument), mine = ins ? soundsOf(ins.id).map(x => x.id) : []; p.sound_ids = rc ? (rc.sound_ids || []).filter(id => mine.includes(id)) : []; }
+        p.why = rc && (rc.instrument || rc.sound_id) && (p.sound_ids.length || p.auto) ? rc.why : '';
       };
+      const drawInst = () => {
+        const box = $('.inst', r), list = own();
+        box.classList.toggle('hidden', !p.layer || !list.length);
+        box.innerHTML = fitFirst(list, p.layer).map(x => `<button class="sug${sameName(x, p.instrument) ? ' on' : ''}" style="--c:${p.layer ? LAYER[p.layer].c : 'var(--accent)'}">${esc(x)}</button>`).join('');
+        box.querySelectorAll('.sug').forEach(b => b.onclick = () => { p.instrument = b.textContent; p.auto = false; p.sAuto = true; $('input', r).value = p.instrument; guess(p.instrument); drawInst(); });
+        const ins = p.layer && insByName(p.id, p.instrument), snds = ins ? soundsOf(ins.id) : [];
+        p.sound_ids = p.sound_ids.filter(id => snds.some(x => x.id === id));
+        const sb = $('.snd', r), c = LAYER[p.layer] ? LAYER[p.layer].c : 'var(--accent)';
+        sb.classList.toggle('hidden', !p.layer || !p.instrument.trim());
+        sb.innerHTML = `<span class="snd-k">sounds</span>` + snds.map(x => `<button class="sug${p.sound_ids.includes(x.id) ? ' on' : ''}" data-s="${esc(x.id)}" style="--c:${c}">${p.sound_ids.includes(x.id) ? '✓ ' : ''}${esc(x.name)}</button>`).join('') + `<button class="sug ghost" data-new>+ new</button>`;
+        // Any number of sounds per section; each recording later picks one of them.
+        sb.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { const id = b.dataset.s; p.sound_ids = p.sound_ids.includes(id) ? p.sound_ids.filter(x => x !== id) : [...p.sound_ids, id]; p.sAuto = false; p.why = ''; drawInst(); });
+        $('[data-new]', sb).onclick = e => {
+          const b = e.currentTarget; b.outerHTML = `<input class="sug-in" type="text" placeholder="name it, e.g. ebow">`;
+          const inp = $('input.sug-in', sb); inp.focus();
+          const done = async () => { const v = inp.value.trim(); inp.onblur = null; if (!v) return drawInst(); try { const x = await newSoundFor(p.id, p.instrument.trim(), v); p.sound_ids = [...p.sound_ids, x.id]; p.sAuto = false; p.why = ''; drawInst(); } catch (err) { toast(err.message); } };
+          inp.onkeydown = ev => { if (ev.key === 'Enter') { ev.preventDefault(); done(); } if (ev.key === 'Escape') { inp.onblur = null; drawInst(); } };
+          inp.onblur = done;
+        };
+        const w = $('.sp-why', r); w.classList.toggle('hidden', !p.layer || !p.why); w.textContent = p.why ? '✦ ' + p.why : '';
+      };
+      rowsDraw[p.id] = () => { r.querySelectorAll('.lay .sug').forEach(x => x.classList.toggle('on', (x.dataset.l || null) === p.layer)); $('input', r).value = p.instrument; drawInst(); };
       r.querySelectorAll('.lay .sug').forEach(b => b.onclick = () => {
         p.layer = b.dataset.l || null;
         r.querySelectorAll('.lay .sug').forEach(x => x.classList.toggle('on', x === b));
-        if (p.layer && p.auto) {
-          const pick = fitFirst(own, p.layer)[0] || '';
-          p.instrument = pick; $('input', r).value = pick;
-        }
+        if (p.layer) guess(); else p.why = '';
         drawInst(); sum();
       });
       $('input', r).oninput = e => { p.instrument = e.target.value; p.auto = false; drawInst(); };
       drawInst();
     });
+    const cp = $('#luCopy', root); if (cp) cp.onclick = () => {
+      const pv = sections()[sections().indexOf(sec) - 1], hs = S.track.holders.filter(h => h.section_id === pv.id);
+      P.forEach(p => { const h = hs.find(x => x.member_id === p.id); p.layer = h ? h.layer : null; p.instrument = h ? h.instrument : ''; p.sound_ids = sidsOf(h); p.auto = false; p.sAuto = false; p.why = h ? 'like in ' + pv.name : ''; rowsDraw[p.id] && rowsDraw[p.id](); });
+      LAYERS.forEach(l => { const h = hs.find(x => x.member_id === PRODUCTION && x.layer === l.key); prodOn[l.key] = !!h; prodWhat[l.key] = h ? h.instrument : '';
+        const r = root.querySelector(`.prod-l[data-l="${l.key}"]`); r.classList.toggle('on', prodOn[l.key]); $('.check', r).textContent = prodOn[l.key] ? '✓' : ''; $('.prod-what', r).classList.toggle('hidden', !prodOn[l.key]); $('input', r).value = prodWhat[l.key]; });
+      sum(); toast(`Copied from ${pv.name}. Save to keep it.`);
+    };
     root.querySelectorAll('.prod-l').forEach(r => {
       const k = r.dataset.l;
       $('.prod-t', r).onclick = () => { prodOn[k] = !prodOn[k]; r.classList.toggle('on', prodOn[k]); $('.check', r).textContent = prodOn[k] ? '✓' : ''; $('.prod-what', r).classList.toggle('hidden', !prodOn[k]); sum(); };
@@ -2301,7 +2783,7 @@ function editLineup(focusLayer) {
       r.querySelectorAll('.sug').forEach(b => b.onclick = () => { prodWhat[k] = b.textContent; $('input', r).value = b.textContent; });
     });
     const holdersNow = () => [
-      ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument })),
+      ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument, sound_ids: p.sound_ids })),
       ...LAYERS.filter(l => prodOn[l.key]).map(l => ({ member_id: PRODUCTION, layer: l.key, instrument: prodWhat[l.key] })),
     ];
     $('#save', root).onclick = async () => {
@@ -2756,7 +3238,8 @@ async function postIdea(payload, root) {
     S.track.updated_at = idea.created_at;
     closeSheet(); renderTrack();
     const el = $('#L-' + payload.layer); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  } catch (e) { toast(e.message); if (btn) btn.disabled = false; }
+    return true;
+  } catch (e) { toast(e.message); if (btn) btn.disabled = false; return false; }
 }
 
 /* ---------- backing for recorders ---------- */
@@ -2823,15 +3306,16 @@ function openRecorder(lane) {
   stopEverything();
   const bk = backingHtml(lane);
   const R = { chunks: [], blob: null, secs: 0, offset: 0 };
+  const sp = soundPicker(lane);
   prefetchStack(bk.sec.id);
 
   const s = sheet(`<h3 style="color:${l.c}">Record · ${laneTitle(lane)}</h3><p class="lede" id="hint">Tap to start. Hum it, play it, beatbox it.</p>
     <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0:00</div><div class="count" id="count"></div></div>
-    <div id="bk">${bk.html}</div>
+    <div id="bk">${sp.html}${bk.html}</div>
     <div id="review" class="hidden"><div class="player" style="--c:${l.c}"><button class="play" id="pv">${ICON.play}</button><div class="bar"><i></i></div><span class="time" id="pvTime"></span></div>
       <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. idea for the intro, slow">
       <div class="actions"><button class="btn" id="again">Redo</button><button class="btn primary" id="save">Post</button></div></div>`, root => {
-    bk.wire(root);
+    bk.wire(root); sp.wire(root);
     $('#recBtn', root).onclick = () => (R.rec && R.rec.state === 'recording' ? stop() : start());
     $('#again', root).onclick = () => {
       stopPreview(); R.blob = null;
@@ -2926,9 +3410,10 @@ function openRecorder(lane) {
     const btn = $('#save', s); btn.disabled = true; btn.textContent = 'Uploading…';
     try {
       const up = await api('/audio', { method: 'POST', body: R.blob });
-      await postIdea({ layer: lane, kind: 'audio', audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10, body: $('#cap', s).value,
+      const ok = await postIdea({ layer: lane, kind: 'audio', audio_id: up.id, audio_mime: up.mime, duration: Math.round(R.secs * 10) / 10, body: $('#cap', s).value, sound_id: sp.get(),
         data: R.offset || R.loop ? JSON.stringify({ offset: Math.round(R.offset * 1000) / 1000, ...(R.loop ? { loop: R.loop } : {}),
           ...(R.startBar > 1 ? { place: { mode: R.loop ? 'loop' : 'once', bar: R.startBar } } : {}) }) : '' }, s);
+      if (ok) sp.apply();
     } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Post'; }
   }
 }
@@ -3041,6 +3526,7 @@ function openMidi(lane) {
   stopEverything();
   const bk = backingHtml(lane);
   let monitor = store.get('midiMonitor', true);
+  const sp = soundPicker(lane);
   let sync = store.get('midiSync', false);
   const M = { access: null, input: null, notes: [], open: new Map(), pedal: false, held: new Set(), rec: false, armed: false, len: 0, gridded: false,
     chan: null, seen: new Set(), ticks: 0, lastTick: 0, tickMs: 0, clockAt: 0, firstTick: 0, span: 0 };
@@ -3050,7 +3536,7 @@ function openMidi(lane) {
     <div class="sugs hidden" id="inputs" style="--c:${l.c}"></div>
     <div class="hidden" id="chanBox"><label class="field">Channel</label><div class="sugs" id="chans" style="--c:${l.c}"></div></div>
     <div class="rec-stage"><button class="rec-big" id="recBtn" aria-label="Record"><i></i></button><div class="rec-time" id="recTime">0 notes</div><div class="count" id="count"></div></div>
-    <div id="bk">
+    <div id="bk">${sp.html}
     <button class="toggle${sync ? ' on' : ''}" id="sync"><span class="sw"></span><span><b>Follow Ableton Live’s play button</b><br><span class="small muted">Arm here, press play in Live: the take starts on Live’s downbeat and stops with Live, timed by Live’s MIDI clock.</span></span></button>
     <div id="bkOwn" class="${sync ? 'hidden' : ''}">${bk.html}</div>
     <button class="toggle${monitor ? ' on' : ''}" id="mon"><span class="sw"></span><span><b>Play the notes through this device</b><br><span class="small muted">For keyboards without their own speakers. Leave off when Live makes the sound.</span></span></button>
@@ -3063,7 +3549,7 @@ function openMidi(lane) {
     <div id="review" class="hidden" style="--c:${l.c}"><div class="count" id="liveOffer" style="margin-bottom:8px"></div><div id="rollWrap"></div>
       <label class="field">Caption (optional)</label><input id="cap" type="text" placeholder="e.g. left hand for the B part">
       <div class="actions"><button class="btn" id="again">Redo</button><button class="btn" id="pv">${ICON.play}<span>Play</span></button><button class="btn primary" id="save">Post</button></div></div>`, root => {
-    bk.wire(root);
+    bk.wire(root); sp.wire(root);
     $('#mon', root).onclick = () => { monitor = !monitor; $('#mon', root).classList.toggle('on', monitor); store.set('midiMonitor', monitor); };
     $('#sync', root).onclick = () => { sync = !sync; $('#sync', root).classList.toggle('on', sync); $('#bkOwn', root).classList.toggle('hidden', sync); store.set('midiSync', sync); };
     $('#recBtn', root).onclick = () => (M.rec || M.armed ? stop() : start());
@@ -3071,7 +3557,7 @@ function openMidi(lane) {
     $('#pv', root).onclick = () => { const idea = draftIdea(); if (Takes.active.has(idea.id)) Takes.stop(idea.id); else Takes.play(idea); };
     $('#save', root).onclick = async () => {
       const take = { bpm: pulseOf(bk.sec), len: M.len, bar: M.gridded ? secBarPulses(bk.sec) : 4, notes: M.notes, ...(M.loopP ? { loop: bk.B.bars } : {}), ...(M.startBar > 1 ? { place: { mode: M.loopP ? 'loop' : 'once', bar: M.startBar } } : {}), ...(M.chan != null ? { ch: M.chan + 1 } : {}) };
-      await postIdea({ layer: lane, kind: 'midi', data: JSON.stringify(take), duration: Math.round(M.len * 60 / take.bpm * 10) / 10, body: $('#cap', root).value }, root);
+      if (await postIdea({ layer: lane, kind: 'midi', sound_id: sp.get(), data: JSON.stringify(take), duration: Math.round(M.len * 60 / take.bpm * 10) / 10, body: $('#cap', root).value }, root)) sp.apply();
     };
   });
   s._onclose = () => { if (M.rec || M.armed) stop(); Takes.stopAll(); Player.stop(); for (const n of [...Synth.voices.keys()]) Synth.off(n); if (M.input) M.input.onmidimessage = null; };
@@ -3311,75 +3797,192 @@ async function spacesSheet() {
     }).catch(() => { $('#spList', root).innerHTML = ''; toast('Couldn’t load the spaces'); });
   });
 }
-function spaceSettings() {
-  sheet(`<h3>${esc(spaceName())} · settings</h3>
-    <label class="field">Name</label><input id="sn" type="text" value="${esc(spaceName())}">
-    <label class="field">Logo</label>
-    <label class="logo-pick"><input id="sl" type="file" accept="image/png,image/jpeg,image/webp" hidden><span class="lp-prev">${logoOf(S.space) ? `<img src="${logoOf(S.space).src}" alt="">` : '+'}</span><span class="small muted">Tap to ${logoOf(S.space) ? 'change it' : 'add one'}. It shows on the opening page and in the header.</span></label>
-    ${S.space && S.space.logo_v ? '<button class="sug" id="slRm" style="margin-top:8px">Remove the uploaded logo</button>' : ''}
-    <label class="field">New passcode</label><input id="sk" type="password" autocapitalize="off" placeholder="leave empty to keep it">
-    <p class="small faint" style="font-style:italic">Changing the passcode signs everyone else out of this space, and old invite links stop working. Share the new one yourself.</p>
-    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
-    $('#sl', root).onchange = async e => {
-      const f = e.target.files[0]; if (!f) return;
-      try { const r = await uploadLogo(await shrinkImage(f)); S.space = { ...S.space, logo_v: r.logo_v }; closeSheet(); viewBand(); toast('Logo updated'); } catch (err) { toast(err.message); }
-    };
-    const rm = $('#slRm', root); if (rm) rm.onclick = async () => {
-      try { await api('/space/logo', { method: 'DELETE' }); S.space = { ...S.space, logo_v: null }; closeSheet(); viewBand(); toast('Logo removed'); } catch (err) { toast(err.message); }
-    };
-    $('#ok', root).onclick = async () => {
-      const name = $('#sn', root).value.trim(), nk = $('#sk', root).value.trim();
-      try {
-        const r = await api('/space', { method: 'PATCH', body: { name, new_key: nk } });
-        if (nk) { const l = Spaces.list(), c = l.find(x => x.key === S.key); if (c) c.key = nk; Spaces.save(l); S.key = nk; store.set('key', nk); }
-        S.space = { ...S.space, name: r.name }; Spaces.add(S.key, S.space);
-        closeSheet(); viewBand(); toast(nk ? 'Passcode changed' : 'Saved');
-      } catch (e) { toast(e.message); }
-    };
+/* ---------- you, people, space ---------- */
+async function patchMe(body) {
+  const m = await api('/members/' + S.me, { method: 'PATCH', body });
+  Object.assign(S.members.find(x => x.id === m.id), m); return m;
+}
+// Quick-add chips for instruments: one tap adds it.
+function quickIns(mid, noOther) {
+  const have = insOf(mid).map(i => i.name.toLowerCase());
+  const left = INSTRUMENTS.filter(x => !have.includes(x));
+  return `<div class="sugs qi">${left.slice(0, 12).map(x => `<button class="sug" data-qi="${esc(x)}">+ ${esc(x)}</button>`).join('')}${noOther ? '' : '<button class="sug" data-qi="">+ other…</button>'}</div>`;
+}
+function wireQuickIns(root, mid, after) {
+  root.querySelectorAll('[data-qi]').forEach(b => b.onclick = async () => {
+    if (!b.dataset.qi) return instrumentSheet(mid);
+    b.disabled = true;
+    try { await api('/instruments', { method: 'POST', body: { member_id: mid, name: b.dataset.qi } }); await loadState(); after(); } catch (e) { toast(e.message); b.disabled = false; }
   });
 }
+
+// First time someone opens a space as themselves: say hello, collect instruments and sounds.
+function viewWelcome() {
+  const me = S.members.find(m => m.id === S.me);
+  const step = S.welStep || 0;
+  const done = async () => { try { await patchMe({ ready: true }); } catch (e) { return toast(e.message); } S.welStep = 0; go(''); route(); };
+  const others = S.members.filter(m => m.id !== S.me && !m.guest);
+  const steps = [
+    () => `<div class="wel-hero">${logoOf(S.space) ? logoImg(S.space, 'logo-big') : `<div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>`}<h2>Ahlan, ${esc(me.name)}</h2>
+        <p class="lede">Welcome to <b>${esc(spaceName())}</b>. Two quick things so the others know what you bring. Both can change any time.</p></div>
+      ${others.length ? `<div class="wel-who">${others.map(m => `<span class="wel-p">${avatar(m)}<span>${esc(m.name)}</span></span>`).join('')}</div>` : ''}
+      ${genresOf().length ? `<p class="small muted serif" style="font-style:italic;text-align:center">${esc(genresOf().join(' · '))}</p>` : ''}`,
+    () => `<h3>What do you play?</h3><p class="lede">Tap to add. They become one-tap choices when you’re in a line-up.</p>
+      <div class="wel-ins">${insOf(S.me).map(i => `<button class="sug on" onclick="instrumentSheet('${esc(S.me)}', '${esc(i.id)}')">${esc(i.name)}</button>`).join('') || '<p class="small faint" style="font-style:italic;margin:0">Nothing yet.</p>'}</div>
+      ${quickIns(S.me)}`,
+    () => `<h3>Your sounds</h3><p class="lede">The sounds you make on each instrument, like an ebow on the guitar or a warm pad on the synth. Record a few seconds so the others can hear it. Optional.</p>
+      ${insOf(S.me).length ? soundsBlock(S.me) : '<p class="small faint" style="font-style:italic">Add an instrument first, or skip this.</p>'}`,
+  ];
+  $('#app').innerHTML = `<div class="wrap wel">
+    <div class="wz-dots">${steps.map((x, i) => `<i class="${i < step ? 'done' : i === step ? 'on' : ''}"></i>`).join('')}<span>${['Welcome', 'Instruments', 'Sounds'][step]}</span></div>
+    ${steps[step]()}
+    <div class="actions">${step ? '<button class="btn" id="wl-back">Back</button>' : `<button class="btn" id="wl-notme">Not ${esc(me.name)}?</button>`}
+      <button class="btn primary" id="wl-next">${step === steps.length - 1 ? 'Take me in' : step ? 'Next' : 'Let’s go'}</button></div>
+    ${step < steps.length - 1 ? '<div class="sugs" style="justify-content:center;margin-top:12px"><button class="sug wz-skip" id="wl-skip">Skip for now</button></div>' : ''}
+  </div>`;
+  wireQuickIns($('#app'), S.me, viewWelcome);
+  const back = $('#wl-back'); if (back) back.onclick = () => { S.welStep = step - 1; viewWelcome(); };
+  const notme = $('#wl-notme'); if (notme) notme.onclick = () => { Spaces.setMe(''); route(); };
+  $('#wl-next').onclick = () => { if (step < steps.length - 1) { S.welStep = step + 1; viewWelcome(); scrollTo(0, 0); } else done(); };
+  const skip = $('#wl-skip'); if (skip) skip.onclick = done;
+}
+
+function viewYou() {
+  const render = () => {
+    const me = S.members.find(m => m.id === S.me); if (!me) return route();
+    const mine = S.tracks.filter(t => t.created_by === S.me);
+    const n = insOf(S.me).reduce((k, i) => k + soundsOf(i.id).length, 0);
+    $('#app').innerHTML = spaceTop() + `<div class="wrap">
+      <div class="you-hero">${avatar(me, 'xl')}<div class="you-name"><input id="yname" type="text" value="${esc(me.name)}" aria-label="Your name"><span class="small muted serif">in ${esc(spaceName())} · ${plural(insOf(S.me).length, 'instrument')} · ${plural(n, 'sound')}</span></div></div>
+      <div class="list-head"><b>Instruments &amp; sounds</b><span class="small muted" style="font-style:italic">tap to edit</span></div>
+      <div class="card-box">${soundsBlock(S.me)}</div>
+      ${quickIns(S.me, true)}
+      <div class="list-head"><b>Your tracks</b><span class="small muted">${mine.length}</span></div>
+      ${mine.length ? `<div class="menu">${mine.slice(0, 6).map(t => `<button class="menu-item" onclick="go('t/${esc(t.id)}')"><span><b>${esc(t.title)}</b><span class="small muted">${esc([t.genre, ago(t.updated_at)].filter(Boolean).join(' · '))}</span></span></button>`).join('')}
+        ${mine.length > 6 ? `<button class="sug" onclick="S.homeTab='mine'; go('')">See all ${mine.length}</button>` : ''}</div>` : '<p class="small faint" style="font-style:italic">Nothing planted yet.</p>'}
+      <div class="list-head"><b>This phone</b></div>
+      <div class="menu">
+        <button class="menu-item" id="y-tour"><span><b>Show me around</b><span class="small muted">the tips, again</span></span></button>
+        <button class="menu-item" id="y-switch"><span><b>Not ${esc(me.name)}?</b><span class="small muted">pick who you are on this phone</span></span></button>
+      </div>
+    </div>` + tabBar('me');
+    wireTabs(); wireQuickIns($('#app'), S.me, render);
+    const nm = $('#yname');
+    nm.onchange = async () => { const v = nm.value.trim(); if (!v) { nm.value = me.name; return; } try { await patchMe({ name: v }); toast('Saved'); } catch (e) { toast(e.message); } };
+    nm.onkeydown = e => { if (e.key === 'Enter') nm.blur(); };
+    $('#y-tour').onclick = () => { store.set('coach:track:' + ((S.space && S.space.id) || 'abba'), false); openTour(); };
+    $('#y-switch').onclick = () => { Spaces.setMe(''); route(); };
+  };
+  render();
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'me' && !$('.scrim') && document.activeElement.id !== 'yname') render(); }).catch(e => toast(e.message));
+}
+
 function viewBand() {
   const render = () => {
     const members = S.members.filter(m => !m.guest), guests = S.members.filter(m => m.guest);
-    const row = m => `<div class="member-row"><div class="nm"><b>${esc(m.name)}</b><span class="nm-act">${m.guest ? '' : m.id === S.me ? '<span class="me-tag">you</span>' : `<button class="small muted" data-me="${esc(m.id)}">this is me</button>`}<button class="icon-btn sm" aria-label="Remove ${esc(m.name)}" data-rm="${esc(m.id)}">${ICON.trash}</button></span></div>
-        <input type="text" data-inst="${esc(m.id)}" value="${esc(m.instruments)}" placeholder="${m.guest ? 'what they do, e.g. vocals' : 'instruments, comma separated'}" style="margin-top:8px">
-        ${m.guest ? `<button class="sug" data-promote="${esc(m.id)}" style="margin-top:8px">Make a member</button>` : ''}</div>`;
-    $('#app').innerHTML = topBar(esc(spaceName()), S.me ? backBtn('') : '', `<button class="icon-btn" aria-label="Space settings" onclick="spaceSettings()">${ICON.edit}</button>`) + `<div class="wrap">
+    const row = m => {
+      const n = insOf(m.id).reduce((k, i) => k + soundsOf(i.id).length, 0), open = S.expanded['p:' + m.id];
+      return `<div class="member-row${open ? ' open' : ''}"><button class="nm" data-open="${esc(m.id)}">${avatar(m)}<span class="nm-txt"><b>${esc(m.name)}</b><span class="small muted serif">${esc(instrumentsOf(m.id).join(', ')) || (m.guest ? 'guest performer' : m.ready ? 'no instruments yet' : 'hasn’t joined yet')}${n ? ` · ${plural(n, 'sound')}` : ''}</span></span>${m.id === S.me ? '<span class="me-tag">you</span>' : ''}<span class="caret">${open ? '▴' : '▾'}</span></button>
+        ${open ? `<div class="nm-body">${soundsBlock(m.id)}<div class="sugs" style="margin-top:10px">${m.guest ? `<button class="sug" data-promote="${esc(m.id)}">Make a member</button>` : ''}<button class="sug" data-rename="${esc(m.id)}">Rename</button><button class="sug danger" data-rm="${esc(m.id)}">Remove</button></div></div>` : ''}</div>`;
+    };
+    $('#app').innerHTML = spaceTop() + `<div class="wrap">
       <div class="list-head"><b>Members</b><span class="small muted" style="font-style:italic">use the app</span></div>
       ${members.map(row).join('') || '<p class="small faint">Nobody yet.</p>'}
       <div class="list-head"><b>Guest performers</b><span class="small muted" style="font-style:italic">named in line-ups, don’t use the app</span></div>
       ${guests.map(row).join('') || '<p class="small faint" style="font-style:italic">None yet. Add one here or straight from a line-up.</p>'}
       <label class="field">Add someone</label>
       <div class="tempo-row"><input id="newName" type="text" placeholder="Name"><button class="btn" id="addG">Guest</button><button class="btn" id="add">Member</button></div>
-      <p class="muted small" style="margin-top:14px">Tap “this is me” to switch who you are on this phone. Instruments show up as one-tap choices in the line-up.</p>
-      <div style="margin-top:24px;display:flex;gap:10px"><button class="btn block" onclick="store.set('coach:track:' + ((S.space && S.space.id) || 'abba'), false); openTour()">Show me around</button><button class="btn block" onclick="spacesSheet()">Switch or join</button></div>
-      <div style="margin-top:10px"><button class="btn block" id="logout">Leave ${esc(spaceName())} on this phone</button></div>
-    </div>`;
-    $('#app').querySelectorAll('[data-me]').forEach(b => b.onclick = () => { Spaces.setMe(b.dataset.me); render(); });
+      <p class="muted small serif" style="margin-top:12px;font-style:italic">Members you add pick their name the first time they open ${esc(spaceName())}.</p>
+    </div>` + tabBar('band');
+    wireTabs();
+    $('#app').querySelectorAll('[data-open]').forEach(b => b.onclick = () => { const k = 'p:' + b.dataset.open; S.expanded[k] = !S.expanded[k]; render(); });
     $('#app').querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
       const m = S.members.find(x => x.id === b.dataset.rm);
       confirmSheet(`Remove ${esc(m.name)}?`, 'They come off every line-up. Their ideas and recordings stay, still credited to them.', 'Remove', async () => {
         await api('/members/' + m.id, { method: 'DELETE' });
         S.members = S.members.filter(x => x.id !== m.id);
         if (S.me === m.id) Spaces.setMe('');
-        render();
+        route();
+      });
+    });
+    $('#app').querySelectorAll('[data-rename]').forEach(b => b.onclick = () => {
+      const m = S.members.find(x => x.id === b.dataset.rename);
+      sheet(`<h3>Rename</h3><input id="rn" type="text" value="${esc(m.name)}"><div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
+        const inp = $('#rn', root); setTimeout(() => inp.select(), 60);
+        $('#ok', root).onclick = async () => { const v = inp.value.trim(); if (!v) return; try { const r = await api('/members/' + m.id, { method: 'PATCH', body: { name: v } }); Object.assign(m, r); closeSheet(); render(); } catch (e) { toast(e.message); } };
       });
     });
     $('#app').querySelectorAll('[data-promote]').forEach(b => b.onclick = async () => {
       try { const m = await api('/members/' + b.dataset.promote, { method: 'PATCH', body: { guest: false } }); Object.assign(S.members.find(x => x.id === m.id), m); render(); } catch (e) { toast(e.message); }
     });
-    $('#app').querySelectorAll('[data-inst]').forEach(inp => inp.onchange = async () => {
-      try { const m = await api('/members/' + inp.dataset.inst, { method: 'PATCH', body: { instruments: inp.value } }); Object.assign(S.members.find(x => x.id === m.id), m); toast('Saved'); } catch (e) { toast(e.message); }
-    });
     const add = guest => async () => {
       const name = $('#newName').value.trim(); if (!name) return $('#newName').focus();
-      try { const m = await api('/members', { method: 'POST', body: { name, guest } }); S.members.push(m); if (!S.me) Spaces.setMe(m.id); render(); } catch (e) { toast(e.message); }
+      try { const m = await api('/members', { method: 'POST', body: { name, guest } }); S.members.push(m); render(); toast(guest ? `${name} added as a guest performer` : `${name} added. They pick their name when they open it.`); } catch (e) { toast(e.message); }
     };
     $('#add').onclick = add(false); $('#addG').onclick = add(true);
+  };
+  render();
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'band' && !$('.scrim')) render(); }).catch(e => toast(e.message));
+}
+
+function viewSpace() {
+  const render = () => {
+    const sp = S.space || { id: 'abba' }, g = genresOf();
+    const people = S.members.filter(m => !m.guest).length;
+    $('#app').innerHTML = spaceTop('') + `<div class="wrap">
+      <div class="sp-hero">
+        <label class="sp-logo"><input id="sl" type="file" accept="image/png,image/jpeg,image/webp" hidden>${logoOf(sp) ? `<img src="${logoOf(sp).src}" alt="">` : '<span>+ logo</span>'}</label>
+        <div class="sp-name"><input id="sn" type="text" value="${esc(spaceName())}" aria-label="Space name"><span class="small muted serif">${plural(people, 'member')} · ${plural(S.tracks.length, 'track')}${S.space && S.space.logo_v ? ' · <button class="link-btn" id="slRm">remove logo</button>' : ''}</span></div>
+      </div>
+      <div class="list-head"><b>Genres</b><span class="small muted" style="font-style:italic">offered when planting a track</span></div>
+      <div class="sugs gen-list">${g.map((x, i) => `<span class="sug gen">${esc(x)}<button data-gx="${i}" aria-label="Remove ${esc(x)}">×</button></span>`).join('') || '<span class="small faint" style="font-style:italic">None yet.</span>'}</div>
+      <div class="tempo-row" style="margin-top:10px"><input id="gnew" type="text" placeholder="add a genre"><button class="btn" id="gadd">Add</button></div>
+      ${GENRE_IDEAS.filter(x => !g.some(y => y.toLowerCase() === x.toLowerCase())).length ? `<div class="sugs gen-ideas">${GENRE_IDEAS.filter(x => !g.some(y => y.toLowerCase() === x.toLowerCase())).slice(0, 8).map(x => `<button class="sug ghost" data-gi="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>` : ''}
+      <div class="list-head"><b>Passcode</b></div>
+      <div class="menu"><button class="menu-item" id="sk"><span><b>Change the passcode</b><span class="small muted">everyone else signs in again with the new one</span></span></button></div>
+      <div class="list-head"><b>Your spaces</b></div>
+      <div class="menu">
+        <button class="menu-item" onclick="spacesSheet()"><span><b>Switch or join a space</b><span class="small muted">${plural(Spaces.list().length, 'space')} on this phone</span></span></button>
+        <button class="menu-item" onclick="newSpaceSheet()"><span><b>+ Start a new space</b><span class="small muted">a band, a project, or just you</span></span></button>
+        <button class="menu-item danger" id="logout"><span><b>Leave ${esc(spaceName())} on this phone</b><span class="small muted">nothing is deleted</span></span></button>
+      </div>
+    </div>` + tabBar('space');
+    wireTabs();
+    const nm = $('#sn');
+    nm.onchange = async () => {
+      const v = nm.value.trim(); if (!v) { nm.value = spaceName(); return; }
+      try { const r = await api('/space', { method: 'PATCH', body: { name: v } }); S.space = { ...S.space, name: r.name }; Spaces.add(S.key, S.space); render(); toast('Renamed'); } catch (e) { toast(e.message); }
+    };
+    nm.onkeydown = e => { if (e.key === 'Enter') nm.blur(); };
+    $('#sl').onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try { const r = await uploadLogo(await shrinkImage(f)); S.space = { ...S.space, logo_v: r.logo_v }; render(); toast('Logo updated'); } catch (err) { toast(err.message); }
+    };
+    const rm = $('#slRm'); if (rm) rm.onclick = e => { e.preventDefault(); confirmSheet('Remove the logo?', '', 'Remove', async () => { await api('/space/logo', { method: 'DELETE' }); S.space = { ...S.space, logo_v: null }; render(); }); };
+    const setG = async list => { try { await saveGenres(list); render(); } catch (e) { toast(e.message); } };
+    $('#app').querySelectorAll('[data-gx]').forEach(b => b.onclick = () => setG(g.filter((_, i) => i !== +b.dataset.gx)));
+    $('#app').querySelectorAll('[data-gi]').forEach(b => b.onclick = () => setG([...g, b.dataset.gi]));
+    const gn = $('#gnew');
+    const addG = async () => { const v = gn.value.trim(); if (!v) return gn.focus(); if (g.some(x => x.toLowerCase() === v.toLowerCase())) return toast('Already there'); await setG([...g, v]); $('#gnew').focus(); };
+    $('#gadd').onclick = addG; gn.onkeydown = e => { if (e.key === 'Enter') addG(); };
+    $('#sk').onclick = () => sheet(`<h3>New passcode</h3><p class="lede">Everyone else in ${esc(spaceName())} signs in again with it. Share it yourself.</p>
+      <input id="k1" type="password" autocapitalize="off" placeholder="at least 6 characters"><input id="k2" type="password" autocapitalize="off" placeholder="type it again" style="margin-top:8px">
+      <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Change it</button></div>`, root => {
+      setTimeout(() => $('#k1', root).focus(), 60);
+      $('#ok', root).onclick = async () => {
+        const nk = $('#k1', root).value.trim();
+        if (nk !== $('#k2', root).value.trim()) return toast('The two passcodes don’t match');
+        try {
+          await api('/space', { method: 'PATCH', body: { new_key: nk } });
+          const l = Spaces.list(), c = l.find(x => x.key === S.key); if (c) c.key = nk; Spaces.save(l); S.key = nk; store.set('key', nk);
+          closeSheet(); toast('Passcode changed');
+        } catch (e) { toast(e.message); }
+      };
+    });
     confirmBtn($('#logout'), 'Tap again to leave', () => { Spaces.forget(S.key); go(''); (S.key ? loadState().catch(() => {}) : Promise.resolve()).then(route); });
   };
   render();
-  loadState().then(render).catch(e => toast(e.message));
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'space' && !$('.scrim') && !['sn', 'gnew'].includes(document.activeElement.id)) render(); }).catch(e => toast(e.message));
 }
 
 function shareTrack() {

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS spaces (
   name TEXT NOT NULL,
   key_hash TEXT,
   logo_v INTEGER,
+  genres TEXT,
   created_at INTEGER NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS spaces_key ON spaces (key_hash);
@@ -13,7 +14,8 @@ CREATE TABLE IF NOT EXISTS members (
   instruments TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL,
   space_id TEXT NOT NULL DEFAULT 'abba',
-  guest INTEGER NOT NULL DEFAULT 0
+  guest INTEGER NOT NULL DEFAULT 0,
+  ready INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS tracks (
@@ -54,6 +56,7 @@ CREATE TABLE IF NOT EXISTS holders (
   layer TEXT NOT NULL,
   member_id TEXT NOT NULL,
   instrument TEXT NOT NULL DEFAULT '',
+  sound_ids TEXT NOT NULL DEFAULT '',
   PRIMARY KEY (section_id, layer, member_id)
 );
 
@@ -81,6 +84,7 @@ CREATE TABLE IF NOT EXISTS ideas (
   duration REAL,
   starred INTEGER NOT NULL DEFAULT 0,
   data TEXT NOT NULL DEFAULT '',
+  sound_id TEXT,
   created_at INTEGER NOT NULL
 );
 
@@ -96,3 +100,23 @@ CREATE TABLE IF NOT EXISTS grooves (
   created_at INTEGER NOT NULL,
   space_id TEXT NOT NULL DEFAULT 'abba'
 );
+CREATE TABLE IF NOT EXISTS instruments (
+  id TEXT PRIMARY KEY,
+  member_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  position REAL NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS instruments_member ON instruments (member_id, position);
+CREATE TABLE IF NOT EXISTS sounds (
+  id TEXT PRIMARY KEY,
+  instrument_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  notes TEXT NOT NULL DEFAULT '',
+  audio_id TEXT,
+  audio_mime TEXT,
+  duration REAL,
+  position REAL NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sounds_instrument ON sounds (instrument_id, position);
