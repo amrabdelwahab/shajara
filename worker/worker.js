@@ -230,7 +230,10 @@ async function route(req, env, url, member, space) {
     const pr = await env.DB.prepare('SELECT * FROM projects WHERE space_id = ? ORDER BY CASE WHEN date = \'\' THEN 1 ELSE 0 END, date, created_at').bind(sp).all();
     const pt = await env.DB.prepare('SELECT pt.project_id, pt.track_id FROM project_tracks pt JOIN projects p ON p.id = pt.project_id WHERE p.space_id = ? ORDER BY pt.position').bind(sp).all();
     const pv = await env.DB.prepare('SELECT v.* FROM project_votes v JOIN projects p ON p.id = v.project_id WHERE p.space_id = ?').bind(sp).all();
-    const projects = pr.results.map(p => ({ ...p, track_ids: pt.results.filter(x => x.project_id === p.id).map(x => x.track_id), votes: pv.results.filter(v => v.project_id === p.id) }));
+    const pp = await env.DB.prepare('SELECT x.project_id, x.id, x.kind, x.reply_to, x.member_id, x.created_at FROM project_posts x JOIN projects p ON p.id = x.project_id WHERE p.space_id = ?').bind(sp).all();
+    const talk = pid => { const l = pp.results.filter(x => x.project_id === pid), said = l.filter(x => ['opinion', 'question', 'concern', 'answer'].includes(x.kind));
+      return { posts: said.length, open: l.filter(x => x.kind === 'question' && !l.some(y => y.reply_to === x.id)).length, last: l.reduce((m, x) => Math.max(m, x.created_at), 0) }; };
+    const projects = pr.results.map(p => ({ ...p, track_ids: pt.results.filter(x => x.project_id === p.id).map(x => x.track_id), votes: pv.results.filter(v => v.project_id === p.id), talk: talk(p.id) }));
     return json({ projects, space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
@@ -372,7 +375,7 @@ async function route(req, env, url, member, space) {
   // Projects, as the band defines them: philosophy first, one creative director, a stage, and the band's buy-in.
   // A project holds tracks in its own order (an album's tracklist, a show's setlist); a track can be in several.
   if (a === 'projects') {
-    const SCALES = ['album', 'ep', 'single', 'show', 'experiment'];
+    const SCALES = ['album', 'ep', 'show', 'series', 'collab', 'experiment'];
     const STAGES = ['philosophy', 'proposal', 'buyin', 'development', 'rehearsing', 'done', 'parked', 'notadopted', 'outside'];
     const FORMATS = ['live', 'underground', 'cinematic', 'mixed'];
     const PRODS = ['universe', 'fills', 'both'];
@@ -382,6 +385,7 @@ async function route(req, env, url, member, space) {
       if (!p) return null;
       p.track_ids = (await env.DB.prepare('SELECT track_id FROM project_tracks WHERE project_id = ? ORDER BY position').bind(pid).all()).results.map(r => r.track_id);
       p.votes = (await env.DB.prepare('SELECT member_id, want, director_ok, needs, updated_at FROM project_votes WHERE project_id = ?').bind(pid).all()).results;
+      p.posts = (await env.DB.prepare('SELECT * FROM project_posts WHERE project_id = ? ORDER BY created_at').bind(pid).all()).results;
       return p;
     };
     const setTracks = async (pid, ids) => {
@@ -404,6 +408,9 @@ async function route(req, env, url, member, space) {
         genres: g ? JSON.stringify(g) : cur.genres, date: 'date' in b ? str(b.date, 20) : cur.date, proposal: prop,
       };
     };
+    // The project's conversation: opinions, questions, concerns and answers, plus buy-in answers and stage moves as they happen.
+    const post = (pid, who, kind, text, replyTo) => env.DB.prepare('INSERT INTO project_posts (id, project_id, member_id, kind, body, reply_to, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .bind(uid(), pid, who || null, kind, text, replyTo || null, now()).run();
     const COLS = ['name', 'scale', 'stage', 'philosophy', 'oneline', 'director', 'format', 'production', 'genres', 'date', 'proposal'];
     if (m === 'POST' && !id) {
       const b = await body(req);
@@ -417,22 +424,42 @@ async function route(req, env, url, member, space) {
     }
     const cur = id ? await read(id) : null;
     if (id && !cur) return json({ error: 'not found' }, 404);
+    if (m === 'GET' && id && !sub) return json(cur);
     if (sub === 'vote' && m === 'PUT') {
       const b = await body(req), who = str(b.member_id, 40) || member;
       if (!who || !(await memberInSpace(who))) return json({ error: 'pick who you are first' }, 400);
       const ans = v => ['yes', 'no', 'unsure'].includes(v) ? v : '';
+      const before = cur.votes.find(v => v.member_id === who) || { want: '', director_ok: '', needs: '' };
+      const next = { want: ans(b.want), director_ok: ans(b.director_ok), needs: str(b.needs, 500) };
       await env.DB.prepare('INSERT OR REPLACE INTO project_votes (project_id, member_id, want, director_ok, needs, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
-        .bind(id, who, ans(b.want), ans(b.director_ok), str(b.needs, 500), now()).run();
+        .bind(id, who, next.want, next.director_ok, next.needs, now()).run();
+      if (next.want !== before.want || next.director_ok !== before.director_ok || (next.needs && next.needs !== before.needs)) await post(id, who, 'vote', JSON.stringify(next));
+      return json(await read(id));
+    }
+    if (sub === 'posts' && m === 'POST') {
+      const b = await body(req), text = str(b.body, 4000);
+      if (!text) return json({ error: 'write something first' }, 400);
+      if (!member || !(await memberInSpace(member))) return json({ error: 'pick who you are first' }, 400);
+      const kind = ['opinion', 'question', 'concern', 'answer'].includes(b.kind) ? b.kind : 'opinion';
+      const replyTo = b.reply_to && cur.posts.some(x => x.id === b.reply_to) ? b.reply_to : null;
+      await post(id, member, replyTo ? 'answer' : kind, text, replyTo);
+      await env.DB.prepare('UPDATE projects SET updated_at = ? WHERE id = ?').bind(now(), id).run();
+      return json(await read(id));
+    }
+    if (sub === 'posts' && m === 'DELETE' && subId) {
+      await env.DB.batch([env.DB.prepare('DELETE FROM project_posts WHERE id = ? AND project_id = ?').bind(subId, id), env.DB.prepare('DELETE FROM project_posts WHERE reply_to = ? AND project_id = ?').bind(subId, id)]);
       return json(await read(id));
     }
     if (m === 'PATCH' && id && !sub) {
       const b = await body(req), f = await fields(b, cur);
       await env.DB.prepare(`UPDATE projects SET ${COLS.map(c => c + ' = ?').join(', ')}, updated_at = ? WHERE id = ?`).bind(...COLS.map(c => f[c]), now(), id).run();
+      if (f.stage !== cur.stage) await post(id, member, 'stage', JSON.stringify({ from: cur.stage, to: f.stage }));
+      if (f.director !== cur.director && f.director) await post(id, member, 'director', f.director);
       if (Array.isArray(b.track_ids)) await setTracks(id, b.track_ids);
       return json(await read(id));
     }
     if (m === 'DELETE' && id && !sub) {
-      await env.DB.batch([env.DB.prepare('DELETE FROM project_tracks WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM project_votes WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(id)]);
+      await env.DB.batch([env.DB.prepare('DELETE FROM project_tracks WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM project_votes WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM project_posts WHERE project_id = ?').bind(id), env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(id)]);
       return json({ ok: true });
     }
   }

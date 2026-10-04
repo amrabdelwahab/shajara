@@ -984,6 +984,47 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
   .projects > .pcard.new { max-width: 480px; }
   .wrap.project > * { max-width: 720px; }
 }
+
+/* ---------- project conversation ---------- */
+.convo { display: flex; flex-direction: column; gap: 10px; }
+.convo-empty { margin: 0; padding: 16px; border-radius: var(--radius); border: 1px dashed var(--line); font: italic 16px/1.4 var(--serif); color: var(--muted); }
+.thread { display: flex; flex-direction: column; gap: 6px; }
+.post { padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.post.question { border-color: color-mix(in srgb, #3b8bff 45%, var(--line)); }
+.post.concern { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
+.post.reply { margin-left: 22px; background: #0c0c0c; }
+.post-h { display: flex; align-items: center; gap: 7px; }
+.post-h b { font: 800 11px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+.post-h .faint { font: italic 12px/1 var(--serif); }
+.post-h .sp { flex: 1; }
+.post-k { font: 800 8.5px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; padding: 4px 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.post-k.question { background: color-mix(in srgb, #3b8bff 20%, transparent); color: #7fb0ff; }
+.post-k.concern { background: color-mix(in srgb, var(--danger) 18%, transparent); color: #ff8a80; }
+.post-b { margin: 8px 0 0; font: 16px/1.45 var(--serif); white-space: pre-wrap; }
+.post-del { color: var(--faint); font-size: 12px; width: 24px; height: 24px; }
+.post-reply { align-self: flex-start; margin-left: 22px; font: italic 13px/1 var(--serif); color: var(--muted); text-decoration: underline; padding: 2px 0; }
+.post-ev { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; padding: 2px 4px; font: 14px/1.4 var(--serif); color: var(--muted); }
+.post-ev b { font: 800 10.5px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; color: var(--text); }
+.post-ev .faint { font-style: italic; font-size: 12px; }
+.composer { margin-top: 4px; padding: 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.composer .sugs { margin: 0; }
+.composer textarea { min-height: 64px; }
+.composer-a { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.composer-a .faint { font: italic 13px/1.3 var(--serif); }
+.pc-talk { font: 12px/1 var(--serif); color: var(--muted); }
+
+.plant-for { width: 100%; display: flex; align-items: center; gap: 16px; text-align: left; padding: 18px; border-radius: var(--radius); border: 1px dashed color-mix(in srgb, var(--brand-yellow) 55%, var(--line)); background: color-mix(in srgb, var(--brand-yellow) 6%, transparent); }
+.plant-for b { display: block; font: 800 14px/1.1 var(--display); font-stretch: 125%; text-transform: uppercase; color: var(--brand-yellow); }
+.plant-for > span:last-child span { display: block; margin-top: 5px; font: italic 15px/1.35 var(--serif); color: var(--muted); }
+.pf-tree { display: inline-flex; align-items: flex-end; gap: 4px; height: 34px; flex: none; }
+.pf-tree i { width: 8px; border-radius: 3px; background: var(--c); }
+.pf-tree i:nth-child(1) { height: 32px; } .pf-tree i:nth-child(2) { height: 24px; } .pf-tree i:nth-child(3) { height: 16px; } .pf-tree i:nth-child(4) { height: 9px; }
+.pj-alt { display: block; margin: 10px auto 0; font: italic 14px/1 var(--serif); }
+.pj-add { display: flex; gap: 8px; margin-top: 10px; }
+.pj-add .btn { flex: 1; border-style: dashed; }
+
+.pc-more { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); font-size: 18px; }
+.pcard .pc-top { padding-right: 34px; }
 </style>
 </head>
 <body>
@@ -2614,9 +2655,10 @@ const CURVES = [
   { k: 'waves', label: 'Waves', f: i => i % 2 ? 4 : 2 },
 ];
 
-function newTrack() {
+function newTrack(seed, after) {
   if (needMe()) return;
-  const W = { step: 0, vary: { maqam: false, pulse: false, meter: false }, title: '', idea: '', seeds: [], seedText: '', by: S.me ? [S.me] : [], genre: '', maqam: '', tonic: '', tempo: '', meter: [4, 1],
+  seed = seed || {};
+  const W = { step: 0, vary: { maqam: false, pulse: false, meter: false }, title: seed.title || '', idea: seed.idea || '', seeds: [], seedText: '', by: S.me ? [S.me] : [], genre: seed.genre || '', maqam: '', tonic: '', tempo: '', meter: [4, 1],
     shape: 'song', secs: SHAPES[2].names.map(n => ({ name: n, energy: 0 })), curve: '' };
   const STEPS = ['The idea', 'What it’s built on', 'Where it lives', 'Its shape', 'Each section', 'Plant it'];
   const varyBtn = k => `<button class="vary${W.vary[k] ? ' on' : ''}" data-vary="${k}" type="button">${W.vary[k] ? '✓ ' : ''}Changes per section</button>`;
@@ -2757,7 +2799,9 @@ function newTrack() {
           ...(W.vary.meter && x.meter ? { meter_n: x.meter[0], meter_sub: x.meter[1] } : {}) })),
       } });
       keepGenre(W.genre);
-      S.track = t; closeSheet(); go('t/' + t.id);
+      S.track = t; closeSheet();
+      if (after) await after(t);
+      go('t/' + t.id);
       toast(`${t.sections.length} section${t.sections.length > 1 ? 's' : ''} planted`);
     } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = 'Plant it'; }
   };
@@ -4142,7 +4186,8 @@ async function spacesSheet() {
 // The band's way of making things: everything new is a project (an album, a single track, a show),
 // it starts with its philosophy, one person directs it, and the band says yes before it moves on.
 // A project holds tracks in its own order; a track can be in several.
-const SCALES = [['album', 'Album'], ['ep', 'EP'], ['single', 'Single track'], ['show', 'Show'], ['experiment', 'Experiment']];
+// Projects are the bigger things a group of tracks belongs to; a single track carries its own idea already.
+const SCALES = [['album', 'Album'], ['ep', 'EP'], ['show', 'Show'], ['series', 'Series of events'], ['collab', 'Collaboration'], ['experiment', 'Experiment']];
 const STAGES = [['philosophy', 'Philosophy', '#8a8a8a'], ['proposal', 'Proposal', 'var(--brand-yellow)'], ['buyin', 'Seeking buy-in', '#ff9f43'], ['development', 'In development', '#3b8bff'], ['rehearsing', 'Rehearsing', '#c38bff'], ['done', 'Performed / Released', 'var(--brand-green)'],
   ['parked', 'Parked', '#ff5a4e'], ['notadopted', 'Not adopted', '#a07a5a'], ['outside', 'Outside the band', '#b07ad8']];
 const MAIN_STAGES = STAGES.slice(0, 6), ASIDE = ['parked', 'notadopted', 'outside'];
@@ -4170,14 +4215,32 @@ function fmtDate(d) {
 }
 const stagePill = k => { const s = stageOf(k); return `<span class="stage-pill" style="--c:${s[2]}">${esc(s[1])}</span>`; };
 
+// Edit, set aside or delete a project, from its card or its page.
+function projectMenu(id) {
+  const p = (S.projects || []).find(x => x.id === id); if (!p) return;
+  const after = () => route();
+  menuSheet(esc(p.name), [
+    { label: 'Open', icon: ICON.folder, run: () => go('p/' + p.id) },
+    { label: 'Edit details', hint: 'name, philosophy, size, date, director, genres', icon: ICON.edit, run: () => projectEdit(p, after) },
+    ...(ASIDE.includes(p.stage) ? [{ label: 'Bring it back', hint: 'to Proposal', icon: ICON.play, run: () => patchProject(p, { stage: 'proposal' }).then(after).catch(e => toast(e.message)) }]
+      : [{ label: 'Park it', hint: 'set aside for now, nothing is lost', icon: ICON.stack, run: () => patchProject(p, { stage: 'parked' }).then(after).catch(e => toast(e.message)) }]),
+    { label: 'Delete project', hint: 'its tracks stay, untouched', icon: ICON.trash, danger: true, run: () => confirmSheet(`Delete ${esc(p.name)}?`, 'The project, its conversation and the band’s answers go. Its tracks stay, untouched.', 'Delete project', async () => {
+      await api('/projects/' + p.id, { method: 'DELETE' }); S.projects = S.projects.filter(x => x.id !== p.id);
+      if (location.hash.replace(/^#\/?/, '') === 'projects') route(); else go('projects');
+      toast('Project deleted');
+    }) },
+  ]);
+}
 function projectCard(p) {
   const dir = S.members.find(m => m.id === p.director), b = p.stage === 'buyin' && needsBuyin() ? buyinSum(p) : null;
   return `<button class="pcard${waitingOnMe(p) ? ' ask' : ''}" onclick="go('p/${esc(p.id)}')">
+    <span class="kebab pc-more" role="button" tabindex="0" aria-label="Project options" onclick="event.stopPropagation(); projectMenu('${esc(p.id)}')">⋯</span>
     <div class="pc-top">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pc-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
     <b class="pc-name">${esc(p.name)}</b>
     ${p.philosophy ? `<p class="pc-phil">${esc(p.philosophy)}</p>` : p.oneline ? `<p class="pc-phil">${esc(p.oneline)}</p>` : '<p class="pc-phil faint">no philosophy yet</p>'}
     <div class="pc-foot">${dir ? `${avatar(dir, 'xs')}<span>${esc(dir.id === S.me ? 'you direct' : dir.name + ' directs')}</span>` : '<span class="faint">no director yet</span>'}
       <span class="sp"></span>${p.track_ids.length ? `<span class="faint">${plural(p.track_ids.length, 'track')}</span>` : ''}
+      ${p.talk && p.talk.posts ? `<span class="pc-talk">💬 ${p.talk.posts}${p.talk.open ? ` · ${p.talk.open}?` : ''}</span>` : ''}
       ${b ? `<span class="pc-votes${b.allYes ? ' ok' : b.anyNo ? ' no' : ''}">${b.done}/${b.n} answered</span>` : ''}</div>
     ${waitingOnMe(p) ? '<span class="pc-ask">Waiting for your answer</span>' : ''}</button>`;
 }
@@ -4192,7 +4255,7 @@ function viewProjects() {
     ];
     const aside = ps.filter(p => ASIDE.includes(p.stage));
     $('#app').innerHTML = spaceTop() + `<div class="wrap projects">
-      <p class="sh-lede">An album, a single track, a show. Each starts with its philosophy and has one person directing it${needsBuyin() ? ', and the band says yes before it moves on' : ''}.</p>
+      <p class="sh-lede">The bigger things: an album, a show, a series of events, a collaboration. Each starts with its philosophy and has one person directing it${needsBuyin() ? ', and the band says yes before it moves on' : ''}.</p>
       <button class="pcard new" onclick="newProject()"><span class="pn-plus">+</span><b>New project</b><span class="faint">start with what it’s about</span></button>
       ${groups.filter(([, l]) => l.length).map(([t, l]) => `<div class="list-head"><b>${t}</b><span class="small muted">${l.length}</span></div><div class="pgrid">${l.map(projectCard).join('')}</div>`).join('')}
       ${aside.length ? `<details class="aside"><summary><b>Set aside</b><span class="small muted">${aside.length} · parked, not adopted, outside the band</span></summary><div class="pgrid">${aside.map(projectCard).join('')}</div></details>` : ''}
@@ -4213,8 +4276,8 @@ function newProject(seedTracks, after) {
   const chips = (id, list, cur, attr) => `<div class="sugs" id="${id}">${list.map(([k, l]) => `<button class="sug${cur === k ? ' on' : ''}" data-${attr}="${esc(k)}">${esc(l)}</button>`).join('')}</div>`;
   const stepHtml = () => {
     switch (W.step) {
-      case 0: return `<h3>A new project</h3><p class="lede">Before the rhythm, before the references: what is it actually about?</p>
-        <label class="field">Name</label><input id="np-name" type="text" value="${esc(W.name)}" placeholder="e.g. Yemeni EP, Berghain 12 Dec">
+      case 0: return `<h3>A new project</h3><p class="lede">An album, a show, a series of events, a collaboration: something several tracks belong to. Before anything else, what is it actually about?</p>
+        <label class="field">Name</label><input id="np-name" type="text" value="${esc(W.name)}" placeholder="e.g. First album, Berghain 12 Dec, with Ayoub">
         <label class="field">Philosophy · one line</label><textarea id="np-phil" rows="3" placeholder="What is it about? Not the genre, the thing underneath.">${esc(W.philosophy)}</textarea>
         <label class="field">In one line (optional)</label><input id="np-one" type="text" value="${esc(W.oneline)}" placeholder="how you’d describe it to a friend">`;
       case 1: return `<h3>Its shape</h3><p class="lede">How big is it, and is it aiming at a date?</p>
@@ -4289,6 +4352,36 @@ function projectEdit(p, after) {
     });
   });
 }
+// The conversation on a project: what people think, ask and worry about, with buy-in answers and stage moves woven in.
+const POST_KINDS = [['opinion', 'Opinion'], ['question', 'Question'], ['concern', 'Concern']];
+function postEvent(x, p) {
+  const who = x.member_id === S.me ? 'You' : memberName(x.member_id);
+  try {
+    if (x.kind === 'vote') {
+      const v = JSON.parse(x.body), dir = S.members.find(m => m.id === p.director);
+      const say = { yes: 'yes', no: 'no', unsure: 'not sure' };
+      const bits = [v.want && `${say[v.want]} to doing it`, v.director_ok && `${say[v.director_ok]} to ${dir ? (dir.id === x.member_id ? 'directing it themselves' : dir.name + ' directing') : 'the director'}`].filter(Boolean);
+      return `<b>${esc(who)}</b> answered: ${esc(bits.join(', ') || 'cleared their answer')}${v.needs ? `. Needs first: “${esc(v.needs)}”` : ''}`;
+    }
+    if (x.kind === 'stage') { const v = JSON.parse(x.body); return `<b>${esc(who)}</b> moved it to ${stagePill(v.to)}`; }
+    if (x.kind === 'director') return `<b>${esc(who)}</b> made ${esc(memberName(x.body))} the director`;
+  } catch {}
+  return '';
+}
+function conversationHtml(p) {
+  const posts = p.posts || [], top = posts.filter(x => !x.reply_to);
+  const replies = id => posts.filter(x => x.reply_to === id);
+  const bubble = (x, reply) => `<div class="post ${x.kind}${reply ? ' reply' : ''}"><div class="post-h">${avatar(S.members.find(m => m.id === x.member_id), 'xs')}<b>${esc(x.member_id === S.me ? 'You' : memberName(x.member_id))}</b>${reply ? '' : `<span class="post-k ${x.kind}">${esc(lbl(POST_KINDS, x.kind) || 'Answer')}</span>`}<span class="faint">${ago(x.created_at)}</span><span class="sp"></span>${x.member_id === S.me ? `<button class="post-del" data-pdel="${esc(x.id)}" aria-label="Delete">✕</button>` : ''}</div>
+    <p class="post-b">${esc(x.body)}</p></div>`;
+  const items = top.map(x => ['vote', 'stage', 'director'].includes(x.kind)
+    ? `<div class="post-ev">${postEvent(x, p)}<span class="faint">${ago(x.created_at)}</span></div>`
+    : `<div class="thread">${bubble(x)}${replies(x.id).map(r => bubble(r, true)).join('')}
+        ${x.kind === 'question' || replies(x.id).length ? `<button class="post-reply" data-reply="${esc(x.id)}">${x.kind === 'question' ? (replies(x.id).length ? 'Add an answer' : 'Answer this') : 'Reply'}</button>` : `<button class="post-reply" data-reply="${esc(x.id)}">Reply</button>`}</div>`).join('');
+  return `<div class="convo">${items || '<p class="convo-empty">Nothing said yet. Is this worth doing? What would you ask before saying yes?</p>'}
+    <div class="composer"><div class="sugs" id="pkind">${POST_KINDS.map(([k, l], i) => `<button class="sug${i ? '' : ' on'}" data-k="${k}">${l}</button>`).join('')}</div>
+      <textarea id="ptext" rows="2" placeholder="What do you think?"></textarea>
+      <div class="composer-a"><span class="faint" id="preplying"></span><button class="btn primary sm" id="psend">Post</button></div></div></div>`;
+}
 async function patchProject(p, body) {
   const r = await api('/projects/' + p.id, { method: 'PATCH', body });
   Object.assign(S.projects.find(x => x.id === p.id), r);
@@ -4306,7 +4399,7 @@ function viewProject(id) {
     const genres = (() => { try { return JSON.parse(p.genres || '[]'); } catch { return []; } })();
     const si = MAIN_STAGES.findIndex(x => x[0] === p.stage), aside = ASIDE.includes(p.stage);
     const b = buyinSum(p), showVotes = needsBuyin() && (p.stage === 'buyin' || (p.votes || []).length);
-    const listName = p.scale === 'show' ? 'Setlist' : ['album', 'ep'].includes(p.scale) ? 'Tracklist' : 'Tracks';
+    const listName = ['show', 'series'].includes(p.scale) ? 'Setlist' : ['album', 'ep'].includes(p.scale) ? 'Tracklist' : 'Tracks';
     const voteRow = m => {
       const v = voteOf(p, m.id), mine = m.id === S.me;
       const ans = (k, q) => mine ? `<div class="vq"><span>${q}</span><div class="vchips">${ANSWERS.map(([a, l]) => `<button class="vchip ${a}${v[k] === a ? ' on' : ''}" data-vote="${k}" data-a="${a}">${l}</button>`).join('')}</div></div>`
@@ -4315,7 +4408,7 @@ function viewProject(id) {
         ${ans('want', 'Do we want to do this?')}${ans('director_ok', dir ? `${dir.id === m.id ? 'You' : esc(dir.name)} directing?` : 'This director?')}
         ${mine ? `<input class="vneeds" id="vneeds" type="text" value="${esc(v.needs)}" placeholder="what I need first (optional)">` : v.needs ? `<p class="vneed-t">“${esc(v.needs)}”</p>` : ''}</div>`;
     };
-    $('#app').innerHTML = topBar(esc(p.name), backBtn('projects'), `<button class="icon-btn" aria-label="Edit project" id="pjEdit">${ICON.edit}</button>`) + `<div class="wrap project">
+    $('#app').innerHTML = topBar(esc(p.name), backBtn('projects'), `<button class="icon-btn" aria-label="Edit project" id="pjEdit">${ICON.edit}</button><button class="icon-btn" aria-label="More" onclick="projectMenu('${esc(p.id)}')">${ICON.more}</button>`) + `<div class="wrap project">
       <div class="pj-head">${stagePill(p.stage)}${p.scale ? `<span class="pc-scale">${esc(lbl(SCALES, p.scale))}</span>` : ''}${p.date ? `<span class="pj-date">${esc(fmtDate(p.date))}</span>` : ''}</div>
       <div class="pj-phil">${p.philosophy ? `<span class="pp-k">Philosophy</span><p>${esc(p.philosophy)}</p>` : `<button class="pp-empty" id="pjPhil"><span class="pp-k">Philosophy</span><span>What is it actually about? Write this before anything else.</span></button>`}
         ${p.oneline ? `<p class="pj-one">${esc(p.oneline)}</p>` : ''}</div>
@@ -4330,12 +4423,16 @@ function viewProject(id) {
       ${showVotes ? `<div class="list-head"><b>Band buy-in</b><span class="small muted">${b.done} of ${b.n} answered${b.allYes && b.done === b.n ? ' · everyone’s in' : ''}</span></div>
         <div class="votes">${bandMembers().sort((a, c) => (c.id === S.me) - (a.id === S.me)).map(voteRow).join('')}</div>
         ${p.stage === 'buyin' && b.allYes && b.done === b.n ? '<button class="btn primary block" data-stage="development" style="margin-top:12px">Everyone said yes · move to In development</button>' : ''}` : ''}
+      <div class="list-head"><b>Conversation</b><span class="small muted">${(p.talk && p.talk.open) ? plural(p.talk.open, 'open question') : 'opinions, questions, concerns'}</span></div>
+      ${conversationHtml(p)}
       <div class="list-head"><b>${listName}</b>${list.length > 1 ? '<span class="small muted">↑ ↓ to reorder</span>' : ''}</div>
-      ${list.length ? `<div class="pj-list">${list.map((t, i) => `<div class="pj-t"><span class="pj-n">${i + 1}</span>
+      ${`${list.length ? '' : `<div class="empty small">${['show', 'series'].includes(p.scale) ? 'No setlist yet. Pick the tracks you’ll play.' : ['album', 'ep'].includes(p.scale) ? 'No tracks on it yet.' : 'No tracks in it yet.'}</div>`}
+        ${list.length ? `<div class="pj-list">${list.map((t, i) => `<div class="pj-t"><span class="pj-n">${i + 1}</span>
           <button class="pj-open" data-go="${esc(t.id)}"><b>${esc(t.title)}</b><span class="small muted serif">${esc([t.genre, t.tempo ? t.tempo + ' bpm' : '', t.sections.map(x => x.name).join(' → ')].filter(Boolean).join(' · '))}</span></button>
           <span class="pj-act"><button class="icon-btn sm" data-up="${i}" aria-label="Move up"${i ? '' : ' disabled'}>↑</button><button class="icon-btn sm" data-dn="${i}" aria-label="Move down"${i < list.length - 1 ? '' : ' disabled'}>↓</button><button class="icon-btn sm" data-out="${esc(t.id)}" aria-label="Take out of this project">✕</button></span></div>`).join('')}</div>`
-        : '<div class="empty small">No tracks in it yet.</div>'}
-      <button class="btn block lp-new" id="pjAdd">+ Add tracks</button>
+        : ''}
+        <div class="pj-add"><button class="btn" id="pjAdd">${['show', 'series'].includes(p.scale) ? '+ Pick tracks for the set' : '+ Pick existing tracks'}</button><button class="btn" id="pjPlant">+ Plant a new one</button></div>`}
+
       <div class="list-head"><b>The proposal</b><span class="small muted">tap to write</span></div>
       <div class="menu prop">${[['taking', 'What exactly are we taking', 'A rhythm, a time signature, a maqam, a melody, a form… and what we deliberately leave out'], ['scope', 'Scope', 'How many rehearsals, aiming at what, what does done mean'], ['open', 'Open questions', 'What you genuinely don’t know and want the band’s input on']]
         .map(([k, t, h]) => `<button class="menu-item" data-prop="${k}"><span><b>${t}</b><span class="small ${prop[k] ? '' : 'muted'}" style="white-space:pre-wrap">${esc(prop[k] || h)}</span></span></button>`).join('')}</div>
@@ -4359,6 +4456,31 @@ function viewProject(id) {
       try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: next }); Object.assign(S.projects.find(x => x.id === p.id), r); render(); } catch (e) { toast(e.message); }
     });
     const vn = $('#vneeds'); if (vn) vn.onchange = async () => { const v = voteOf(p, S.me); try { const r = await api(`/projects/${p.id}/vote`, { method: 'PUT', body: { ...v, needs: vn.value.trim() } }); Object.assign(S.projects.find(x => x.id === p.id), r); toast('Saved'); } catch (e) { toast(e.message); } };
+    // The draft lives outside the page so a background refresh never loses it (or what it's replying to).
+    const D = S.pjDraft && S.pjDraft.pid === p.id ? S.pjDraft : (S.pjDraft = { pid: p.id, kind: 'opinion', replyTo: null, text: '' });
+    let kind = D.kind, replyTo = D.replyTo;
+    const keep = () => { D.kind = kind; D.replyTo = replyTo; D.text = $('#ptext').value; };
+    $('#ptext').value = D.text; $('#ptext').oninput = keep;
+    const setKind = k => { kind = k; keep(); $('#app').querySelectorAll('#pkind .sug').forEach(x => x.classList.toggle('on', x.dataset.k === k)); $('#ptext').placeholder = { opinion: 'What do you think?', question: 'What do you want to know before saying yes?', concern: 'What worries you about it?' }[k]; };
+    $('#app').querySelectorAll('#pkind .sug').forEach(x => x.onclick = () => { replyTo = null; $('#preplying').textContent = ''; $('#pkind').classList.remove('hidden'); setKind(x.dataset.k); });
+    const showReply = id => {
+      replyTo = id; keep(); const q = (p.posts || []).find(y => y.id === replyTo); if (!q) { replyTo = null; keep(); return; }
+      $('#pkind').classList.add('hidden'); $('#preplying').innerHTML = `Replying to ${esc(q.member_id === S.me ? 'yourself' : memberName(q.member_id))} · <button class="link-btn" id="pcancel">cancel</button>`;
+      $('#pcancel').onclick = () => { replyTo = null; keep(); $('#preplying').textContent = ''; $('#pkind').classList.remove('hidden'); };
+      const t = $('#ptext'); t.placeholder = q.kind === 'question' ? 'Your answer' : 'Your reply';
+    };
+    if (replyTo) showReply(replyTo); else setKind(kind);
+    $('#app').querySelectorAll('[data-reply]').forEach(x => x.onclick = () => { showReply(x.dataset.reply); const t = $('#ptext'); t.focus(); t.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+    $('#psend').onclick = async () => {
+      if (needMe()) return;
+      const text = $('#ptext').value.trim(); if (!text) return $('#ptext').focus();
+      $('#psend').disabled = true;
+      try { const r = await api(`/projects/${p.id}/posts`, { method: 'POST', body: { kind, body: text, reply_to: replyTo } }); Object.assign(S.projects.find(x => x.id === p.id), r); S.pjDraft = null; render(); }
+      catch (e) { toast(e.message); $('#psend').disabled = false; }
+    };
+    $('#app').querySelectorAll('[data-pdel]').forEach(x => x.onclick = () => confirmSheet('Delete this?', 'Replies to it go too.', 'Delete', async () => {
+      const r = await api(`/projects/${p.id}/posts/${x.dataset.pdel}`, { method: 'DELETE' }); Object.assign(S.projects.find(y => y.id === p.id), r); render();
+    }));
     $('#app').querySelectorAll('[data-prop]').forEach(btn => btn.onclick = () => {
       const k = btn.dataset.prop, t = btn.querySelector('b').textContent;
       sheet(`<h3>${esc(t)}</h3><textarea id="prt" rows="8">${esc(prop[k] || '')}</textarea><div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="ok">Save</button></div>`, root => {
@@ -4370,7 +4492,12 @@ function viewProject(id) {
     $('#app').querySelectorAll('[data-up]').forEach(x => x.onclick = () => { const i = +x.dataset.up, n = [...ids]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; save({ track_ids: n }); });
     $('#app').querySelectorAll('[data-dn]').forEach(x => x.onclick = () => { const i = +x.dataset.dn, n = [...ids]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; save({ track_ids: n }); });
     $('#app').querySelectorAll('[data-out]').forEach(x => x.onclick = () => save({ track_ids: ids.filter(y => y !== x.dataset.out) }));
-    $('#pjAdd').onclick = () => {
+    const plant = $('#pjPlant'); if (plant) plant.onclick = () => {
+      const g = (() => { try { return JSON.parse(p.genres || '[]')[0] || ''; } catch { return ''; } })();
+      newTrack({ genre: g },
+        async t => { try { await setProjectTracks(p, [...ids, t.id]); toast(`Planted in ${p.name}`); } catch (e) { toast(e.message); } });
+    };
+    const addBtn = $('#pjAdd'); if (addBtn) addBtn.onclick = () => {
       const pick = new Set(), others = S.tracks.filter(t => !ids.includes(t.id));
       sheet(`<h3>Add to ${esc(p.name)}</h3><p class="lede">Tick the tracks. They go to the end; reorder after.</p>
         <div class="menu" id="pjPick">${others.map(t => `<button class="menu-item" data-t="${esc(t.id)}"><span class="check"></span><span><b>${esc(t.title)}</b><span class="small muted">${esc([t.genre, projectsOf(t.id).map(x => x.name).join(', ')].filter(Boolean).join(' · ') || ago(t.updated_at))}</span></span></button>`).join('') || '<p class="small faint" style="text-align:center">Every track is in it already.</p>'}</div>
@@ -4381,7 +4508,11 @@ function viewProject(id) {
     };
   };
   render();
-  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'p/' + id && !$('.scrim') && document.activeElement.id !== 'vneeds') render(); }).catch(e => toast(e.message));
+  const busy = () => $('.scrim') || ['vneeds', 'ptext'].includes(document.activeElement.id) || ($('#ptext') && $('#ptext').value.trim());
+  loadState().then(() => api('/projects/' + id)).then(full => {
+    const cur = (S.projects || []).find(x => x.id === id); if (cur) Object.assign(cur, full);
+    if (location.hash.replace(/^#\/?/, '') === 'p/' + id && !busy()) render();
+  }).catch(e => toast(e.message));
 }
 // From a track: tick the projects it belongs to.
 function trackProjectsSheet(t) {
