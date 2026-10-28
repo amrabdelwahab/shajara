@@ -230,6 +230,13 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .steps .tg.watch { background: var(--mar); color: var(--ink); } .steps .tg.listen { background: var(--ab-2); color: var(--fg); } .steps .tg.at { background: var(--line); color: var(--fg); }
 .steps li .cue:has(.tg)::before { content: ""; }
 .steps li:not(.rest) .cue { font-size: 16px; }
+.snote { display: block; font-size: 12px; font-weight: 400; color: var(--muted); margin-top: 2px; letter-spacing: 0; text-transform: none; }
+.steps .snote { font-size: 13px; }
+.sstrip { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.schip { font: inherit; font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); }
+.schip.has { border-color: var(--accent); cursor: pointer; } .schip:disabled { color: var(--muted); }
+.sarr { color: var(--muted); font-size: 11px; }
+.snote-open { font-size: 12.5px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 10px; } .snote-open b { color: var(--fg); font-weight: 600; }
 .sheet li.give .k, .sheet li.give .what, .steps li.give .do { color: var(--mar); }
 /* section panel */
 .sec .mks { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: 1px; }
@@ -271,7 +278,19 @@ const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&a
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
 let PLAYERS = {}, SONGS = [];
-const actText = a => a.kind === "set" ? `Set up: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`;
+// What the sound is, in its owner's words (a patch, a preset, a pedal), under the step.
+const actText = a => (a.kind === "set" ? `Set up: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`) + (a.note ? `<small class="snote">${a.note}</small>` : "");
+// A player's sounds through one song, in order; tap one to read what it is.
+const soundStrip = blocks => {
+  const seq = []; blocks.forEach(b => { const n = b.patch || b.tone; if (n && (!seq.length || seq[seq.length - 1].n !== n)) seq.push({ n, note: b.patch ? b.pnote : "" }); });
+  if (seq.length < 1) return "";
+  return `<div class="sstrip">${seq.map(x => `<button type="button" class="schip${x.note ? " has" : ""}" ${x.note ? `data-note="${x.note}"` : "disabled"}>${x.n}</button>`).join('<span class="sarr">→</span>')}</div><div class="snote-open" hidden></div>`;
+};
+document.addEventListener("click", e => {
+  const c = e.target.closest(".schip[data-note]"); if (!c) return;
+  const box = c.closest(".sheet").querySelector(".snote-open"), same = !box.hidden && box.dataset.for === c.textContent;
+  box.hidden = same; box.dataset.for = c.textContent; box.innerHTML = `<b>${c.textContent}</b> ${c.dataset.note}`;
+});
 const actWhen = (b, secName) => b.s === 0 || (b.act && b.act.kind === "set") ? "Before the song" : `Before ${secName}${b.act && b.act.rest ? ", while you rest" : ""}`;
 const cueLead = c => c.from === "production" ? "listen" : "watch " + (PLAYERS[c.from] ? PLAYERS[c.from].name : "the cue");
 // Cues read as plain sentences: "Marwan's signal for the theme", "Marwan nods Amr in", "You hear: the drums come in".
@@ -327,10 +346,10 @@ function shape(d) {
       t.sections.forEach((s, i) => {
         const h = pick(s); if (!h) return;
         const what = h.part || LAYER_WORD[h.layer] || "", tone = h.instrument || LAYER_WORD[h.layer] || "", audio = s.parts[h.layer] ? s.parts[h.layer].audio_id : "";
-        const patch = esc((h.sounds || []).join(" + "));
+        const patch = esc((h.sounds || []).join(" + ")), pnote = esc((h.sound_notes || []).filter(Boolean).join(" · "));
         const last = out[out.length - 1];
         if (last && last.e === i && last.what === esc(what) && last.tone === esc(tone) && last.audio === audio && last.patch === patch) last.e = i + 1;
-        else out.push({ s: i, e: i + 1, what: esc(what), tone: esc(tone), audio, layer: h.layer, patch });
+        else out.push({ s: i, e: i + 1, what: esc(what), tone: esc(tone), audio, layer: h.layer, patch, pnote });
       });
       return out;
     };
@@ -341,8 +360,9 @@ function shape(d) {
       // Sound actions: set it before your first entry, switch it when it changes from your last part.
       blocks.forEach((b, i) => {
         const p = blocks[i - 1], to = b.patch || b.tone;
-        if (!p) { if (to) b.act = { kind: "set", to }; }
-        else if (to !== (p.patch || p.tone) && (b.patch || p.patch || b.tone !== p.tone)) b.act = { kind: "switch", to, rest: b.s > p.e };
+        const note = b.patch ? b.pnote : "";
+        if (!p) { if (to) b.act = { kind: "set", to, note }; }
+        else if (to !== (p.patch || p.tone) && (b.patch || p.patch || b.tone !== p.tone)) b.act = { kind: "switch", to, note, rest: b.s > p.e };
       });
       if (blocks.length) lanes.push({ who, label: PLAYERS[who].name, role: PLAYERS[who].role, blocks });
     });
@@ -509,7 +529,7 @@ function renderSong(song, idx) {
     const tr = el("div", { class: "track" });
     gridLines(tr);
     lane.blocks.forEach(b => {
-      const d = el("div", { class: "blk " + b.cls, "data-who": lane.who, title: `${b.what} · ${b.tone}` }, `<strong>${b.audio ? playBtn(b.audio) : ""}${b.what}</strong>${b.patch ? `<span class="patch">${b.patch}</span>` : `<em>${b.tone}</em>`}`);
+      const d = el("div", { class: "blk " + b.cls, "data-who": lane.who, title: `${b.what} · ${b.patch || b.tone}${b.pnote ? " — " + b.pnote : ""}` }, `<strong>${b.audio ? playBtn(b.audio) : ""}${b.what}</strong>${b.patch ? `<span class="patch">${b.patch}</span>` : `<em>${b.tone}</em>`}`);
       d.style.left = `calc(${pos(b.s)}% + 2px)`;
       d.style.width = `calc(${pos(b.e) - pos(b.s)}% - 4px)`;
       tr.append(d);
@@ -575,6 +595,7 @@ function renderSong(song, idx) {
     const items = [];
     song.lanes.filter(l => l.who === who).forEach(l => l.blocks.forEach(b => items.push({ ...b, lane: l.label })));
     items.sort((a, b) => a.s - b.s);
+    if (who !== "production" && items.length) card.insertAdjacentHTML("beforeend", soundStrip(items));
     {
       const ol = el("ol"); const secs = song.sections;
       const nameAt = x => secs[Math.min(Math.floor(x), secs.length - 1)].name;

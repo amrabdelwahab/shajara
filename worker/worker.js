@@ -180,7 +180,7 @@ async function sendout(env, tok, audioId) {
   const nm = Object.fromEntries(names.map(r => [r.id, r.name]));
   // Sound names for the line-ups, so the page can say when someone sets or switches their sound.
   const sids = [...new Set(holders.flatMap(h => (h.sound_ids || '').split(',').filter(Boolean)))];
-  const snd = sids.length ? Object.fromEntries((await q(`SELECT id, name FROM sounds WHERE id IN (${sids.map(() => '?').join(',')})`, ...sids)).map(r => [r.id, r.name])) : {};
+  const snd = sids.length ? Object.fromEntries((await q(`SELECT id, name, notes FROM sounds WHERE id IN (${sids.map(() => '?').join(',')})`, ...sids)).map(r => [r.id, r])) : {};
   const songs = tracks.map(t => ({
     id: t.id, title: t.title, maqam: t.maqam, tonic: t.tonic, tempo: t.tempo, notes: (t.notes || '').slice(0, 600),
     sections: sections.filter(s => s.track_id === t.id).map(s => {
@@ -193,7 +193,8 @@ async function sendout(env, tok, audioId) {
       }
       return { id: s.id, name: s.name, maqam: s.maqam, tempo: s.tempo, bars: s.bars, weight: s.weight, note: (s.notes || '').slice(0, 140), cues: parseCues(s.cues),
         text: (s.notes || '').slice(0, 2000),
-        lineup: holders.filter(h => h.section_id === s.id).map(h => ({ member_id: h.member_id, layer: h.layer, part: h.part || '', instrument: h.instrument || '', sounds: (h.sound_ids || '').split(',').map(x => snd[x]).filter(Boolean) })), parts,
+        lineup: holders.filter(h => h.section_id === s.id).map(h => ({ member_id: h.member_id, layer: h.layer, part: h.part || '', instrument: h.instrument || '', sounds: (h.sound_ids || '').split(',').map(x => snd[x] && snd[x].name).filter(Boolean),
+          sound_notes: (h.sound_ids || '').split(',').map(x => snd[x] && (snd[x].notes || '').slice(0, 300)).filter(x => x != null) })), parts,
         // Everything left on the section: recordings, notes and links, newest first.
         ideas: ideas.filter(i => i.section_id === s.id).slice(0, 40).map(i => ({ layer: i.layer, kind: i.kind, by_name: nm[i.author_id] || '', body: (i.body || '').slice(0, 1000), audio_id: i.kind === 'audio' ? i.audio_id : null, url: i.kind === 'link' ? i.url : null, starred: !!i.starred, duration: i.duration || null })) };
     }),
