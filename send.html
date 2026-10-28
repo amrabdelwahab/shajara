@@ -247,6 +247,12 @@ body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage)
 .smap span { font-size: 11.5px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
 .smap span.on { border-color: var(--accent); color: var(--fg); } .smap span.off { opacity: .45; } .smap span.done { background: var(--accent); color: var(--ink); border-color: var(--accent); }
 .scard { background: var(--surface); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.scard.rev header { cursor: pointer; }
+.scard.rev.now { box-shadow: inset 3px 0 0 var(--accent), 0 0 0 1px var(--accent); } .scard.rev.now .eyebrow { color: var(--accent); }
+.rparts { display: flex; flex-direction: column; gap: 4px; }
+.rpart { display: grid; grid-template-columns: 76px 1fr; gap: 8px; font-size: 13.5px; } .rpart b { font-weight: 600; }
+.rpart.me b { color: var(--amr); } .rpart:not(.me) { color: var(--muted); } .rpart:not(.me) b { color: var(--fg); font-weight: 500; }
+.seg button { padding: 5px 10px; }
 .scard.known { background: color-mix(in srgb, var(--amr) 14%, var(--surface)); box-shadow: inset 3px 0 0 var(--amr); }
 .scard.known .scue, .scard.known .sline, .scard.known .sblock, .scard.known .swith, .scard.known .applink, .scard.known .sline-none { display: none; }
 .learned { font-size: 12px; font-weight: 600; color: var(--ink); background: var(--amr); border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
@@ -290,7 +296,7 @@ body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage)
 .seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--ink); }
 .seg { align-self: center; } .seg button { padding: 5px 12px; font-size: 12.5px; }
-body.stage .prep, body.rehearsal #tab-night, body.stage #tab-night, body.stage .setlist, body.stage #me, body.stage .topbar .lbl, body.stage #asof { display: none; }
+body.stage .prep, body.rehearsal #tab-night, body.review #tab-night, body.review .legend, body.review .blurb, body.review .lede, body.stage #tab-night, body.stage .setlist, body.stage #me, body.stage .topbar .lbl, body.stage #asof { display: none; }
 body.stage .sbar .chip { font-size: 16px; padding: 10px 16px; white-space: nowrap; } body.stage .sbar { padding: 0 0 6px; }
 body.stage .stitle { margin-top: 10px; }
 body.rehearsal .prep, body.rehearsal .legend, body.rehearsal .blurb, body.rehearsal .meta-row, body.rehearsal .more, body.rehearsal .secpanel, body.rehearsal .lede { display: none !important; }
@@ -323,7 +329,7 @@ body.stage .secpanel { display: none; }
     <div class="eyebrow">Next concert · running order</div>
     <h1>Loading the set…</h1>
     <p class="lede">Pick who you are, then a song. Each song is one board: a lane per player, the backing tracks, and the cues.</p>
-    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearsal</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button><button class="chip sm" id="asof" type="button" hidden title="Reload to pick up changes made in Shajara"></button></div>
+    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="review" aria-pressed="false">Review</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearse</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button><button class="chip sm" id="asof" type="button" hidden title="Reload to pick up changes made in Shajara"></button></div>
     <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"><li role="presentation"><button role="tab" id="tab-night" aria-selected="false"><span class="n">★</span><span>My night</span></button></li></ol>
   </header>
   <section id="night" hidden></section>
@@ -537,7 +543,7 @@ function renderSong(song, idx) {
   // stage mode: the song as a list, top to bottom; each row = a section, what I do in it, the cue that starts it
   const stage = el("div", { class: "stage-view" }); wrap.append(stage);
   let nowI = -1;
-  const setNow = i => { nowI = i; wrap.querySelectorAll(".sec").forEach(d => d.classList.toggle("now", +d.dataset.i === i)); };
+  const setNow = i => { nowI = i; wrap.querySelectorAll(".sec").forEach(d => d.classList.toggle("now", +d.dataset.i === i)); wrap.querySelectorAll(".scard.rev").forEach(c => c.classList.toggle("now", +c.dataset.i === i)); };
   const renderStrip = () => {
     // stage: a short checklist. One line per entry or change: the cue, then what to do, then the sound if it changes.
     const who = ME; const secs = song.sections;
@@ -755,7 +761,7 @@ function renderSong(song, idx) {
   // Study at home: the song as the sections you play, each with the line to learn, how you come in, and what to play it on.
   const study = el("section", { class: "study", id: `prep-${idx}` }); head.after(study);
   const renderStudy = () => {
-    const who = ME, raw = song.raw;
+    const who = ME, raw = song.raw, REV = document.body.classList.contains("review");
     const mineIn = r => who ? r.lineup.find(l => l.member_id === who) : null;
     const all = raw.map((r, i) => ({ r, i, my: mineIn(r) })), items = all.filter(x => !who || x.my);
     const knowKey = r => `know:${TOKEN}:${who || "all"}:${r.id}`;
@@ -764,12 +770,28 @@ function renderSong(song, idx) {
     const nKnown = items.filter(x => known(x.r)).length;
     const map = `<div class="smap">${raw.map((r, i) => `<span class="${mineIn(r) ? "on" : who ? "off" : ""}${known(r) && mineIn(r) ? " done" : ""}">${esc(r.name)}</span>`).join("")}</div>`;
     const lines = items.flatMap(x => x.my ? x.r.ideas.filter(y => y.kind === "audio" && y.layer === x.my.layer).sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0)).slice(0, 1) : []);
-    const sum = who
+    const sum = REV
+      ? `${raw.length} sections, for going through together. Tap one: we’re here.${who ? " Your parts are marked." : ""}`
+      : who
       ? (items.length ? (nKnown === items.length ? `You play in <b>${items.length}</b> of ${raw.length} sections · <b class="ok">all learned ✓</b>` : `You play in <b>${items.length}</b> of ${raw.length} sections · <b>${items.length - nKnown}</b> still to learn.`) : `You sit this one out.`)
       : `${raw.length} sections. Pick who you are to study your parts; this is everyone's.`;
     const other = x => `<div class="take">${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}${x.starred ? " · ★" : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
+    const note = x => x.kind === "link" ? `<div class="take"><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></div>`
+      : `<div class="take"><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}</span><div>${esc(x.body)}</div></span></div>`;
     const cards = all.map(({ r, i, my }) => {
       const recs = r.ideas.filter(x => x.kind === "audio");
+      if (REV) {
+        // Review together: the whole section for the room — cue in, everyone's parts, every recording, the notes. Tap = we're here.
+        const cue = song.cues.find(c => c.at === i), notes = r.ideas.filter(x => x.kind !== "audio"), text = r.text.length > r.note.length ? r.text : "";
+        const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : "", r.note].filter(Boolean).map(esc).join(" · ");
+        const parts = [...r.lineup].sort((a, b) => (b.member_id === who) - (a.member_id === who)).map(l => `<div class="rpart${l.member_id === who ? " me" : ""}"><b>${esc(nameOf(l.member_id))}</b><span>${esc(l.part || LAYER_WORD[l.layer] || "")}${(l.sounds || []).length ? ` <span class="patch">${esc(l.sounds.join(" + "))}</span>` : l.instrument ? ` <span class="muted">· ${esc(l.instrument)}</span>` : ""}</span></div>`).join("");
+        return `<article class="scard rev${nowI === i ? " now" : ""}" data-i="${i}" data-loop="0" data-slow="0"><header><div><div class="eyebrow">${i + 1} / ${raw.length}${nowI === i ? " · we’re here" : ""}</div><h4>${esc(r.name)}</h4>${facts ? `<div class="muted small">${facts}</div>` : ""}</div></header>
+          ${cue ? `<p class="scue">${esc(cueLine(cue))}</p>` : ""}
+          <div class="rparts">${parts}</div>
+          ${recs.length ? `<div class="sline">${recs.map(other).join("")}<div class="sctl"><button type="button" class="chip sm" data-loop aria-pressed="false">repeat</button><button type="button" class="chip sm" data-slow aria-pressed="false">slow</button></div></div>` : ""}
+          ${text || notes.length ? `<div class="sblock"><h5>Notes</h5>${text ? `<p class="sp-text">${esc(text)}</p>` : ""}${notes.map(note).join("")}</div>` : ""}
+          <a class="applink small" href="${esc(appLink(song.id, r.id))}" target="_blank" rel="noopener">Change this section in Shajara ↗</a></article>`;
+      }
       if (who && !my) {
         // You sit this one out: a small card so the song stays whole, with the cue into it and what the others do.
         const cue = song.cues.find(c => c.at === i), nA = recs.length;
@@ -785,8 +807,6 @@ function renderSong(song, idx) {
       const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : "", r.note].filter(Boolean).map(esc).join(" · ");
       const sound = my ? ((my.sounds || []).length ? my.sounds.join(" + ") : my.instrument) : "";
       const take = x => `<div class="take${x.starred ? " star" : ""}">${playBtn(x.audio_id)}<span><b>${x.starred ? "★ the line" : "a take"}</b> <span class="muted">by ${esc(x.by_name)}${x.duration ? ` · ${Math.round(x.duration)}s` : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
-      const note = x => x.kind === "link" ? `<div class="take"><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></div>`
-        : `<div class="take"><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}</span><div>${esc(x.body)}</div></span></div>`;
       const whoElse = r.lineup.filter(l => !my || l.member_id !== who).map(l => `${esc(nameOf(l.member_id))}: ${esc(l.part || LAYER_WORD[l.layer] || "")}`).join(" · ");
       return `<article class="scard${known(r) ? " known" : ""}" data-loop="0" data-slow="0">
         <header><div><div class="eyebrow">${i + 1} / ${raw.length}</div><h4>${esc(r.name)}</h4>${facts ? `<div class="muted small">${facts}</div>` : ""}</div>
@@ -802,9 +822,10 @@ function renderSong(song, idx) {
         ${who ? `<button type="button" class="knowbtn" data-know="${esc(knowKey(r))}" aria-pressed="${known(r)}">${known(r) ? "Still learning this" : "✓ I know this"}</button>` : ""}
       </article>`;
     });
-    study.innerHTML = `<div class="shead"><p class="prep-sum">${sum}</p>${map}${lines.length > 1 ? `<button type="button" class="chip" data-playall>▶ Play my lines in order</button>` : ""}</div>
+    study.innerHTML = `<div class="shead"><p class="prep-sum">${sum}</p>${map}${!REV && lines.length > 1 ? `<button type="button" class="chip" data-playall>▶ Play my lines in order</button>` : ""}</div>
       ${cards.join("") || ""}<button type="button" class="chip more sboard">${wrap.classList.contains("showboard") ? "Hide" : "Show"} the board and everyone’s parts</button>`;
     study.querySelector(".sboard").addEventListener("click", () => { wrap.classList.toggle("showboard"); renderStudy(); fitAll(); });
+    study.querySelectorAll(".scard.rev header").forEach(h => h.addEventListener("click", () => { const i = +h.parentNode.dataset.i; setNow(nowI === i ? -1 : i); renderStudy(); }));
     const pa = study.querySelector("[data-playall]");
     if (pa) pa.addEventListener("click", () => {
       const btns = lines.map(l => study.querySelector(`.sline .pl-btn[data-audio="${l.audio_id}"]`)).filter(Boolean); let k = 0;
@@ -902,15 +923,16 @@ const themeBtn = document.getElementById("theme");
 const setTheme = t => { document.documentElement.dataset.theme = t; themeBtn.textContent = t === "light" ? "Dark" : "Light"; try { localStorage.setItem("setlist-theme", t); } catch (e) {} };
 try { setTheme(localStorage.getItem("setlist-theme") || "dark"); } catch (e) { setTheme("dark"); }
 themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light"));
-// Modes: study at home (everything), rehearsal (board + your part, screen awake), stage (your checklist only, screen awake).
+// Modes: study at home (your parts), review together (section by section, for the room), rehearsal (board + your part, screen awake), stage (your checklist only, screen awake).
 let wake = null, MODE = "study";
 const modeBtns = [...document.querySelectorAll("#modes [data-mode]")];
 async function setMode(m) {
-  MODE = m; document.body.classList.toggle("stage", m === "stage"); document.body.classList.toggle("rehearsal", m === "rehearsal");
+  MODE = m; document.body.classList.toggle("stage", m === "stage"); document.body.classList.toggle("rehearsal", m === "rehearsal"); document.body.classList.toggle("review", m === "review");
   modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
   try { localStorage.setItem("setlist-mode", m); } catch (e) {}
   if (m !== "study" && !night.hidden) show(lastSong);
   try { if (m !== "study" && navigator.wakeLock) { if (!wake) wake = await navigator.wakeLock.request("screen"); } else if (wake) { wake.release(); wake = null; } } catch (e) {}
+  panels.forEach(p => p._renderStudy && p._renderStudy());
   fitAll();
 }
 modeBtns.forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));

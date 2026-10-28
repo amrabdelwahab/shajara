@@ -10,9 +10,9 @@ Whoever runs the night: **Sets → New set** — name, date, venue, cast. Cast =
 - Per section in the set's version: **who plays what, on which sound** · **cues** (who gives it, or "production") · a note.
 - **Send-out link** → one link for everyone, no login.
 
-## 3. The meeting (we sit together)
-- One phone edits the set; everyone else has the link open on **Everyone**, Study mode, looking at the board.
-- Decisions go straight into the set's version. Others tap **↻** to see them.
+## 3. The meeting (we sit together) — Review mode
+- Section by section, one card each: the cue into it, everyone's part and sound, every recording (▶), the notes. Tap a card = "we're here".
+- One phone edits the set ("Change this section in Shajara ↗" lands on it); everyone else taps **↻** to catch up.
 
 ## 4. At home (Study)
 - Pick yourself. Per song: **your parts, one card each** — the section, what you play and on which sound, how you come in, the line to learn (▶, repeat, slow), what's around you, notes. Tick **I know this** as you go; "Play my lines in order" runs through the song.
