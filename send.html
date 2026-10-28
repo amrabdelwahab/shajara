@@ -248,6 +248,11 @@ body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage)
 .smap span.on { border-color: var(--accent); color: var(--fg); } .smap span.off { opacity: .45; } .smap span.done { background: var(--accent); color: var(--ink); border-color: var(--accent); }
 .scard { background: var(--surface); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
 .scard.known { opacity: .6; }
+.scard.out { opacity: .55; padding: 10px 14px; gap: 6px; background: transparent; border: 1px dashed var(--line); }
+.scard.out h4 { font-size: 17px; } .scard.out .eyebrow { font-size: 10.5px; } .scard.out .scue { font-size: 12.5px; }
+.scard.out .mk { font-size: 11px; color: var(--muted); align-self: center; }
+.sothers { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--muted); } .sothers b { color: var(--fg); font-weight: 500; }
+.scard.out .sblock { gap: 4px; } .scard.out .take { font-size: 12.5px; } .scard.out .pl-btn { width: 24px; height: 24px; font-size: 10px; }
 .scard header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .scard h4 { margin: 0; font-family: var(--display); font-size: 24px; font-weight: 600; line-height: 1.1; }
 .scard .small { font-size: 12px; }
@@ -745,7 +750,7 @@ function renderSong(song, idx) {
   const renderStudy = () => {
     const who = ME, raw = song.raw;
     const mineIn = r => who ? r.lineup.find(l => l.member_id === who) : null;
-    const items = raw.map((r, i) => ({ r, i, my: mineIn(r) })).filter(x => !who || x.my);
+    const all = raw.map((r, i) => ({ r, i, my: mineIn(r) })), items = all.filter(x => !who || x.my);
     const knowKey = r => `know:${TOKEN}:${who || "all"}:${r.id}`;
     const known = r => { try { return localStorage.getItem(knowKey(r)) === "1"; } catch (e) { return false; } };
     const nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
@@ -755,15 +760,24 @@ function renderSong(song, idx) {
     const sum = who
       ? (items.length ? `You play in <b>${items.length}</b> of ${raw.length} sections${nKnown ? ` · <b>${nKnown}</b> learned` : ""}.` : `You sit this one out.`)
       : `${raw.length} sections. Pick who you are to study your parts; this is everyone's.`;
-    const cards = items.map(({ r, i, my }) => {
+    const other = x => `<div class="take">${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}${x.starred ? " · ★" : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
+    const cards = all.map(({ r, i, my }) => {
       const recs = r.ideas.filter(x => x.kind === "audio");
+      if (who && !my) {
+        // You sit this one out: a small card so the song stays whole, with the cue into it and what the others do.
+        const cue = song.cues.find(c => c.at === i), nA = recs.length;
+        const who2 = r.lineup.map(l => `<span><b>${esc(nameOf(l.member_id))}</b> ${esc(l.part || LAYER_WORD[l.layer] || "")}</span>`).join("");
+        return `<article class="scard out"><header><div><div class="eyebrow">${i + 1} / ${raw.length} · you rest</div><h4>${esc(r.name)}</h4>${r.note ? `<div class="muted small">${esc(r.note)}</div>` : ""}</div>${nA ? `<span class="mk">▶ ${nA}</span>` : ""}</header>
+          ${cue ? `<p class="scue">${esc(cueLine(cue))}</p>` : ""}
+          <div class="sothers">${who2}</div>
+          ${nA ? `<div class="sblock">${recs.map(other).join("")}</div>` : ""}</article>`;
+      }
       const mineRecs = my ? recs.filter(x => x.layer === my.layer).sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0)) : [];
       const others = recs.filter(x => !mineRecs.includes(x)), notes = r.ideas.filter(x => x.kind !== "audio"), text = r.text.length > r.note.length ? r.text : "";
       const cue = song.cues.find(c => c.at === i);
       const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : "", r.note].filter(Boolean).map(esc).join(" · ");
       const sound = my ? ((my.sounds || []).length ? my.sounds.join(" + ") : my.instrument) : "";
       const take = x => `<div class="take${x.starred ? " star" : ""}">${playBtn(x.audio_id)}<span><b>${x.starred ? "★ the line" : "a take"}</b> <span class="muted">by ${esc(x.by_name)}${x.duration ? ` · ${Math.round(x.duration)}s` : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
-      const other = x => `<div class="take">${playBtn(x.audio_id)}<span><b>${esc(nameOf(x.author_id) === "Someone" ? x.by_name : x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}${x.starred ? " · ★" : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
       const note = x => x.kind === "link" ? `<div class="take"><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></div>`
         : `<div class="take"><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}</span><div>${esc(x.body)}</div></span></div>`;
       const whoElse = r.lineup.filter(l => !my || l.member_id !== who).map(l => `${esc(nameOf(l.member_id))}: ${esc(l.part || LAYER_WORD[l.layer] || "")}`).join(" · ");
