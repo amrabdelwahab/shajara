@@ -645,7 +645,7 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 
 /* ---------- tabs, you, space, welcome ---------- */
 .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: color-mix(in srgb, #000 90%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line); padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); }
-.tabbar-in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); padding: 0 4px; }
+.tabbar-in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); padding: 0 4px; }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; color: var(--faint); border-radius: 12px; }
 .tab svg { width: 24px; height: 24px; transition: transform .15s ease-out; }
 .tab.on { color: var(--text); }
@@ -1147,6 +1147,32 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
 .nx-go[disabled] { opacity: .45; }
 .nx-why { margin: 8px 0 0 !important; text-align: center; font: italic 13px/1.3 var(--serif) !important; color: var(--muted); }
 .nx-other { display: block; margin: 12px auto 0; font: italic 13px/1 var(--serif); color: var(--muted); }
+
+/* sets */
+.ver-banner { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; width: 100%; text-align: left; padding: 10px 14px; border-radius: var(--radius); border: 1px dashed var(--line); margin: 6px 0 12px; }
+.ver-banner .k, .cues-strip .k { color: var(--muted); font: 700 9px/1 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .06em; }
+.ver-banner b { font: 16px/1.2 var(--serif); } .ver-banner .faint { font: italic 14px/1.3 var(--serif); }
+.cues-strip { display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left; padding: 12px 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); margin: 0 0 12px; }
+.cues-strip .cue-l { font: 16px/1.3 var(--serif); display: flex; align-items: baseline; gap: 8px; }
+.cues-strip .cue-l i { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-yellow); flex: none; }
+.cues-strip .cue-l i.pr { background: var(--muted); }
+.cue-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.lu-part { margin-top: 8px; }
+.set-mini { margin: 0; padding-left: 20px; font: 15px/1.45 var(--serif); }
+.set-mini li.faint { list-style: none; }
+.set-hero { display: flex; flex-direction: column; gap: 12px; margin: 8px 0 6px; }
+.set-cast { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.set-cast .sc { display: inline-flex; align-items: center; gap: 7px; font: 16px/1 var(--serif); padding: 4px 10px 4px 4px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.st-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.st-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 10px 8px 10px 12px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.st-n { font: 800 12px/1.6 var(--display); color: var(--brand-yellow); }
+.st-main { display: flex; flex-direction: column; gap: 5px; text-align: left; min-width: 0; }
+.st-main b { font: 800 14px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .02em; }
+.st-who { font: 15px/1.3 var(--serif); color: var(--text); }
+.st-warn { font: italic 14px/1.3 var(--serif); color: #ff9f43; }
+.st-ord { display: flex; gap: 0; } .st-ord .icon-btn { width: 34px; height: 34px; } .st-ord .icon-btn[disabled] { opacity: .25; }
+.sw-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr); gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.sw-row b { font: 17px/1.2 var(--serif); }
 </style>
 </head>
 <body>
@@ -1573,7 +1599,10 @@ const spaceName = () => (S.space && S.space.name) || '‘ala bab allah';
 async function loadState() {
   const d = await api('/state');
   S.members = d.members;
-  S.tracks = d.tracks;
+  // Tracks written or versioned for a set live in their set, not in the Tracks list.
+  S.tracks = d.tracks.filter(t => !t.set_id);
+  S.versions = d.tracks.filter(t => t.set_id);
+  S.sets = d.sets || [];
   S.grooves = d.grooves || [];
   S.instruments = d.instruments || [];
   S.sounds = d.sounds || [];
@@ -1603,6 +1632,8 @@ function route() {
   if (h.startsWith('t/')) return viewTrack(h.slice(2));
   if (h.startsWith('p/')) return viewProject(h.slice(2));
   if (h === 'projects') return viewProjects();
+  if (h === 'sets') return viewSets();
+  if (h.startsWith('set/')) return viewSet(h.slice(4));
   return viewHome();
 }
 window.addEventListener('hashchange', route);
@@ -1612,13 +1643,14 @@ function topBar(title, left, right) {
   return `<div class="top"><div class="top-in">${left || ''}<h1>${title}</h1>${right || ''}</div></div>`;
 }
 const backBtn = to => `<button class="icon-btn" aria-label="Back" onclick="go('${to}')">${ICON.back}</button>`;
-const TABS = [['', 'Tracks', 'tree'], ['projects', 'Projects', 'folder'], ['shelf', 'Shelf', 'shelf'], ['me', 'Sounds', 'sounds'], ['space', 'Space', 'home']];
+const TABS = [['', 'Tracks', 'tree'], ['sets', 'Sets', 'set'], ['projects', 'Projects', 'folder'], ['shelf', 'Shelf', 'shelf'], ['me', 'Sounds', 'sounds'], ['space', 'Space', 'home']];
 // One family for the tab bar: same stroke, and the shapes marked .f fill in when the tab is on.
 const TAB_ICON = {
   tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="f" d="M7.6 15.2a4.1 4.1 0 0 1-.9-8.1 5.4 5.4 0 0 1 10.6 0 4.1 4.1 0 0 1-.9 8.1Z"/><path d="M12 11.5v9.5M12 15l-2.4-2.2M12 16.5l2.6-2.4M8.5 21h7"/></svg>',
   shelf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 20.5h19"/><circle class="f" cx="8" cy="14.6" r="5.4"/><circle class="h" cx="8" cy="14.6" r="1.3"/><path class="f" d="M14.6 7.2l4.6-.9 2.2 13.8-4.6.4Z"/></svg>',
   sounds: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3.5 10.5v3M7.25 7v10M11 3.5v17M14.75 7.5v9M18.5 5.5v13M22 10.5v3" class="w"/></svg>',
   folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path class="f" d="M3 7.2A2.2 2.2 0 0 1 5.2 5h3.9l2.2 2.4h7.5A2.2 2.2 0 0 1 21 9.6v8.2a2.2 2.2 0 0 1-2.2 2.2H5.2A2.2 2.2 0 0 1 3 17.8Z"/></svg>',
+  set: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h9M4 12h9M4 17.5h6"/><path class="f" d="M16 13.2v7.3l5.5-3.65Z"/><path d="M16 4.5h4"/></svg>',
   home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="f" d="M3.8 10.4 12 3.6l8.2 6.8V19.6a1 1 0 0 1-1 1h-4.6v-5.8a2.6 2.6 0 0 0-5.2 0v5.8H4.8a1 1 0 0 1-1-1Z"/></svg>',
 };
 function tabBar(cur) {
@@ -1629,7 +1661,7 @@ function tabBar(cur) {
 function wireTabs() { document.querySelectorAll('[data-tab-go]').forEach(b => b.onclick = () => { if (location.hash.replace(/^#\/?/, '') !== b.dataset.tabGo) go(b.dataset.tabGo); else scrollTo({ top: 0, behavior: 'smooth' }); }); }
 // The space's header: logo + name ▾ (switch) on every tab.
 // Page title on the left, the space switcher on the right: logo, name and arrow in one pill.
-const PAGE_TITLE = { '': 'Tracks', projects: 'Projects', shelf: 'Shelf', me: 'Sounds', space: 'Space' };
+const PAGE_TITLE = { '': 'Tracks', sets: 'Sets', projects: 'Projects', shelf: 'Shelf', me: 'Sounds', space: 'Space' };
 function spaceTop() {
   const sp = S.space || { id: 'abba' }, h = location.hash.replace(/^#\/?/, '');
   const mark = logoOf(sp) ? logoImg(sp, 'logo', '') : `<span class="space-mono">${esc(spaceName().replace(/^[^A-Za-z؀-ۿ]+/, '').slice(0, 1).toUpperCase())}</span>`;
@@ -2352,7 +2384,7 @@ function renderTrack() {
       return `<section class="layer" style="--c:${l.c};--pc:${pc}" id="L-${l.key}">
         <div class="layer-head"><div class="layer-glyph">${STAR}<svg class="g" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${l.glyph}</svg></div>
           <div><div class="layer-name">${l.name}</div><div class="layer-role">${l.role}</div></div><span class="layer-ar ar">${l.ar}</span></div>
-        <div class="holders">${hs.length ? hs.map(h => `<button class="holder" onclick="editLineup('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}${sidsOf(h).length ? ' · ' + esc(soundsLabel(sidsOf(h))) : ''}</button>`).join('')
+        <div class="holders">${hs.length ? hs.map(h => `<button class="holder" onclick="editLineup('${l.key}')">${esc(memberName(h.member_id))}${h.instrument ? ' · ' + esc(h.instrument) : ''}${h.part ? ' · <i>' + esc(h.part) + '</i>' : ''}${sidsOf(h).length ? ' · ' + esc(soundsLabel(sidsOf(h))) : ''}</button>`).join('')
           : `<button class="holder empty" onclick="editLineup('${l.key}')">empty · open for one of you, or production</button>`}</div>
         ${beatHtml}
         ${ideasHtml(sec.id, l.key, prevSeen)}
@@ -2374,13 +2406,15 @@ function renderTrack() {
       <div class="moves">${movesHtml || `<button class="move ghost" onclick="editSection()">+ moves · role swap, unison, silence…</button>`}</div>
       ${progBlock(sec)}
       ${sec.notes ? `<button class="notes" style="margin:0 0 14px" onclick="editSection('s-notes')">${esc(sec.notes)}</button>` : ''}
+      ${t.set_id ? cuesStrip(sec) : ''}
       ${lineupStrip(sec)}
       <div class="tree">${layers}</div>`;
   }
 
-  $('#app').innerHTML = topBar(esc(t.title), backBtn(''),
+  $('#app').innerHTML = topBar(esc(t.title), backBtn(t.set_id ? 'set/' + t.set_id : ''),
     `<button class="icon-btn" aria-label="Share" onclick="shareTrack()">${ICON.share}</button><button class="icon-btn" aria-label="Track options" onclick="trackMenu()">${ICON.more}</button>`) +
     `<div class="wrap${S.pickExplicit ? ' with-picks' : ''}">
+      ${versionBanner(t)}
       <div class="hero"><div class="chips">${chips}${t.notes ? '' : `<button class="chip ghost" onclick="editTrack('f-notes')">+ track note</button>`}</div>${trackNotes}</div>
       <div class="form">${form}</div>
       ${panel}
@@ -2914,13 +2948,14 @@ function newTrack(seed, after) {
       const t = await api('/tracks', { method: 'POST', body: {
         title: W.title.trim() || 'Untitled', notes: lines.join('\n\n'), genre: W.genre,
         maqam: W.vary.maqam ? '' : W.maqam, tonic: W.vary.maqam ? '' : W.tonic, tempo: W.vary.pulse ? '' : W.tempo,
-        meter_n: W.meter[0], meter_sub: W.meter[1],
+        meter_n: W.meter[0], meter_sub: W.meter[1], set_id: S.plantInSet || undefined,
         sections: W.secs.map(x => ({ name: x.name, energy: x.energy || '',
           ...(W.vary.maqam ? { maqam: x.maqam || '', tonic: x.tonic || '' } : {}),
           ...(W.vary.pulse ? { tempo: x.tempo || '' } : {}),
           ...(W.vary.meter && x.meter ? { meter_n: x.meter[0], meter_sub: x.meter[1] } : {}) })),
       } });
       keepGenre(W.genre);
+      S.plantInSet = null;
       S.track = t; closeSheet();
       if (after) await after(t);
       go('t/' + t.id);
@@ -3170,9 +3205,12 @@ function editSection(focusId) {
 // People are the fixed resource: each of you is in one layer per section, or out. Production can fill any number of layers.
 function lineupOf(sid) {
   const hs = S.track.holders.filter(h => h.section_id === sid);
-  const people = S.members.map(m => {
+  // In a set, the line-up is the set's cast (plus anyone already placed here).
+  const cast = S.track.set_id && setOf(S.track.set_id) ? setOf(S.track.set_id).people : null;
+  const pool = cast ? S.members.filter(m => cast.includes(m.id) || hs.some(h => h.member_id === m.id)).sort((a, b) => cast.indexOf(a.id) - cast.indexOf(b.id)) : S.members;
+  const people = pool.map(m => {
     const h = hs.find(x => x.member_id === m.id);
-    return { id: m.id, name: m.name, guest: !!m.guest, layer: h ? h.layer : null, instrument: h ? h.instrument : '', sound_ids: sidsOf(h) };
+    return { id: m.id, name: m.name, guest: cast ? false : !!m.guest, layer: h ? h.layer : null, instrument: h ? h.instrument : '', part: h ? h.part || '' : '', sound_ids: sidsOf(h) };
   });
   const prod = hs.filter(h => h.member_id === PRODUCTION);
   return { people, prod };
@@ -3201,9 +3239,9 @@ function editLineup(focusLayer) {
     <p class="lede">There are ${P.filter(p => !p.guest).length} of you. Each of you is in one layer in this section, or out. Layers can stay empty; production and guests can fill the gaps.</p>
     <div class="lu-sum" id="sum"></div>
     ${(() => { const pv = sections()[sections().indexOf(sec) - 1]; return pv && S.track.holders.some(h => h.section_id === pv.id) ? `<button class="btn block lu-copy" id="luCopy">Same as ${esc(pv.name)}</button>` : ''; })()}
-    ${P.map((p, i) => `${p.guest && !(P[i - 1] || {}).guest ? '<div class="list-head"><b>Guest performers</b></div>' : ''}<div class="lu-row${p.guest ? ' guest' : ''}" data-i="${i}"><div class="top-l"><b>${esc(p.name)}${p.guest ? '<span class="guest-tag">guest</span>' : ''}</b><input type="text" placeholder="on what?" value="${esc(p.instrument)}"></div>
+    ${P.map((p, i) => `${p.guest && !(P[i - 1] || {}).guest ? '<div class="list-head"><b>Guest performers</b></div>' : ''}<div class="lu-row${p.guest ? ' guest' : ''}" data-i="${i}"><div class="top-l"><b>${esc(p.name)}${p.guest ? '<span class="guest-tag">guest</span>' : ''}</b><input type="text" placeholder="on what?" value="${esc(p.instrument)}"></div>${S.track.set_id ? `<input class="lu-part" type="text" placeholder="plays what here? e.g. the theme, unison" value="${esc(p.part)}">` : ''}
       <div class="sugs lay">${choice(i, p.layer)}</div><div class="sugs inst"></div><div class="sugs snd hidden"></div><p class="sp-why hidden"></p></div>`).join('')}
-    <div class="lu-row guest-add"><div class="top-l"><b>+ Guest</b><span class="small muted" style="font-style:italic">someone playing or singing on this, who doesn’t use the app</span></div>
+    ${S.track.set_id ? `<p class="small muted">These are the set’s cast. Add someone from the set’s page.</p>` : ''}<div class="lu-row guest-add${S.track.set_id ? ' hidden' : ''}"><div class="top-l"><b>+ Guest</b><span class="small muted" style="font-style:italic">someone playing or singing on this, who doesn’t use the app</span></div>
       <div class="row2" style="margin-top:8px"><input id="gName" type="text" placeholder="name, e.g. Layla"><input id="gWhat" type="text" placeholder="what, e.g. vocals"></div>
       <button class="btn block" id="gAdd" style="margin-top:8px">Add guest performer</button></div>
     <div class="lu-row prod"><div class="top-l"><b>Production</b><span class="small muted" style="font-style:italic">the one role that can be in every layer at once</span></div>
@@ -3262,6 +3300,7 @@ function editLineup(focusLayer) {
         drawInst(); sum();
       });
       $('input', r).oninput = e => { p.instrument = e.target.value; p.auto = false; drawInst(); };
+      const pi = $('.lu-part', r); if (pi) pi.oninput = e => { p.part = e.target.value; };
       drawInst();
     });
     const cp = $('#luCopy', root); if (cp) cp.onclick = () => {
@@ -3278,7 +3317,7 @@ function editLineup(focusLayer) {
       r.querySelectorAll('.sug').forEach(b => b.onclick = () => { prodWhat[k] = b.textContent; $('input', r).value = b.textContent; });
     });
     const holdersNow = () => [
-      ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument, sound_ids: p.sound_ids })),
+      ...P.filter(p => p.layer).map(p => ({ member_id: p.id, layer: p.layer, instrument: p.instrument, sound_ids: p.sound_ids, part: p.part || '' })),
       ...LAYERS.filter(l => prodOn[l.key]).map(l => ({ member_id: PRODUCTION, layer: l.key, instrument: prodWhat[l.key] })),
     ];
     $('#save', root).onclick = async () => {
@@ -4769,6 +4808,203 @@ function trackProjectsSheet(t) {
 /* ---------- your shelf ---------- */
 // Recordings that belong to you rather than a track. They travel with you across spaces
 // and drop into any layer of any track as a take; the recording itself is shared, not copied.
+/* ---------- sets ---------- */
+// A set is something you play: a cast (people of the space, or guests from outside) and tracks in running order.
+// Each track in a set is its own version, so changing it for the set never touches the original.
+const setOf = id => (S.sets || []).find(x => x.id === id);
+const versionOf = id => (S.versions || []).find(t => t.id === id);
+const setTracks = st => st.track_ids.map(versionOf).filter(Boolean);
+const origOf = t => t && t.version_of ? [...S.tracks, ...(S.versions || [])].find(x => x.id === t.version_of) : null;
+const sendUrl = st => location.origin + location.pathname.replace(/index\.html$/, '').replace(/\/?$/, '/') + 'send.html#' + st.share;
+// Everyone placed in a track's line-up, in any section (production left out).
+const playersOf = t => [...new Set((t.holders || []).map(h => h.member_id).filter(id => id !== PRODUCTION))];
+function versionBanner(t) {
+  if (!t.set_id) return '';
+  const st = setOf(t.set_id), o = origOf(t);
+  return `<button class="ver-banner" onclick="go('set/${esc(t.set_id)}')"><span class="k">${o ? 'Set version' : 'Written for the set'}</span><b>${esc(st ? st.name : 'a set')}</b>${o ? `<span class="faint">from “${esc(o.title)}”. Changes here stay in the set.</span>` : ''}</button>`;
+}
+function cuesStrip(sec) {
+  const cues = parseCuesC(sec.cues);
+  return `<button class="cues-strip" onclick="editCues()"><span class="k">Cues into ${esc(sec.name)}</span>${cues.length ? cues.map(c => `<span class="cue-l"><i class="${c.from === PRODUCTION ? 'pr' : ''}"></i>${c.from === PRODUCTION ? 'listen' : 'watch ' + esc(firstName(c.from))}: ${esc(c.text)}</span>`).join('') : '<span class="faint">+ who gives the cue, and what it is</span>'}</button>`;
+}
+const parseCuesC = j => { try { const l = JSON.parse(j || '[]'); return Array.isArray(l) ? l : []; } catch { return []; } };
+function editCues() {
+  const { sec } = curView(), st = setOf(S.track.set_id);
+  const C = parseCuesC(sec.cues).map(c => ({ ...c }));
+  const who = [[PRODUCTION, 'Production (you hear it)'], ...(st ? st.people : []).map(id => [id, memberName(id) + ' (watch them)'])];
+  const draw = root => {
+    $('#cl', root).innerHTML = C.map((c, i) => `<div class="cue-row" data-i="${i}"><select>${who.map(([id, l]) => `<option value="${esc(id)}"${c.from === id ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
+      <input type="text" placeholder="e.g. unison theme, drums in, nod" value="${esc(c.text)}"><button class="icon-btn" aria-label="Remove">✕</button></div>`).join('') || '<p class="small muted">No cues yet.</p>';
+    root.querySelectorAll('.cue-row').forEach(r => { const c = C[+r.dataset.i];
+      $('select', r).onchange = e => { c.from = e.target.value; }; $('input', r).oninput = e => { c.text = e.target.value; };
+      $('button', r).onclick = () => { C.splice(+r.dataset.i, 1); draw(root); }; });
+  };
+  sheet(`<h3>Cues into ${esc(sec.name)}</h3><p class="lede">What tells everyone this section starts: someone’s signal, or something in the production. It shows up for everyone in the send-out.</p>
+    <div id="cl"></div><button class="btn block" id="cAdd" style="margin-top:10px">+ cue</button>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="save">Save cues</button></div>`, root => {
+    draw(root);
+    $('#cAdd', root).onclick = () => { C.push({ from: st && st.people[0] ? st.people[0] : PRODUCTION, text: '' }); draw(root); root.querySelector('.cue-row:last-child input').focus(); };
+    $('#save', root).onclick = async () => { try { S.track = await api('/sections/' + sec.id, { method: 'PATCH', body: { cues: C.filter(c => c.text.trim()) } }); closeSheet(); renderTrack(); } catch (e) { toast(e.message); } };
+  });
+}
+function setCard(st) {
+  const ts = setTracks(st), people = st.people.map(id => S.members.find(m => m.id === id)).filter(Boolean);
+  const dd = typeof daysTo === 'function' ? daysTo(st.date) : null;
+  return `<button class="pcard set-card" onclick="go('set/${esc(st.id)}')"><div class="pc-top">${st.date ? `<span class="pc-date">${esc(fmtDate(st.date))}</span>` : ''}${st.venue ? `<span class="pc-scale">${esc(st.venue)}</span>` : ''}${st.share ? '<span class="pc-scale">sent out</span>' : ''}</div>
+    <b class="pc-name">${esc(st.name)}</b>
+    ${ts.length ? `<ol class="set-mini">${ts.slice(0, 6).map(t => `<li>${esc(t.title)}</li>`).join('')}${ts.length > 6 ? `<li class="faint">+ ${ts.length - 6} more</li>` : ''}</ol>` : '<p class="pc-phil faint">No tracks yet.</p>'}
+    <div class="pc-foot">${people.map(m => avatar(m, 'xs')).join('')}<span class="sp"></span><span class="faint">${plural(ts.length, 'track')}${dd != null && dd >= 0 ? ` · ${dd === 0 ? 'today' : plural(dd, 'day') + ' to go'}` : ''}</span></div></button>`;
+}
+function viewSets() {
+  const render = () => {
+    const l = S.sets || [];
+    $('#app').innerHTML = spaceTop() + `<div class="wrap projects">
+      <p class="sh-lede">A set is something you play: who’s on stage, which tracks, in what order, and who plays what in each. A track in a set is its own version, so you can change it for the night without touching the original.</p>
+      <button class="pcard new" onclick="newSet()"><span class="pn-plus">+</span><b>New set</b><span class="faint">a gig, a session, a rehearsal</span></button>
+      ${l.length ? `<div class="pgrid">${l.map(setCard).join('')}</div>` : '<div class="empty small">No sets yet.</div>'}
+    </div>` + tabBar('sets');
+    wireTabs();
+  };
+  render();
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'sets' && !$('.scrim')) render(); }).catch(e => toast(e.message));
+}
+// Who's in the set: anyone in the space, or someone from outside (added as a guest performer).
+function castPicker(root, picked) {
+  const draw = () => {
+    const ms = S.members.filter(m => !m.guest), gs = S.members.filter(m => m.guest);
+    const chip = m => `<button type="button" class="sug${picked.includes(m.id) ? ' on' : ''}" data-m="${esc(m.id)}">${picked.includes(m.id) ? '✓ ' : ''}${esc(m.name)}${m.instruments ? ` <span class="faint">${esc(m.instruments.split(',')[0])}</span>` : ''}</button>`;
+    $('#cast', root).innerHTML = `<div class="sugs">${ms.map(chip).join('')}</div>${gs.length ? `<div class="list-head"><b>Guests</b></div><div class="sugs">${gs.map(chip).join('')}</div>` : ''}
+      <div class="row2" style="margin-top:12px"><input id="oName" type="text" placeholder="someone from outside, e.g. Layla"><input id="oWhat" type="text" placeholder="plays what, e.g. vocals"></div>
+      <button type="button" class="btn block" id="oAdd" style="margin-top:8px">+ Add them to the set</button>`;
+    root.querySelectorAll('#cast [data-m]').forEach(b => b.onclick = () => { const id = b.dataset.m; const i = picked.indexOf(id); if (i < 0) picked.push(id); else picked.splice(i, 1); draw(); });
+    $('#oAdd', root).onclick = async () => {
+      const name = $('#oName', root).value.trim(); if (!name) return $('#oName', root).focus();
+      try { const m = await api('/members', { method: 'POST', body: { name, guest: true, instruments: $('#oWhat', root).value.trim() } }); S.members.push(m); picked.push(m.id); draw(); } catch (e) { toast(e.message); }
+    };
+  };
+  draw();
+}
+function newSet() {
+  if (needMe()) return;
+  const picked = S.members.some(m => m.id === S.me) ? [S.me] : [];
+  sheet(`<h3>New set</h3><p class="lede">Name it, say when and where, and who’s playing. Tracks come next.</p>
+    <input id="nName" type="text" placeholder="e.g. Cairo Jazz Club, 20 Nov">
+    <div class="row2" style="margin-top:10px"><input id="nDate" type="date"><input id="nVenue" type="text" placeholder="where"></div>
+    <div class="list-head"><b>Who’s playing</b></div><div id="cast"></div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="mk">Create set</button></div>`, root => {
+    castPicker(root, picked); $('#nName', root).focus();
+    $('#mk', root).onclick = async () => {
+      const name = $('#nName', root).value.trim(); if (!name) return $('#nName', root).focus();
+      try { const st = await api('/sets', { method: 'POST', body: { name, date: $('#nDate', root).value, venue: $('#nVenue', root).value.trim(), people: picked } }); S.sets = [...(S.sets || []), { ...st }]; closeSheet(); go('set/' + st.id); } catch (e) { toast(e.message); }
+    };
+  });
+}
+async function patchSet(id, body) { const st = await api('/sets/' + id, { method: 'PATCH', body }); S.sets = (S.sets || []).map(x => x.id === id ? { ...x, ...st } : x); return st; }
+function editSetSheet(id) {
+  const st = setOf(id), picked = st.people.slice();
+  sheet(`<h3>Edit set</h3>
+    <input id="nName" type="text" value="${esc(st.name)}">
+    <div class="row2" style="margin-top:10px"><input id="nDate" type="date" value="${esc(st.date)}"><input id="nVenue" type="text" placeholder="where" value="${esc(st.venue)}"></div>
+    <textarea id="nNotes" rows="3" placeholder="notes for everyone: call time, soundcheck, what to bring" style="margin-top:10px">${esc(st.notes)}</textarea>
+    <div class="list-head"><b>Who’s playing</b></div><div id="cast"></div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="sv">Save</button></div>`, root => {
+    castPicker(root, picked);
+    $('#sv', root).onclick = async () => { try { await patchSet(id, { name: $('#nName', root).value.trim(), date: $('#nDate', root).value, venue: $('#nVenue', root).value.trim(), notes: $('#nNotes', root).value.trim(), people: picked }); closeSheet(); viewSet(id); } catch (e) { toast(e.message); } };
+  });
+}
+function setMenu(id) {
+  const st = setOf(id);
+  menuSheet(esc(st.name), [
+    { label: 'Edit set', hint: 'name, date, place, notes, who’s playing', run: () => editSetSheet(id) },
+    { label: 'Send out', hint: 'a link everyone in the set can open', run: () => sendOutSheet(id) },
+    { label: 'Delete set', hint: `${plural(st.track_ids.length, 'set version')} go with it. The original tracks stay.`, danger: true,
+      run: () => confirmSheet('Delete this set?', `“${esc(st.name)}” and its ${plural(st.track_ids.length, 'track version')} are deleted. Your original tracks are not touched.`, 'Delete set', async () => { await api('/sets/' + id, { method: 'DELETE' }); S.sets = S.sets.filter(x => x.id !== id); go('sets'); }) },
+  ]);
+}
+// Add a track: a version of one of ours (who takes whose part), or a brand new one written for the set.
+function addToSet(id) {
+  const st = setOf(id), have = setTracks(st).map(t => t.version_of);
+  const list = S.tracks.slice().sort((a, b) => a.title.localeCompare(b.title));
+  sheet(`<h3>Add a track</h3><p class="lede">Start from one of your tracks: the set gets its own version to change freely. Or plant a new one just for the set.</p>
+    <button class="menu-item" id="plant"><span><b>+ New track for this set</b><span class="small muted">plant it here, it stays in the set</span></span></button>
+    <div class="list-head"><b>From your tracks</b></div>
+    <div class="menu">${list.map(t => `<button class="menu-item" data-t="${esc(t.id)}"><span><b>${esc(t.title)}</b><span class="small muted">${plural(t.sections.length, 'section')}${playersOf(t).length ? ' · ' + esc(playersOf(t).map(firstName).join(', ')) : ''}${have.includes(t.id) ? ' · already in the set' : ''}</span></span></button>`).join('') || '<p class="small muted">No tracks yet.</p>'}</div>`, root => {
+    $('#plant', root).onclick = () => { closeSheet(); S.plantInSet = id; newTrack(); };
+    root.querySelectorAll('[data-t]').forEach(b => b.onclick = () => swapSheet(id, b.dataset.t));
+  });
+}
+// Who plays it tonight: everyone in the track keeps their part, or hands it to someone in the set (or nobody).
+function swapSheet(setId, tid) {
+  const st = setOf(setId), t = S.tracks.find(x => x.id === tid), from = playersOf(t);
+  const cast = st.people.map(id => S.members.find(m => m.id === id)).filter(Boolean);
+  const swap = Object.fromEntries(from.map(id => [id, st.people.includes(id) ? id : '']));
+  const draw = root => {
+    $('#sw', root).innerHTML = from.map(id => `<div class="sw-row"><b>${esc(memberName(id))}</b><span class="faint">→</span><select data-f="${esc(id)}">${cast.map(m => `<option value="${esc(m.id)}"${swap[id] === m.id ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}<option value=""${!swap[id] ? ' selected' : ''}>nobody</option></select></div>`).join('') || '<p class="small muted">Nobody is placed in this track’s line-up yet. You can do it in the set’s version.</p>';
+    root.querySelectorAll('#sw select').forEach(x => x.onchange = () => { swap[x.dataset.f] = x.value; });
+  };
+  sheet(`<h3>${esc(t.title)} in ${esc(st.name)}</h3><p class="lede">Who plays whose part? Everyone who’s in the set keeps theirs; pick who takes over from the others. Production stays as it is. Everything can still be changed per section afterwards.</p>
+    <div id="sw"></div>
+    <div class="actions"><button class="btn" onclick="closeSheet()">Cancel</button><button class="btn primary" id="go">Add to the set</button></div>`, root => {
+    draw(root);
+    $('#go', root).onclick = async () => {
+      $('#go', root).disabled = true;
+      try { const r = await api(`/sets/${setId}/versions`, { method: 'POST', body: { from: tid, swap } }); await loadState(); closeSheet(); viewSet(setId); toast(`${t.title} is in the set`); }
+      catch (e) { toast(e.message); $('#go', root).disabled = false; }
+    };
+  });
+}
+function sendOutSheet(id) {
+  const draw = () => {
+    const st = setOf(id);
+    sheet(st.share ? `<h3>Send out</h3><p class="lede">Anyone with this link sees the set the way you do: every track as a board, each person’s part in order, the cues, and the recorded lines to listen to. No passcode, and nothing else of the space.</p>
+      <input type="text" readonly value="${esc(sendUrl(st))}" id="lnk">
+      <div class="actions"><button class="btn" id="cp">Copy link</button><a class="btn primary" href="${esc(sendUrl(st))}" target="_blank" rel="noopener">Open it</a></div>
+      <button class="btn block" id="stop" style="margin-top:10px">Stop sharing</button>`
+      : `<h3>Send out</h3><p class="lede">Make a link for everyone in the set: each track as a board, each person’s part in order, the cues, and the recorded lines to listen to. They don’t need the passcode, and they only see this set.</p>
+      <div class="actions"><button class="btn" onclick="closeSheet()">Not now</button><button class="btn primary" id="mk">Make the link</button></div>`, root => {
+      if ($('#mk', root)) $('#mk', root).onclick = async () => { try { const r = await api(`/sets/${id}/share`, { method: 'POST' }); S.sets = S.sets.map(x => x.id === id ? { ...x, share: r.share } : x); draw(); } catch (e) { toast(e.message); } };
+      if ($('#cp', root)) $('#cp', root).onclick = async () => { try { await navigator.clipboard.writeText($('#lnk', root).value); toast('Link copied'); } catch { $('#lnk', root).select(); } };
+      if ($('#stop', root)) $('#stop', root).onclick = async () => { try { await api(`/sets/${id}/share`, { method: 'DELETE' }); S.sets = S.sets.map(x => x.id === id ? { ...x, share: null } : x); closeSheet(); viewSet(id); toast('The old link no longer works'); } catch (e) { toast(e.message); } };
+    });
+  };
+  draw();
+}
+function viewSet(id) {
+  const render = () => {
+    const st = setOf(id);
+    if (!st) { $('#app').innerHTML = topBar('Set', backBtn('sets')) + '<div class="wrap"><p class="muted">Loading…</p></div>'; return; }
+    const ts = setTracks(st), cast = st.people.map(pid => S.members.find(m => m.id === pid)).filter(Boolean);
+    const row = (t, i) => {
+      const o = origOf(t), pl = playersOf(t), outside = pl.filter(pid => !st.people.includes(pid)), idle = st.people.filter(pid => !pl.includes(pid));
+      const recs = (t.kinds && t.kinds.audio) || 0;
+      return `<li class="st-row"><span class="st-n">${String(i + 1).padStart(2, '0')}</span>
+        <button class="st-main" onclick="go('t/${esc(t.id)}')"><b>${esc(t.title)}</b>
+          <span class="small faint">${o ? 'version of “' + esc(o.title) + '”' : 'written for the set'} · ${plural(t.sections.length, 'section')}${recs ? ` · ${plural(recs, 'recording')}` : ''}</span>
+          <span class="st-who">${pl.length ? esc([...pl.map(firstName), ...(t.holders.some(h => h.member_id === PRODUCTION) ? ['production'] : [])].join(' · ')) : '<span class="faint">nobody placed yet</span>'}</span>
+          ${outside.length ? `<span class="st-warn">${esc(outside.map(memberName).join(', '))} ${outside.length > 1 ? 'aren’t' : 'isn’t'} in this set</span>` : ''}
+          ${idle.length && pl.length ? `<span class="small faint">sitting out: ${esc(idle.map(firstName).join(', '))}</span>` : ''}</button>
+        <span class="st-ord"><button class="icon-btn" aria-label="Move up" ${i ? '' : 'disabled'} data-up="${i}">↑</button><button class="icon-btn" aria-label="Move down" ${i < ts.length - 1 ? '' : 'disabled'} data-dn="${i}">↓</button><button class="icon-btn" aria-label="Remove" data-rm="${esc(t.id)}">✕</button></span></li>`;
+    };
+    $('#app').innerHTML = topBar(esc(st.name), backBtn('sets'), `<button class="icon-btn" aria-label="Set options" onclick="setMenu('${esc(id)}')">${ICON.more}</button>`) + `<div class="wrap set-page">
+      <div class="set-hero"><div class="chips">${st.date ? `<span class="chip"><span class="k">When</span>${esc(fmtDate(st.date))}</span>` : ''}${st.venue ? `<span class="chip"><span class="k">Where</span>${esc(st.venue)}</span>` : ''}<button class="chip ghost" onclick="editSetSheet('${esc(id)}')">✎ edit</button></div>
+        ${st.notes ? `<p class="notes">${esc(st.notes)}</p>` : ''}
+        <div class="set-cast">${cast.map(m => `<span class="sc">${avatar(m, 'xs')}${esc(m.name)}${m.guest ? '<i class="guest-tag">guest</i>' : ''}</span>`).join('')}<button class="chip ghost" onclick="editSetSheet('${esc(id)}')">+ people</button></div>
+        <button class="btn primary block" onclick="sendOutSheet('${esc(id)}')">${st.share ? 'Send-out link' : 'Send out to the cast'}</button></div>
+      <div class="list-head"><b>Running order</b><span class="small muted">tap a track to change its version</span></div>
+      <ol class="st-list">${ts.map(row).join('')}</ol>
+      <button class="pcard new" onclick="addToSet('${esc(id)}')"><span class="pn-plus">+</span><b>Add a track</b><span class="faint">one of yours, or a new one</span></button>
+    </div>` + tabBar('sets');
+    wireTabs();
+    const order = ts.map(t => t.id);
+    const move = async (i, d) => { const o = order.slice(); [o[i], o[i + d]] = [o[i + d], o[i]]; try { await patchSet(id, { track_ids: o }); render(); } catch (e) { toast(e.message); } };
+    document.querySelectorAll('[data-up]').forEach(b => b.onclick = () => move(+b.dataset.up, -1));
+    document.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => move(+b.dataset.dn, 1));
+    document.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { const t = versionOf(b.dataset.rm);
+      confirmSheet('Take it out of the set?', `The set’s version of “${esc(t.title)}” is deleted, with anything recorded only in it. ${origOf(t) ? 'The original track stays.' : ''}`, 'Take it out', async () => { await api(`/sets/${id}/tracks/${t.id}`, { method: 'DELETE' }); await loadState(); render(); }); });
+  };
+  render();
+  loadState().then(() => { if (location.hash.replace(/^#\/?/, '') === 'set/' + id && !$('.scrim')) render(); }).catch(e => toast(e.message));
+}
 async function loadShelf() { const d = await api('/shelf'); S.shelf = d; return d; }
 const shelfIdea = x => ({ ...x, layer: 'shelf', section_id: 'shelf', author_id: S.me, starred: 0, url: '', body: x.title || x.body || '' });
 function shelfMeta(x) {

@@ -31,7 +31,9 @@ CREATE TABLE IF NOT EXISTS tracks (
   created_by TEXT,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL,
-  space_id TEXT NOT NULL DEFAULT 'abba'
+  space_id TEXT NOT NULL DEFAULT 'abba',
+  set_id TEXT,
+  version_of TEXT
 );
 
 CREATE TABLE IF NOT EXISTS sections (
@@ -49,7 +51,9 @@ CREATE TABLE IF NOT EXISTS sections (
   chords TEXT,
   bars INTEGER,
   notes TEXT NOT NULL DEFAULT '',
-  created_at INTEGER NOT NULL
+  created_at INTEGER NOT NULL,
+  cues TEXT NOT NULL DEFAULT '[]',
+  weight REAL
 );
 
 CREATE TABLE IF NOT EXISTS holders (
@@ -58,6 +62,7 @@ CREATE TABLE IF NOT EXISTS holders (
   member_id TEXT NOT NULL,
   instrument TEXT NOT NULL DEFAULT '',
   sound_ids TEXT NOT NULL DEFAULT '',
+  part TEXT NOT NULL DEFAULT '',
   PRIMARY KEY (section_id, layer, member_id)
 );
 
@@ -182,3 +187,32 @@ CREATE TABLE IF NOT EXISTS project_posts (
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS project_posts_project ON project_posts (project_id, created_at);
+-- Sets: something you play. A cast (members of the space or guests from outside), tracks in running order,
+-- and per track either the track's own line-up or the set's own role assignment. A share token publishes a read-only send-out.
+
+CREATE TABLE IF NOT EXISTS sets (
+  id TEXT PRIMARY KEY,
+  space_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  date TEXT NOT NULL DEFAULT '',
+  venue TEXT NOT NULL DEFAULT '',
+  notes TEXT NOT NULL DEFAULT '',
+  share TEXT,
+  created_by TEXT,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sets_space ON sets (space_id, created_at);
+CREATE UNIQUE INDEX IF NOT EXISTS sets_share ON sets (share);
+CREATE TABLE IF NOT EXISTS set_people (
+  set_id TEXT NOT NULL,
+  member_id TEXT NOT NULL,
+  position REAL NOT NULL DEFAULT 0,
+  PRIMARY KEY (set_id, member_id)
+);
+CREATE TABLE IF NOT EXISTS set_tracks (
+  set_id TEXT NOT NULL,
+  track_id TEXT NOT NULL,
+  position REAL NOT NULL DEFAULT 0,
+  PRIMARY KEY (set_id, track_id)
+);

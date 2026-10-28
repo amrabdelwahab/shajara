@@ -1,5 +1,6 @@
 const LAYERS = ['substrate', 'ground', 'bark', 'bloom'];
 const IDEA_LANES = [...LAYERS, 'transition'];
+const PRODUCTION = 'production';
 const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 
 const uid = () => crypto.randomUUID().replace(/-/g, '').slice(0, 16);
@@ -25,6 +26,8 @@ async function body(req) {
   try { return await req.json(); } catch { return {}; }
 }
 
+// Cues into a section: [{text, from}] where from is a member id or 'production' (you hear it in the production).
+const parseCues = j => { let l; try { l = JSON.parse(j || '[]'); } catch { l = []; } return Array.isArray(l) ? l.slice(0, 12).map(c => ({ text: typeof c?.text === 'string' ? c.text.trim().slice(0, 140) : '', from: typeof c?.from === 'string' ? c.from.slice(0, 40) : '' })).filter(c => c.text) : []; };
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max || 500) : '');
 const intIn = (v, lo, hi, d) => { const n = Math.round(Number(v)); return n >= lo && n <= hi ? n : d; };
 
@@ -128,6 +131,8 @@ async function dropUnusedAudio(env, ids) {
 async function moveTrack(env, tid, from, to) {
   // Projects belong to a space, so a track leaving the space leaves its projects.
   await env.DB.prepare('DELETE FROM project_tracks WHERE track_id = ?').bind(tid).run();
+  // A version moved out of its set becomes an ordinary track in the other space.
+  await env.DB.batch([env.DB.prepare('DELETE FROM set_tracks WHERE track_id = ?').bind(tid), env.DB.prepare('UPDATE tracks SET set_id = NULL WHERE id = ?').bind(tid)]);
   const used = new Set();
   const t = await env.DB.prepare('SELECT created_by FROM tracks WHERE id = ?').bind(tid).first();
   if (t.created_by) used.add(t.created_by);
@@ -149,6 +154,46 @@ async function moveTrack(env, tid, from, to) {
     stmts.push(env.DB.prepare('UPDATE holders SET member_id = ? WHERE member_id = ? AND section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(b, a, tid));
   }
   await env.DB.batch(stmts);
+}
+
+// The public send-out of a set: everything the cast needs, and the recorded parts, nothing else of the space.
+async function sendout(env, tok, audioId) {
+  const set = await env.DB.prepare('SELECT * FROM sets WHERE share = ?').bind(tok).first();
+  if (!set) return json({ error: 'this link no longer works' }, 404);
+  const q = (sql, ...a) => env.DB.prepare(sql).bind(...a).all().then(r => r.results);
+  const tracks = await q('SELECT t.id, t.title, t.maqam, t.tonic, t.tempo, t.notes, t.version_of FROM set_tracks x JOIN tracks t ON t.id = x.track_id WHERE x.set_id = ? ORDER BY x.position', set.id);
+  const tids = tracks.map(t => t.id), inT = tids.length ? tids.map(() => '?').join(',') : "''";
+  if (audioId) {
+    const ok = tids.length && await env.DB.prepare(`SELECT 1 FROM ideas WHERE audio_id = ? AND track_id IN (${inT}) LIMIT 1`).bind(audioId, ...tids).first();
+    if (!ok) return json({ error: 'not found' }, 404);
+    const { value, metadata } = await env.AUDIO.getWithMetadata(audioId, { type: 'arrayBuffer', cacheTtl: 86400 });
+    if (!value) return json({ error: 'not found' }, 404);
+    return new Response(value, { headers: { 'Content-Type': metadata?.mime || 'application/octet-stream', 'Cache-Control': 'private, max-age=31536000, immutable' } });
+  }
+  const [people, sections, holders, ideas, names] = await Promise.all([
+    q('SELECT m.id, m.name, m.guest, m.instruments FROM set_people x JOIN members m ON m.id = x.member_id WHERE x.set_id = ? ORDER BY x.position', set.id),
+    tids.length ? q(`SELECT id, track_id, name, position, maqam, tempo, bars, notes, cues, weight FROM sections WHERE track_id IN (${inT}) ORDER BY position, created_at`, ...tids) : [],
+    tids.length ? q(`SELECT h.* FROM holders h JOIN sections s ON s.id = h.section_id WHERE s.track_id IN (${inT})`, ...tids) : [],
+    tids.length ? q(`SELECT track_id, section_id, layer, author_id, audio_id, starred, body, created_at FROM ideas WHERE track_id IN (${inT}) AND kind = 'audio' AND audio_id IS NOT NULL AND section_id IS NOT NULL ORDER BY created_at DESC`, ...tids) : [],
+    q('SELECT id, name FROM members WHERE space_id = ?', set.space_id),
+  ]);
+  const nm = Object.fromEntries(names.map(r => [r.id, r.name]));
+  const songs = tracks.map(t => ({
+    id: t.id, title: t.title, maqam: t.maqam, tonic: t.tonic, tempo: t.tempo, notes: (t.notes || '').slice(0, 600),
+    sections: sections.filter(s => s.track_id === t.id).map(s => {
+      // The line for each layer: the starred take, else the newest recording.
+      const parts = {};
+      for (const l of LAYERS) {
+        const takes = ideas.filter(i => i.section_id === s.id && i.layer === l);
+        const k = takes.find(i => i.starred) || takes[0];
+        if (k) parts[l] = { audio_id: k.audio_id, by: k.author_id, by_name: nm[k.author_id] || '', note: (k.body || '').slice(0, 120) };
+      }
+      return { id: s.id, name: s.name, maqam: s.maqam, tempo: s.tempo, bars: s.bars, weight: s.weight, note: (s.notes || '').slice(0, 140), cues: parseCues(s.cues),
+        lineup: holders.filter(h => h.section_id === s.id).map(h => ({ member_id: h.member_id, layer: h.layer, part: h.part || '', instrument: h.instrument || '' })), parts };
+    }),
+  }));
+  const space = await env.DB.prepare('SELECT id, name, logo_v FROM spaces WHERE id = ?').bind(set.space_id).first();
+  return json({ set: { name: set.name, date: set.date, venue: set.venue, notes: set.notes }, space, people, songs });
 }
 
 async function route(req, env, url, member, space) {
@@ -196,7 +241,7 @@ async function route(req, env, url, member, space) {
   if (a === 'state' && m === 'GET') {
     const [members, tracks, sections, holders, beats, counts, grooves] = await Promise.all([
       env.DB.prepare('SELECT * FROM members WHERE space_id = ? ORDER BY guest, created_at').bind(sp).all(),
-      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, notes, created_by, updated_at, created_at FROM tracks WHERE space_id = ? ORDER BY updated_at DESC').bind(sp).all(),
+      env.DB.prepare('SELECT id, title, maqam, tonic, tempo, genre, notes, created_by, updated_at, created_at, set_id, version_of FROM tracks WHERE space_id = ? ORDER BY updated_at DESC').bind(sp).all(),
       env.DB.prepare(`SELECT id, track_id, name, position, meter_n, meter_sub, energy, bars, maqam, tempo FROM sections WHERE track_id IN (${inSpace}) ORDER BY position, created_at`).all(),
       env.DB.prepare(`SELECT h.*, s.track_id FROM holders h JOIN sections s ON s.id = h.section_id WHERE s.track_id IN (${inSpace})`).all(),
       env.DB.prepare(`SELECT b.section_id, b.layer, b.name, s.track_id FROM beats b JOIN sections s ON s.id = b.section_id WHERE s.track_id IN (${inSpace})`).all(),
@@ -239,7 +284,11 @@ async function route(req, env, url, member, space) {
         people: [...new Set(l.map(x => x.member_id).filter(Boolean))] };
     };
     const projects = pr.results.map(p => ({ ...p, track_ids: pt.results.filter(x => x.project_id === p.id).map(x => x.track_id), votes: pv.results.filter(v => v.project_id === p.id), talk: talk(p.id) }));
-    return json({ projects, space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
+    const st = await env.DB.prepare('SELECT * FROM sets WHERE space_id = ? ORDER BY CASE WHEN date = \'\' THEN 1 ELSE 0 END, date, created_at').bind(sp).all();
+    const stt = await env.DB.prepare('SELECT x.set_id, x.track_id FROM set_tracks x JOIN sets s ON s.id = x.set_id WHERE s.space_id = ? ORDER BY x.position').bind(sp).all();
+    const stp = await env.DB.prepare('SELECT x.set_id, x.member_id FROM set_people x JOIN sets s ON s.id = x.set_id WHERE s.space_id = ? ORDER BY x.position').bind(sp).all();
+    const sets = st.results.map(x => ({ ...x, track_ids: stt.results.filter(y => y.set_id === x.id).map(y => y.track_id), people: stp.results.filter(y => y.set_id === x.id).map(y => y.member_id) }));
+    return json({ sets, projects, space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
   if (a === 'grooves') {
@@ -475,6 +524,120 @@ async function route(req, env, url, member, space) {
       return json({ ok: true });
     }
   }
+  if (a === 'sets') {
+    const read = async sid => {
+      const x = await env.DB.prepare('SELECT * FROM sets WHERE id = ? AND space_id = ?').bind(sid, sp).first();
+      if (!x) return null;
+      const [tr, pe] = await Promise.all([
+        env.DB.prepare('SELECT track_id FROM set_tracks WHERE set_id = ? ORDER BY position').bind(sid).all(),
+        env.DB.prepare('SELECT member_id FROM set_people WHERE set_id = ? ORDER BY position').bind(sid).all(),
+      ]);
+      return { ...x, track_ids: tr.results.map(r => r.track_id), people: pe.results.map(r => r.member_id) };
+    };
+    const setPeople = async (sid, ids) => {
+      const ok = (await env.DB.prepare('SELECT id FROM members WHERE space_id = ?').bind(sp).all()).results.map(r => r.id);
+      const list = [...new Set(ids.filter(x => typeof x === 'string' && ok.includes(x)))].slice(0, 40);
+      await env.DB.batch([env.DB.prepare('DELETE FROM set_people WHERE set_id = ?').bind(sid), ...list.map((mid, i) => env.DB.prepare('INSERT INTO set_people (set_id, member_id, position) VALUES (?, ?, ?)').bind(sid, mid, i))]);
+    };
+    // A version of an existing track: same sections, grooves, chords and recordings, with people swapped as asked
+    // (swap {from: to}; '' = nobody takes that part). The original is never touched.
+    const makeVersion = async (sid, srcId, swap, title) => {
+      const src = await env.DB.prepare('SELECT * FROM tracks WHERE id = ? AND space_id = ?').bind(srcId, sp).first();
+      if (!src) return null;
+      const tid = uid(), t = now(), stmts = [];
+      stmts.push(env.DB.prepare('INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, chords, notes, created_by, created_at, updated_at, space_id, set_id, version_of) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(tid, str(title, 120) || src.title, src.maqam, src.tonic, src.tempo, src.genre, src.chords, src.notes, member, t, t, sp, sid, src.version_of || src.id));
+      const secs = (await env.DB.prepare('SELECT * FROM sections WHERE track_id = ? ORDER BY position, created_at').bind(srcId).all()).results;
+      const map = {};
+      for (const x of secs) {
+        const nid = uid(); map[x.id] = nid;
+        stmts.push(env.DB.prepare('INSERT INTO sections (id, track_id, name, position, meter_n, meter_sub, maqam, tonic, tempo, energy, moves, chords, bars, notes, created_at, cues, weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+          .bind(nid, tid, x.name, x.position, x.meter_n, x.meter_sub, x.maqam, x.tonic, x.tempo, x.energy, x.moves, x.chords, x.bars, x.notes, x.created_at, x.cues || '[]', x.weight));
+      }
+      const ids = secs.map(x => x.id), inS = ids.map(() => '?').join(',') || "''";
+      const hs = ids.length ? (await env.DB.prepare(`SELECT * FROM holders WHERE section_id IN (${inS})`).bind(...ids).all()).results : [];
+      const seen = new Set();
+      for (const h of hs) {
+        const to = h.member_id === PRODUCTION ? PRODUCTION : (h.member_id in swap ? str(swap[h.member_id], 40) : h.member_id);
+        if (!to) continue;
+        const k = map[h.section_id] + '|' + h.layer + '|' + to; if (seen.has(k)) continue; seen.add(k);
+        const same = to === h.member_id;
+        stmts.push(env.DB.prepare('INSERT OR REPLACE INTO holders (section_id, layer, member_id, instrument, sound_ids, part) VALUES (?, ?, ?, ?, ?, ?)')
+          .bind(map[h.section_id], h.layer, to, same ? h.instrument : '', same ? h.sound_ids : '', h.part || ''));
+      }
+      const bs = ids.length ? (await env.DB.prepare(`SELECT * FROM beats WHERE section_id IN (${inS})`).bind(...ids).all()).results : [];
+      for (const x of bs) stmts.push(env.DB.prepare('INSERT INTO beats (section_id, layer, name, pattern, sub, bar) VALUES (?, ?, ?, ?, ?, ?)').bind(map[x.section_id], x.layer, x.name, x.pattern, x.sub, x.bar));
+      // Recordings come along (they share the audio, nothing is duplicated), so everyone can still hear the lines.
+      const ideas = (await env.DB.prepare('SELECT * FROM ideas WHERE track_id = ?').bind(srcId).all()).results;
+      for (const i of ideas) stmts.push(env.DB.prepare('INSERT INTO ideas (id, track_id, section_id, layer, author_id, kind, body, url, audio_id, audio_mime, duration, starred, data, sound_id, shelf_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(uid(), tid, i.section_id ? map[i.section_id] || null : null, i.layer, i.author_id, i.kind, i.body, i.url, i.audio_id, i.audio_mime, i.duration, i.starred, i.data, i.sound_id, null, i.created_at));
+      const last = await env.DB.prepare('SELECT MAX(position) AS p FROM set_tracks WHERE set_id = ?').bind(sid).first();
+      stmts.push(env.DB.prepare('INSERT INTO set_tracks (set_id, track_id, position) VALUES (?, ?, ?)').bind(sid, tid, (last && last.p != null ? last.p : -1) + 1));
+      for (let k = 0; k < stmts.length; k += 80) await env.DB.batch(stmts.slice(k, k + 80));
+      return tid;
+    };
+    const dropVersion = async tid => {
+      await deleteIdeas(env, 'track_id = ?', tid);
+      await env.DB.batch([
+        env.DB.prepare('DELETE FROM holders WHERE section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(tid),
+        env.DB.prepare('DELETE FROM beats WHERE section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(tid),
+        env.DB.prepare('DELETE FROM sections WHERE track_id = ?').bind(tid),
+        env.DB.prepare('DELETE FROM set_tracks WHERE track_id = ?').bind(tid),
+        env.DB.prepare('DELETE FROM project_tracks WHERE track_id = ?').bind(tid),
+        env.DB.prepare('DELETE FROM tracks WHERE id = ?').bind(tid),
+      ]);
+    };
+    if (m === 'POST' && !id) {
+      const b = await body(req), name = str(b.name, 80);
+      if (!name) return json({ error: 'a set needs a name' }, 400);
+      const sid = uid(), t = now();
+      await env.DB.prepare('INSERT INTO sets (id, space_id, name, date, venue, notes, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(sid, sp, name, str(b.date, 20), str(b.venue, 120), str(b.notes, 2000), member, t, t).run();
+      if (Array.isArray(b.people)) await setPeople(sid, b.people);
+      return json(await read(sid), 201);
+    }
+    const cur = id ? await read(id) : null;
+    if (id && !cur) return json({ error: 'not found' }, 404);
+    if (m === 'GET' && id && !sub) return json(cur);
+    if (m === 'PATCH' && id && !sub) {
+      const b = await body(req);
+      await env.DB.prepare('UPDATE sets SET name = ?, date = ?, venue = ?, notes = ?, updated_at = ? WHERE id = ?')
+        .bind(str(b.name, 80) || cur.name, 'date' in b ? str(b.date, 20) : cur.date, 'venue' in b ? str(b.venue, 120) : cur.venue, 'notes' in b ? str(b.notes, 2000) : cur.notes, now(), id).run();
+      if (Array.isArray(b.people)) await setPeople(id, b.people);
+      // Running order: a permutation of the set's own tracks.
+      if (Array.isArray(b.track_ids)) {
+        const list = b.track_ids.filter(x => cur.track_ids.includes(x));
+        if (list.length === cur.track_ids.length) await env.DB.batch(list.map((tid, i) => env.DB.prepare('UPDATE set_tracks SET position = ? WHERE set_id = ? AND track_id = ?').bind(i, id, tid)));
+      }
+      return json(await read(id));
+    }
+    if (m === 'DELETE' && id && !sub) {
+      for (const tid of cur.track_ids) await dropVersion(tid);
+      await env.DB.batch([env.DB.prepare('DELETE FROM set_people WHERE set_id = ?').bind(id), env.DB.prepare('DELETE FROM sets WHERE id = ?').bind(id)]);
+      return json({ ok: true });
+    }
+    if (sub === 'versions' && m === 'POST') {
+      const b = await body(req);
+      const tid = await makeVersion(id, str(b.from, 40), b.swap && typeof b.swap === 'object' ? b.swap : {}, b.title);
+      if (!tid) return json({ error: 'that track isn’t in this space' }, 404);
+      await env.DB.prepare('UPDATE sets SET updated_at = ? WHERE id = ?').bind(now(), id).run();
+      return json({ set: await read(id), track_id: tid }, 201);
+    }
+    if (sub === 'tracks' && subId && m === 'DELETE') {
+      if (!cur.track_ids.includes(subId)) return json({ error: 'that track isn’t in the set' }, 404);
+      await dropVersion(subId);
+      return json(await read(id));
+    }
+    // The send-out: a link anyone in the set can open without the space's passcode.
+    if (sub === 'share' && m === 'POST') {
+      if (!cur.share) await env.DB.prepare('UPDATE sets SET share = ? WHERE id = ?').bind((uid() + uid()).slice(0, 22), id).run();
+      return json(await read(id));
+    }
+    if (sub === 'share' && m === 'DELETE') {
+      await env.DB.prepare('UPDATE sets SET share = NULL WHERE id = ?').bind(id).run();
+      return json(await read(id));
+    }
+  }
   if (a === 'members') {
     if (m === 'POST' && !id) {
       const b = await body(req);
@@ -514,6 +677,13 @@ async function route(req, env, url, member, space) {
       await env.DB.prepare(
         'INSERT INTO tracks (id, title, maqam, tonic, tempo, genre, chords, notes, created_by, created_at, updated_at, space_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
       ).bind(tid, title, str(b.maqam, 60), str(b.tonic, 20), intIn(b.tempo, 20, 400, null), str(b.genre, 60), str(b.chords, 1000), str(b.notes, 4000), member, t, t, sp).run();
+      // Written for a set: it lives in that set, at the end of the running order.
+      const inSet = b.set_id ? await env.DB.prepare('SELECT id FROM sets WHERE id = ? AND space_id = ?').bind(str(b.set_id, 40), sp).first() : null;
+      if (inSet) {
+        const last = await env.DB.prepare('SELECT MAX(position) AS p FROM set_tracks WHERE set_id = ?').bind(inSet.id).first();
+        await env.DB.batch([env.DB.prepare('UPDATE tracks SET set_id = ? WHERE id = ?').bind(inSet.id, tid),
+          env.DB.prepare('INSERT INTO set_tracks (set_id, track_id, position) VALUES (?, ?, ?)').bind(inSet.id, tid, (last && last.p != null ? last.p : -1) + 1)]);
+      }
       const plan = Array.isArray(b.sections) ? b.sections.filter(x => x && str(x.name, 60)).slice(0, 16) : [];
       if (!plan.length) plan.push({ name: str(b.section, 60) || 'Main' });
       for (const p of plan) {
@@ -558,6 +728,7 @@ async function route(req, env, url, member, space) {
         env.DB.prepare('DELETE FROM beats WHERE section_id IN (SELECT id FROM sections WHERE track_id = ?)').bind(id),
         env.DB.prepare('DELETE FROM sections WHERE track_id = ?').bind(id),
         env.DB.prepare('DELETE FROM project_tracks WHERE track_id = ?').bind(id),
+        env.DB.prepare('DELETE FROM set_tracks WHERE track_id = ?').bind(id),
         env.DB.prepare('DELETE FROM tracks WHERE id = ?').bind(id),
       ]);
       return json({ ok: true });
@@ -586,6 +757,8 @@ async function route(req, env, url, member, space) {
         try { JSON.parse(moves || '{}'); } catch { return json({ error: 'bad moves' }, 400); }
         if (moves.length > 4000) return json({ error: 'moves too long' }, 400);
       }
+      await env.DB.prepare('UPDATE sections SET cues = ?, weight = ? WHERE id = ?').bind('cues' in b ? JSON.stringify(parseCues(JSON.stringify(b.cues))) : cur.cues,
+        'weight' in b ? (Number(b.weight) > 0 && Number(b.weight) <= 16 ? Number(b.weight) : null) : cur.weight, id).run();
       await env.DB.prepare('UPDATE sections SET name = ?, notes = ?, meter_n = ?, meter_sub = ?, position = ?, maqam = ?, tonic = ?, tempo = ?, energy = ?, moves = ?, chords = ?, bars = ? WHERE id = ?').bind(
         str(b.name, 60) || cur.name,
         'notes' in b ? str(b.notes, 4000) : cur.notes,
@@ -637,8 +810,8 @@ async function route(req, env, url, member, space) {
         .slice(0, 24);
       await env.DB.batch([
         env.DB.prepare('DELETE FROM holders WHERE section_id = ?').bind(id),
-        ...list.map(h => env.DB.prepare('INSERT OR REPLACE INTO holders (section_id, layer, member_id, instrument, sound_ids) VALUES (?, ?, ?, ?, ?)')
-          .bind(id, h.layer, str(h.member_id, 40), str(h.instrument, 60), cleanSoundIds(h.sound_ids))),
+        ...list.map(h => env.DB.prepare('INSERT OR REPLACE INTO holders (section_id, layer, member_id, instrument, sound_ids, part) VALUES (?, ?, ?, ?, ?, ?)')
+          .bind(id, h.layer, str(h.member_id, 40), str(h.instrument, 60), cleanSoundIds(h.sound_ids), str(h.part, 120))),
       ]);
       await touch(env, trackId);
       return json(await loadTrack(env, trackId));
@@ -772,6 +945,14 @@ export default {
     if (url.pathname === '/api/spaces' && req.method === 'GET') {
       const rows = await env.DB.prepare('SELECT id, name, logo_v FROM spaces ORDER BY created_at').all();
       return json({ spaces: rows.results, epoch: env.LOGOUT_EPOCH || '' }, 200, h);
+    }
+    const so = url.pathname.match(/^\/api\/sendout\/([A-Za-z0-9]{10,40})(?:\/audio\/([a-z0-9]+))?$/);
+    if (so && req.method === 'GET') {
+      try {
+        const res = await sendout(env, so[1], so[2]);
+        for (const [k, v] of Object.entries(h)) res.headers.set(k, v);
+        return res;
+      } catch (e) { return json({ error: String(e && e.message || e) }, 500, h); }
     }
     const key = req.headers.get('X-Band-Key') || url.searchParams.get('k') || '';
     let space;
