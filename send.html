@@ -237,22 +237,22 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .schip.has { border-color: var(--accent); cursor: pointer; } .schip:disabled { color: var(--muted); }
 .sarr { color: var(--muted); font-size: 11px; }
 .snote-open { font-size: 12.5px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 10px; } .snote-open b { color: var(--fg); font-weight: 600; }
-#notesv { display: flex; flex-direction: column; gap: 18px; }
-.notes-song .sp-lane { margin-top: 6px; } .notes-song .sp-lane h4 { color: var(--accent); }
-.notes-song .you { font-size: 10px; letter-spacing: .08em; color: var(--ink); background: var(--amr); border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
-.notes-song .sp-lane li { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; overflow-wrap: anywhere; }
-.notes-song .ico { width: 22px; text-align: center; color: var(--accent); flex: none; } .notes-song a { color: var(--accent); }
-.sp-lane.flash { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 4px; transition: outline-color 1s; }
+.prep { display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid var(--line); }
+.prep-sum { margin: 0; font-size: 14px; } .prep-sum b { color: var(--accent); }
+.prep-sec { background: var(--surface); border-radius: 8px; padding: 12px 16px; }
+.prep-sec h4 { margin: 0 0 4px; font-family: var(--display); font-size: 20px; font-weight: 600; } .prep-sec h4 .muted { font-family: var(--body); font-size: 13px; font-weight: 400; }
+.prep-sec ul { list-style: none; margin: 0; padding: 0; }
+.prep-sec li { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; overflow-wrap: anywhere; }
+.prep-sec .ico { width: 22px; text-align: center; color: var(--accent); flex: none; } .prep-sec a { color: var(--accent); } .prep-sec .star { color: var(--accent); font-size: 12px; }
+.prep-sec .pl-btn { background: var(--accent); color: var(--ink); flex: none; }
+.prep.flash, .sp-lane.flash { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 4px; transition: outline-color 1s; }
 .sp-notes { align-self: flex-start; }
-.moderow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; align-self: flex-start; }
 .seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--ink); }
-.views { display: flex; gap: 18px; border-bottom: 1px solid var(--line); }
-.views button { font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); background: none; border: 0; padding: 8px 0 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
-.views button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
-body.stage .views { display: none; }
-body.rehearsal #tab-notes, body.rehearsal .legend, body.rehearsal .blurb, body.rehearsal .meta-row, body.rehearsal .more, body.rehearsal .secpanel, body.rehearsal .lede { display: none !important; }
+.seg { align-self: center; } .seg button { padding: 5px 12px; font-size: 12.5px; }
+body.stage #tab-night { display: none; }
+body.rehearsal .prep, body.rehearsal .legend, body.rehearsal .blurb, body.rehearsal .meta-row, body.rehearsal .more, body.rehearsal .secpanel, body.rehearsal .lede { display: none !important; }
 body.rehearsal .sheets.folded .sheet:not(.mine) { display: none; }
 body.rehearsal .sec { cursor: pointer; }
 .sheet li.give .k, .sheet li.give .what, .steps li.give .do { color: var(--mar); }
@@ -282,13 +282,10 @@ body.stage .secpanel { display: none; }
     <div class="eyebrow">Next concert · running order</div>
     <h1>Loading the set…</h1>
     <p class="lede">Pick who you are, then a song. Each song is one board: a lane per player, the backing tracks, and the cues.</p>
-    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div></div>
-    <div class="moderow"><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearsal</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button></div>
-    <div class="views" role="tablist" aria-label="View"><button role="tab" id="tab-songs" aria-selected="true">Songs</button><button role="tab" id="tab-night" aria-selected="false">My night</button><button role="tab" id="tab-notes" aria-selected="false">Notes</button></div>
-    <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"></ol>
+    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearsal</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button></div>
+    <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"><li role="presentation"><button role="tab" id="tab-night" aria-selected="false"><span class="n">★</span><span>My night</span></button></li></ol>
   </header>
   <section id="night" hidden></section>
-  <section id="notesv" hidden></section>
   <div id="songs"></div>
 </div>
 <script type="module">
@@ -299,6 +296,8 @@ const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&a
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
 let PLAYERS = {}, SONGS = [];
+// Written notes and links on a section (recordings don't count; they stay on the board).
+const notesIn = r => r.ideas.filter(x => x.kind !== "audio").length + (r.text.length > r.note.length ? 1 : 0);
 // What the sound is, in its owner's words (a patch, a preset, a pedal), under the step.
 const actText = a => (a.kind === "set" ? `Set up: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`) + (a.note ? `<small class="snote">${a.note}</small>` : "");
 // A player's sounds through one song, in order; tap one to read what it is.
@@ -598,7 +597,7 @@ function renderSong(song, idx) {
     }).join("");
     panel.innerHTML = `<div class="sp-head"><div><div class="eyebrow">Section ${i + 1} of ${song.sections.length}</div><h4 class="sp-name">${esc(r.name)}</h4>${facts ? `<div class="muted">${facts}</div>` : ""}</div><button class="chip sm" type="button" data-close>Close</button></div>
       ${r.note ? `<p class="sp-text">${esc(r.note)}</p>` : ""}
-      ${notesIn(r) ? `<button type="button" class="chip sm sp-notes" data-gonotes="nt-${idx}-${i}">✎ ${notesIn(r)} note${notesIn(r) > 1 ? "s" : ""} on this section</button>` : ""}
+      ${notesIn(r) ? `<button type="button" class="chip sm sp-notes" data-goprep="prep-${idx}">✎ ${notesIn(r)} note${notesIn(r) > 1 ? "s" : ""} on this section</button>` : ""}
       ${r.cues.length ? `<ul class="sp-cues">${r.cues.map(c => `<li class="from-${c.from === "production" ? "production" : "person"}">${esc(cueLine(c))}</li>`).join("")}</ul>` : ""}
       ${who ? `<div class="sp-lane"><h4>Who plays what</h4><ul class="sp-who">${who}</ul></div>` : ""}
       ${lanes || `<p class="muted">Nothing recorded on this section yet.</p>`}`;
@@ -684,13 +683,35 @@ function renderSong(song, idx) {
     [...sheets.children].forEach(c => { c.classList.toggle("mine", c.dataset.who === who); });
     const mine = sheets.querySelector(".sheet.mine"); if (mine) sheets.prepend(mine);
     sheets.classList.toggle("folded", !!who);
-    renderStrip();
+    renderStrip(); renderPrep();
   };
   btns.forEach(b => b.addEventListener("click", () => setMe(b.dataset.who && current !== b.dataset.who ? b.dataset.who : null)));
   wrap._apply = apply;
   const more = el("button", { class: "chip more", type: "button" }, "Show everyone's parts");
   more.addEventListener("click", () => sheets.classList.toggle("folded"));
   sheets.after(more);
+  // Study at home: the sections you play in this song, each with what's recorded and written on it.
+  const prep = el("section", { class: "prep", id: `prep-${idx}` }); more.after(prep);
+  const renderPrep = () => {
+    const who = ME, nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
+    const mineIn = r => who ? r.lineup.find(l => l.member_id === who) : null;
+    const played = song.raw.filter(r => mineIn(r));
+    const rec = (x, my) => `<li>${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}</span>${x.starred ? ` <span class="star">★ the part</span>` : ""}${my ? ` <span class="star">your line</span>` : ""}${x.duration ? ` <span class="muted">${Math.round(x.duration)}s</span>` : ""}${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></li>`;
+    const note = x => x.kind === "link" ? `<li><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></li>`
+      : `<li><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || (x.layer === "transition" ? "into the next section" : "")}</span><div>${esc(x.body)}</div></span></li>`;
+    const secs = song.raw.map((r, i) => {
+      const my = mineIn(r); if (who && !my) return "";
+      const recs = r.ideas.filter(x => x.kind === "audio"), notes = r.ideas.filter(x => x.kind !== "audio"), text = r.text.length > r.note.length ? r.text : "";
+      if (!recs.length && !notes.length && !text) return "";
+      return `<div class="prep-sec"><h4>${esc(r.name)}${my ? ` <span class="muted">· ${esc(my.part || LAYER_WORD[my.layer] || "")}</span>` : ""}</h4>
+        ${text ? `<p class="sp-text">${esc(text)}</p>` : ""}${recs.length ? `<ul>${recs.map(x => rec(x, my && x.layer === my.layer)).join("")}</ul>` : ""}${notes.length ? `<ul>${notes.map(note).join("")}</ul>` : ""}</div>`;
+    }).filter(Boolean);
+    const head = who
+      ? (played.length ? `<p class="prep-sum">You play in <b>${played.length}</b> of ${song.raw.length} sections: ${played.map(r => esc(r.name)).join(" · ")}.</p>` : `<p class="prep-sum muted">You sit this one out.</p>`)
+      : `<p class="prep-sum muted">Pick who you are to see your sections. Below: everything recorded or written on this song.</p>`;
+    prep.innerHTML = `<h3>Prepare at home</h3>${head}${secs.join("") || (who && !played.length ? "" : `<p class="muted">Nothing recorded or written on ${who ? "your sections of " : ""}this song yet. Record a line or leave a note in Shajara and it shows here.</p>`)}`;
+  };
+  wrap._renderPrep = renderPrep; renderPrep();
   return wrap;
 }
 
@@ -738,42 +759,13 @@ const meBtns = {};
 });
 function setMe(who) {
   ME = who; Object.entries(meBtns).forEach(([k, b]) => b.setAttribute("aria-pressed", String((k || null) === who)));
-  panels.forEach(p => p._apply(who)); renderNight(); renderNotes(); writeHash();
+  panels.forEach(p => p._apply(who)); renderNight(); writeHash();
   try { who ? localStorage.setItem("setlist-me", who) : localStorage.removeItem("setlist-me"); } catch (e) {}
 }
-// Notes: everything written on the set's sections, in one place, so the boards stay light.
-const notesIn = r => r.ideas.filter(x => x.kind !== "audio").length + (r.text.length > r.note.length ? 1 : 0);
 document.addEventListener("click", e => {
-  const b = e.target.closest("[data-gonotes]"); if (!b) return;
-  show("notes"); const t = document.getElementById(b.dataset.gonotes); if (t) { t.scrollIntoView({ behavior: "smooth", block: "start" }); t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1400); }
+  const b = e.target.closest("[data-goprep]"); if (!b) return;
+  const t = document.getElementById(b.dataset.goprep); if (t) { t.scrollIntoView({ behavior: "smooth", block: "start" }); t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1400); }
 });
-const notesv = document.getElementById("notesv");
-let notesMine = true;
-function renderNotes() {
-  const plays = (k, i) => !!ME && song_lineup(k, i).some(l => l.member_id === ME);
-  const song_lineup = (k, i) => SONGS[k].raw[i].lineup;
-  let html = `<div class="song-title"><div class="eyebrow">Notes</div><h2>What’s written on the set</h2><p class="blurb">Notes and links left on sections in Shajara. Recordings stay on the boards (▶).</p></div>`;
-  if (ME) html += `<div class="chips"><button type="button" class="chip${notesMine ? "" : " on"}" data-nm="0" aria-pressed="${!notesMine}">All sections</button><button type="button" class="chip" data-nm="1" aria-pressed="${notesMine}">Where ${esc(PLAYERS[ME].name)} plays</button></div>`;
-  let any = false;
-  SONGS.forEach((song, k) => {
-    const secs = song.raw.map((r, i) => ({ r, i })).filter(({ r, i }) => notesIn(r) && (!ME || !notesMine || plays(k, i)));
-    if (!secs.length) return; any = true;
-    html += `<article class="night-song notes-song"><header><span class="n">${String(k + 1).padStart(2, "0")}</span><h3>${song.title}</h3><button class="chip sm" type="button" data-go="${k}">Open</button></header>`;
-    secs.forEach(({ r, i }) => {
-      const items = [];
-      if (r.text.length > r.note.length) items.push(`<li><span class="ico">¶</span><span><b>Section note</b><div>${esc(r.text)}</div></span></li>`);
-      r.ideas.filter(x => x.kind !== "audio").forEach(x => items.push(x.kind === "link"
-        ? `<li><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <span class="muted">${esc(LAYER_WORD[x.layer] || "")}</span> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></li>`
-        : `<li><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${esc(LAYER_WORD[x.layer] || (x.layer === "transition" ? "Into the next section" : ""))}</span><div>${esc(x.body)}</div></span></li>`));
-      html += `<div class="sp-lane" id="nt-${k}-${i}"><h4>${esc(r.name)}${plays(k, i) ? ` <span class="you">you play</span>` : ""}</h4><ul>${items.join("")}</ul></div>`;
-    });
-    html += `</article>`;
-  });
-  if (!any) html += `<p class="lede">${ME && notesMine ? "No notes on the sections you play yet." : "No notes yet. Notes written on a section in Shajara show up here."}</p>`;
-  notesv.innerHTML = html;
-  notesv.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(+b.dataset.go)));
-  notesv.querySelectorAll("[data-nm]").forEach(b => b.addEventListener("click", () => { notesMine = b.dataset.nm === "1"; renderNotes(); }));
-}
 // My night: the whole set from one player's side
 const night = document.getElementById("night");
 function renderNight() {
@@ -816,7 +808,7 @@ async function setMode(m) {
   MODE = m; document.body.classList.toggle("stage", m === "stage"); document.body.classList.toggle("rehearsal", m === "rehearsal");
   modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
   try { localStorage.setItem("setlist-mode", m); } catch (e) {}
-  if (m !== "study" && (!night.hidden || !notesv.hidden) && (m === "stage" || !notesv.hidden)) show(lastSong);
+  if (m === "stage" && !night.hidden) show(lastSong);
   try { if (m !== "study" && navigator.wakeLock) { if (!wake) wake = await navigator.wakeLock.request("screen"); } else if (wake) { wake.release(); wake = null; } } catch (e) {}
   fitAll();
 }
@@ -826,26 +818,19 @@ host.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passi
 host.addEventListener("touchend", e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 70) show(cur() + (dx < 0 ? 1 : -1)); }, { passive: true });
 document.addEventListener("keydown", e => { if (e.target.closest("button, input")) return; const p = panels[cur()]; if (!p || p.hidden) return; if (e.key === "ArrowDown" || e.key === "n") p._next(); if (e.key === "ArrowUp" || e.key === "p") p._prev(); });
 function cur() { return panels.findIndex(p => !p.hidden); }
-function writeHash() { const i = cur(); if (i < 0 && night.hidden && notesv.hidden) return; const h = TOKEN + "&" + (i >= 0 ? "s=" + (i + 1) : !night.hidden ? "v=night" : "v=notes") + (ME ? "&me=" + ME : ""); history.replaceState(null, "", "#" + h); }
-const tabs = [...document.querySelectorAll('#setlist [role="tab"]')];
-const songsTab = document.getElementById("tab-songs"), setlistEl = document.getElementById("setlist");
+function writeHash() { const i = cur(); if (i < 0 && night.hidden) return; const h = TOKEN + "&" + (i >= 0 ? "s=" + (i + 1) : "v=night") + (ME ? "&me=" + ME : ""); history.replaceState(null, "", "#" + h); }
+const tabs = [...document.querySelectorAll('#setlist [role="tab"]:not(#tab-night)')];
 function show(i) {
-  if (i === "night" || i === "notes") {
-    panels.forEach(p => { p.hidden = true; }); night.hidden = i !== "night"; notesv.hidden = i !== "notes";
-    tabs.forEach(t => t.setAttribute("aria-selected", "false")); nightTab.setAttribute("aria-selected", String(i === "night")); notesTab.setAttribute("aria-selected", String(i === "notes"));
-    songsTab.setAttribute("aria-selected", "false"); setlistEl.hidden = true; writeHash(); return;
-  }
+  if (i === "night") { panels.forEach(p => { p.hidden = true; }); night.hidden = false; tabs.forEach(t => t.setAttribute("aria-selected", "false")); nightTab.setAttribute("aria-selected", "true"); writeHash(); return; }
   i = Math.max(0, Math.min(SONGS.length - 1, i));
-  night.hidden = true; notesv.hidden = true; nightTab.setAttribute("aria-selected", "false"); notesTab.setAttribute("aria-selected", "false");
-  songsTab.setAttribute("aria-selected", "true"); setlistEl.hidden = false;
+  night.hidden = true; nightTab.setAttribute("aria-selected", "false");
   panels.forEach((p, j) => { p.hidden = j !== i; });
   tabs.forEach((t, j) => { t.setAttribute("aria-selected", String(j === i)); t.tabIndex = j === i ? 0 : -1; });
   fitAll(); writeHash();
   lastSong = i; try { localStorage.setItem("setlist-tab", String(i)); } catch (e) {}
 }
 const nightTab = document.getElementById("tab-night"); nightTab.addEventListener("click", () => show("night"));
-const notesTab = document.getElementById("tab-notes"); notesTab.addEventListener("click", () => show("notes"));
-let lastSong = 0; songsTab.addEventListener("click", () => show(lastSong));
+let lastSong = 0;
 tabs.forEach((t, i) => {
   t.addEventListener("click", () => show(i));
   t.addEventListener("keydown", e => {
@@ -860,9 +845,9 @@ try { const v = parseInt(localStorage.getItem("setlist-tab"), 10); if (!isNaN(v)
 const H = new URLSearchParams(location.hash.slice(1));
 if (H.get("me") && PLAYERS[H.get("me")]) ME = H.get("me");
 if (H.get("s")) start = parseInt(H.get("s"), 10) - 1;
-const wantNight = H.get("v") === "night", wantNotes = H.get("v") === "notes";
+const wantNight = H.get("v") === "night";
 setMe(ME);
-show(wantNight ? "night" : wantNotes ? "notes" : start);
+show(wantNight ? "night" : start);
 try { const m = localStorage.getItem("setlist-mode"); if (m && m !== "study") setMode(m); } catch (e) {}
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
 window.addEventListener("resize", fitAll);
