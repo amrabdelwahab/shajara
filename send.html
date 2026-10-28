@@ -226,6 +226,11 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .night-song .act { margin: 0; font-size: 14px; }
 .steps li.act .do { font-size: 18px; color: var(--accent); }
 .steps li.act .cue::before { content: ""; }
+.steps .tg { display: inline-block; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: 1px; }
+.steps .tg.watch { background: var(--mar); color: var(--ink); } .steps .tg.listen { background: var(--ab-2); color: var(--fg); } .steps .tg.at { background: var(--line); color: var(--fg); }
+.steps li .cue:has(.tg)::before { content: ""; }
+.steps li:not(.rest) .cue { font-size: 16px; }
+.sheet li.give .k, .sheet li.give .what, .steps li.give .do { color: var(--mar); }
 /* section panel */
 .sec .mks { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: 1px; }
 .sec .mk { font-size: 9.5px; color: var(--fg); background: var(--surface); border-radius: 3px; padding: 0 4px; font-weight: 500; }
@@ -266,7 +271,7 @@ const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&a
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
 let PLAYERS = {}, SONGS = [];
-const actText = a => a.kind === "set" ? `Set your sound: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`;
+const actText = a => a.kind === "set" ? `Set up: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`;
 const actWhen = (b, secName) => b.s === 0 || (b.act && b.act.kind === "set") ? "Before the song" : `Before ${secName}${b.act && b.act.rest ? ", while you rest" : ""}`;
 const cueLead = c => c.from === "production" ? "listen" : "watch " + (PLAYERS[c.from] ? PLAYERS[c.from].name : "the cue");
 // Cues read as plain sentences: "Marwan's signal for the theme", "Marwan nods Amr in", "You hear: the drums come in".
@@ -278,6 +283,17 @@ const cueLine = c => {
   if (/^he\b/i.test(t)) return n + t.slice(2);
   return n + "’s cue: " + t;
 };
+// The same cue from the giver's side: "Give your signal for the theme", "Nod Amr into the taqsim".
+const giveText = c => {
+  const t = String(c.text);
+  if (/^his sign(al)?\b/i.test(t)) return "Give your" + t.slice(3);
+  if (/^his\b/i.test(t)) return "Your" + t.slice(3);
+  const m = t.match(/^he\s+(\w+)(.*)$/i);
+  if (m) { const v = m[1].replace(/(ch|sh|ss|x)es$/, "$1").replace(/s$/, ""); return v[0].toUpperCase() + v.slice(1) + m[2]; }
+  return "Cue: " + t;
+};
+// Stage: a tag that says how the cue reaches you, then the cue itself.
+const cueTag = c => c.from === "production" ? `<b class="tg listen">Listen</b>${c.text}` : `<b class="tg watch">Watch</b>${cueLine(c)}`;
 const cueOn = c => {
   const t = String(c.text), n = cueName(c);
   if (c.from === "production") return "Come in when you hear: " + t;
@@ -325,7 +341,7 @@ function shape(d) {
       // Sound actions: set it before your first entry, switch it when it changes from your last part.
       blocks.forEach((b, i) => {
         const p = blocks[i - 1], to = b.patch || b.tone;
-        if (!p) { if (b.patch) b.act = { kind: "set", to: b.patch }; }
+        if (!p) { if (to) b.act = { kind: "set", to }; }
         else if (to !== (p.patch || p.tone) && (b.patch || p.patch || b.tone !== p.tone)) b.act = { kind: "switch", to, rest: b.s > p.e };
       });
       if (blocks.length) lanes.push({ who, label: PLAYERS[who].name, role: PLAYERS[who].role, blocks });
@@ -424,17 +440,24 @@ function renderSong(song, idx) {
       if (!mine.length) lines = [`<li><span class="do muted">You sit this one out.</span></li>`];
       else {
         let prevEnd = 0;
+        const theirs = song.cues.filter(c => c.from !== who);
+        // cues you give yourself, as actions, in order
+        const gives = (a, b) => song.cues.filter(c => c.from === who && c.at >= a && c.at < b).forEach(c => lines.push(`<li class="act give"><span class="cue">${secs[Math.min(c.at, secs.length - 1)].name}</span><span class="do">◉ ${giveText(c)}</span></li>`));
         mine.forEach((bk, i) => {
           const k = Math.floor(bk.s);
           if (bk.s > prevEnd) lines.push(`<li class="rest"><span class="cue">${secs.slice(Math.floor(prevEnd), k).map(x => x.name).join(" · ")}</span><span class="do">rest</span></li>`);
-          const cue = song.cues.filter(c => c.at <= bk.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
+          gives(prevEnd, k);
+          const cue = theirs.filter(c => c.at <= bk.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
           if (bk.act) lines.push(`<li class="act"><span class="cue">${actWhen(bk, secs[k].name)}</span><span class="do">⇄ ${actText(bk.act)}</span></li>`);
-          lines.push(`<li><span class="cue">${cue ? cueText(cue) : secs[k].name}</span><span class="do">${bk.audio ? playBtn(bk.audio) : ""}${bk.what}</span></li>`);
+          gives(k, k + 1);
+          lines.push(`<li><span class="cue">${cue ? cueTag(cue) : `<b class="tg at">At</b>${secs[k].name}`}</span><span class="do">${bk.audio ? playBtn(bk.audio) : ""}${bk.what}</span></li>`);
+          gives(k + 1, bk.e);
           prevEnd = Math.max(prevEnd, bk.e);
         });
         if (prevEnd < secs.length) {
-          const cue = song.cues.filter(c => c.at >= prevEnd).sort((x, y) => x.at - y.at)[0];
-          lines.push(`<li class="rest"><span class="cue">${cue ? cueText(cue) : secs[Math.floor(prevEnd)].name}</span><span class="do">out</span></li>`);
+          const cue = theirs.filter(c => c.at >= prevEnd).sort((x, y) => x.at - y.at)[0];
+          lines.push(`<li class="rest"><span class="cue">${cue ? cueTag(cue) : `<b class="tg at">At</b>${secs[Math.floor(prevEnd)].name}`}</span><span class="do">out</span></li>`);
+          gives(prevEnd, secs.length);
         }
       }
     }
@@ -557,24 +580,30 @@ function renderSong(song, idx) {
       // what the others are doing when you come in
       const around = at => song.lanes.filter(l => l.who !== who).flatMap(l => l.blocks.filter(b => b.s <= at && b.e > at).map(b => `${l.who === "production" ? l.label : PLAYERS[l.who].name}: ${b.what}`)).slice(0, 3).join(" · ");
       let prevEnd = 0, n = 0;
+      const theirs = song.cues.filter(c => c.from !== who);
+      // cues you give: your own action at that section
+      const gives = (a, b) => song.cues.filter(c => c.from === who && c.at >= a && c.at < b).forEach(c =>
+        ol.append(el("li", { class: "act give" }, `<span class="k">◉</span><span><div class="when">${nameAt(c.at)} · you cue</div><div class="what">${giveText(c)}</div></span>`)));
       const rest = (from, to) => {
         if (to <= from) return;
-        const cues = song.cues.filter(c => c.at >= from && c.at < to).map(cueText);
+        const cues = theirs.filter(c => c.at >= from && c.at < to).map(cueText);
         const names = [...new Set(secs.slice(Math.floor(from), Math.ceil(to)).map(x => x.name))].join(" · ");
         ol.append(el("li", { class: "rest" }, `<span class="k">·</span><span><div class="when">${names}</div><div class="what muted">You rest${cues.length ? ". " + cues.join(". ") : ""}</div></span>`));
       };
       items.forEach(b => {
-        rest(prevEnd, b.s);
+        rest(prevEnd, b.s); gives(prevEnd, Math.floor(b.s));
         const sec = nameAt(b.s), endSec = secs[Math.min(Math.ceil(b.e) - 1, secs.length - 1)].name;
         const when = sec === endSec ? sec : `${sec} → ${endSec}`;
         const what = who === "production" ? `${b.lane}: ${b.what}` : b.what;
-        const cue = song.cues.filter(c => c.at <= b.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
+        const cue = theirs.filter(c => c.at <= b.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
         const w = around(b.s);
         if (b.act) ol.append(el("li", { class: "act" }, `<span class="k">⇄</span><span><div class="when">${actWhen(b, sec)}</div><div class="what">${actText(b.act)}</div></span>`));
+        gives(Math.floor(b.s), Math.floor(b.s) + 1);
         ol.append(el("li", {}, `<span class="k">${++n}</span><span><div class="when">${when}</div><div class="what">${b.audio ? playBtn(b.audio) : ""}${what} · ${b.tone}</div>${cue ? `<div class="on">${cueOn(cue)}</div>` : ""}${w ? `<div class="with">With: ${w}</div>` : ""}</span>`));
+        gives(Math.floor(b.s) + 1, b.e);
         prevEnd = Math.max(prevEnd, b.e);
       });
-      rest(prevEnd, secs.length);
+      rest(prevEnd, secs.length); gives(prevEnd, secs.length);
       card.append(ol);
     }
     sheets.append(card);
@@ -683,7 +712,7 @@ function renderNight() {
     }
     html = html.replace(/<ol class="changes">[\s\S]*$/, m => `<details><summary>Changes and cues</summary>${m}`) ;
     if (!/<details>/.test(html) && first) html += `<details><summary>Cues</summary>`;
-    if (first) html += `<ul class="cues">${song.cues.map(c => `<li class="from-${c.from}"><b>${secName(c.at)}</b> ${cueLine(c)}</li>`).join("")}</ul></details>`;
+    if (first) html += `<ul class="cues">${song.cues.map(c => `<li class="from-${c.from}"><b>${secName(c.at)}</b> ${c.from === ME ? "◉ " + giveText(c) : cueLine(c)}</li>`).join("")}</ul></details>`;
     card.innerHTML = html; card.querySelector("[data-go]").addEventListener("click", () => show(i)); night.append(card);
   });
 }
