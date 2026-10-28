@@ -15,9 +15,10 @@ Whoever runs the night: **Sets → New set** — name, date, venue, cast. Cast =
 - Decisions go straight into the set's version. Others tap **↻** to see them.
 
 ## 4. At home (Study)
-- Pick yourself. Per song: the board, **your part in order**, **Prepare at home** = the sections you play with every recording (▶) and note on them.
+- Pick yourself. Per song: **your parts, one card each** — the section, what you play and on which sound, how you come in, the line to learn (▶, repeat, slow), what's around you, notes. Tick **I know this** as you go; "Play my lines in order" runs through the song.
 - **My night** = your whole night in order: entries, sound changes, what you wait for.
-- Record your line in Shajara (open the space, pick yourself, Sets → the song → the section). It appears on the link for everyone.
+- No recording of your line yet? **Record it in Shajara ↗** on the card opens the app on that section (switches to the right space, asks for its passcode once). Same link to leave a note.
+- The arrangement board is one tap away ("Show the board") but not the point here.
 
 ## 5. Rehearsal (Rehearsal mode)
 - Board + your part, screen stays awake, tap a section = "we're here".
