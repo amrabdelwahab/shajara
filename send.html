@@ -237,6 +237,34 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .schip.has { border-color: var(--accent); cursor: pointer; } .schip:disabled { color: var(--muted); }
 .sarr { color: var(--muted); font-size: 11px; }
 .snote-open { font-size: 12.5px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 10px; } .snote-open b { color: var(--fg); font-weight: 600; }
+.study { display: flex; flex-direction: column; gap: 12px; }
+body.stage .study, body.rehearsal .study { display: none; }
+body:not(.stage):not(.rehearsal) .song:not(.showboard) .board-scroll, body:not(.stage):not(.rehearsal) .song:not(.showboard) .secpanel,
+body:not(.stage):not(.rehearsal) .song:not(.showboard) .legend, body:not(.stage):not(.rehearsal) .song:not(.showboard) h3,
+body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage):not(.rehearsal) .song:not(.showboard) .more:not(.sboard) { display: none; }
+.shead { display: flex; flex-direction: column; gap: 10px; }
+.smap { display: flex; flex-wrap: wrap; gap: 4px; }
+.smap span { font-size: 11.5px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
+.smap span.on { border-color: var(--accent); color: var(--fg); } .smap span.off { opacity: .45; } .smap span.done { background: var(--accent); color: var(--ink); border-color: var(--accent); }
+.scard { background: var(--surface); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.scard.known { opacity: .6; }
+.scard header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.scard h4 { margin: 0; font-family: var(--display); font-size: 24px; font-weight: 600; line-height: 1.1; }
+.scard .small { font-size: 12px; }
+.know { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); white-space: nowrap; cursor: pointer; padding-top: 4px; }
+.know input { accent-color: var(--accent); width: 16px; height: 16px; }
+.splay { margin: 0; font-size: 15px; } .splay b { font-weight: 600; }
+.scue { margin: 0; font-size: 13.5px; } .scue::before { content: "→ "; color: var(--mar); }
+.sline { background: var(--bg); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.take { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; overflow-wrap: anywhere; } .take.star b { color: var(--accent); }
+.take .ico { width: 22px; text-align: center; color: var(--accent); flex: none; } .take a { color: var(--accent); }
+.sline .pl-btn, .sblock .pl-btn { background: var(--accent); color: var(--ink); flex: none; width: 30px; height: 30px; font-size: 12px; }
+.sctl { display: flex; gap: 6px; padding-top: 4px; } .sctl .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.sline-none { margin: 0; font-size: 13px; }
+.sblock { display: flex; flex-direction: column; gap: 6px; } .sblock h5 { margin: 0; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.swith { margin: 0; }
+.applink { color: var(--accent); font-size: 13px; text-decoration: none; } .applink:hover { text-decoration: underline; } .sline-none .applink { font-size: inherit; }
+.sboard { align-self: flex-start; display: inline-flex; }
 .prep { display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid var(--line); }
 .prep-sum { margin: 0; font-size: 14px; } .prep-sum b { color: var(--accent); }
 .prep-sec { background: var(--surface); border-radius: 8px; padding: 12px 16px; }
@@ -297,7 +325,10 @@ const TOKEN = (location.hash.match(/^#([A-Za-z0-9]{10,40})/) || [])[1] || new UR
 const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
-let PLAYERS = {}, SONGS = [], LOADED_AT = 0;
+let PLAYERS = {}, SONGS = [], LOADED_AT = 0, SPACE_ID = "";
+// The Shajara app sits next to this page; a deep link opens that space, that track, that section.
+const APP = location.href.replace(/send\.html.*$/, "");
+const appLink = (trackId, sectionId) => `${APP}#in/${SPACE_ID}/t/${trackId}/${sectionId}`;
 document.getElementById("asof").addEventListener("click", () => location.reload());
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && LOADED_AT && Date.now() - LOADED_AT > 15 * 60e3 && !document.body.classList.contains("stage")) location.reload(); });
 // Written notes and links on a section (recordings don't count; they stay on the board).
@@ -344,7 +375,19 @@ const cueOn = c => {
   if (/^he\b/i.test(t)) return "Come in when " + n + t.slice(2);
   return "Come in on " + n + "’s cue: " + t;
 };
-let NOW_AUDIO = null, NOW_BTN = null;
+let NOW_AUDIO = null, NOW_BTN = null, NEXT_LINE = null;
+// Study cards: repeat / slow toggles, and "I know this" ticks kept on this phone.
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-loop],[data-slow]"); if (!t) return;
+  const card = t.closest(".scard"), k = "loop" in t.dataset ? "loop" : "slow";
+  card.dataset[k] = card.dataset[k] === "1" ? "0" : "1"; t.setAttribute("aria-pressed", card.dataset[k] === "1");
+  if (NOW_AUDIO && NOW_BTN && card.contains(NOW_BTN)) { NOW_AUDIO.loop = card.dataset.loop === "1"; NOW_AUDIO.playbackRate = card.dataset.slow === "1" ? 0.75 : 1; }
+});
+document.addEventListener("change", e => {
+  const c = e.target.closest("[data-know]"); if (!c) return;
+  try { c.checked ? localStorage.setItem(c.dataset.know, "1") : localStorage.removeItem(c.dataset.know); } catch (x) {}
+  const w = c.closest(".song"); if (w && w._renderStudy) w._renderStudy();
+});
 const playBtn = id => `<button class="pl-btn" type="button" data-audio="${esc(id)}" aria-label="Listen to this line">▶</button>`;
 document.addEventListener("click", e => {
   const b = e.target.closest(".pl-btn"); if (!b) return;
@@ -352,11 +395,12 @@ document.addEventListener("click", e => {
   if (NOW_BTN === b && NOW_AUDIO && !NOW_AUDIO.paused) { NOW_AUDIO.pause(); b.textContent = "▶"; return; }
   if (NOW_AUDIO) { NOW_AUDIO.pause(); if (NOW_BTN) NOW_BTN.textContent = "▶"; }
   NOW_AUDIO = new Audio(`${API}/api/sendout/${TOKEN}/audio/${b.dataset.audio}`); NOW_BTN = b; b.textContent = "❚❚";
-  NOW_AUDIO.onended = () => { b.textContent = "▶"; };
+  const card = b.closest(".scard"); if (card) { NOW_AUDIO.loop = card.dataset.loop === "1"; NOW_AUDIO.playbackRate = card.dataset.slow === "1" ? 0.75 : 1; NOW_AUDIO.preservesPitch = true; }
+  NOW_AUDIO.onended = () => { b.textContent = "▶"; if (NEXT_LINE) NEXT_LINE(); };
   NOW_AUDIO.play().catch(() => { b.textContent = "▶"; });
 }, true);
 function shape(d) {
-  PLAYERS = {};
+  PLAYERS = {}; SPACE_ID = d.space ? d.space.id : "";
   d.people.forEach((p, i) => { PLAYERS[p.id] = { name: p.name, role: (p.instruments || "").split(",")[0].trim() || (p.guest ? "Guest" : ""), color: PALETTE[i % PALETTE.length] }; });
   PLAYERS.production = { name: "Production", role: "Backing tracks & samples", color: "var(--ab-2)" };
   const css = Object.keys(PLAYERS).filter(k => k !== "production").map((k, i) => `.blk.p${i} { background: ${PLAYERS[k].color}; color: var(--ink); }`).join("\n");
@@ -395,7 +439,7 @@ function shape(d) {
       if (blocks.length) lanes.push({ who: "production", label: [...new Set(blocks.flatMap(b => b.tone.split(" + ")).filter(Boolean))].slice(0, 3).join(" + ") || LAYER_WORD[layer], sub: true, blocks });
     });
     const cues = t.sections.flatMap((s, i) => s.cues.map(c => ({ at: i, text: esc(c.text), from: c.from === "production" ? "production" : c.from })));
-    return { raw: t.sections, title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
+    return { id: t.id, raw: t.sections, title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
   });
 }
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
@@ -689,35 +733,64 @@ function renderSong(song, idx) {
     [...sheets.children].forEach(c => { c.classList.toggle("mine", c.dataset.who === who); });
     const mine = sheets.querySelector(".sheet.mine"); if (mine) sheets.prepend(mine);
     sheets.classList.toggle("folded", !!who);
-    renderStrip(); renderPrep();
+    renderStrip(); renderStudy();
   };
   btns.forEach(b => b.addEventListener("click", () => setMe(b.dataset.who && current !== b.dataset.who ? b.dataset.who : null)));
   wrap._apply = apply;
   const more = el("button", { class: "chip more", type: "button" }, "Show everyone's parts");
   more.addEventListener("click", () => sheets.classList.toggle("folded"));
   sheets.after(more);
-  // Study at home: the sections you play in this song, each with what's recorded and written on it.
-  const prep = el("section", { class: "prep", id: `prep-${idx}` }); more.after(prep);
-  const renderPrep = () => {
-    const who = ME, nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
+  // Study at home: the song as the sections you play, each with the line to learn, how you come in, and what to play it on.
+  const study = el("section", { class: "study", id: `prep-${idx}` }); head.after(study);
+  const renderStudy = () => {
+    const who = ME, raw = song.raw;
     const mineIn = r => who ? r.lineup.find(l => l.member_id === who) : null;
-    const played = song.raw.filter(r => mineIn(r));
-    const rec = (x, my) => `<li>${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}</span>${x.starred ? ` <span class="star">★ the part</span>` : ""}${my ? ` <span class="star">your line</span>` : ""}${x.duration ? ` <span class="muted">${Math.round(x.duration)}s</span>` : ""}${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></li>`;
-    const note = x => x.kind === "link" ? `<li><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></li>`
-      : `<li><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || (x.layer === "transition" ? "into the next section" : "")}</span><div>${esc(x.body)}</div></span></li>`;
-    const secs = song.raw.map((r, i) => {
-      const my = mineIn(r); if (who && !my) return "";
-      const recs = r.ideas.filter(x => x.kind === "audio"), notes = r.ideas.filter(x => x.kind !== "audio"), text = r.text.length > r.note.length ? r.text : "";
-      if (!recs.length && !notes.length && !text) return "";
-      return `<div class="prep-sec"><h4>${esc(r.name)}${my ? ` <span class="muted">· ${esc(my.part || LAYER_WORD[my.layer] || "")}</span>` : ""}</h4>
-        ${text ? `<p class="sp-text">${esc(text)}</p>` : ""}${recs.length ? `<ul>${recs.map(x => rec(x, my && x.layer === my.layer)).join("")}</ul>` : ""}${notes.length ? `<ul>${notes.map(note).join("")}</ul>` : ""}</div>`;
-    }).filter(Boolean);
-    const head = who
-      ? (played.length ? `<p class="prep-sum">You play in <b>${played.length}</b> of ${song.raw.length} sections: ${played.map(r => esc(r.name)).join(" · ")}.</p>` : `<p class="prep-sum muted">You sit this one out.</p>`)
-      : `<p class="prep-sum muted">Pick who you are to see your sections. Below: everything recorded or written on this song.</p>`;
-    prep.innerHTML = `<h3>Prepare at home</h3>${head}${secs.join("") || (who && !played.length ? "" : `<p class="muted">Nothing recorded or written on ${who ? "your sections of " : ""}this song yet. Record a line or leave a note in Shajara and it shows here.</p>`)}`;
+    const items = raw.map((r, i) => ({ r, i, my: mineIn(r) })).filter(x => !who || x.my);
+    const knowKey = r => `know:${TOKEN}:${who || "all"}:${r.id}`;
+    const known = r => { try { return localStorage.getItem(knowKey(r)) === "1"; } catch (e) { return false; } };
+    const nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
+    const nKnown = items.filter(x => known(x.r)).length;
+    const map = `<div class="smap">${raw.map((r, i) => `<span class="${mineIn(r) ? "on" : who ? "off" : ""}${known(r) && mineIn(r) ? " done" : ""}">${esc(r.name)}</span>`).join("")}</div>`;
+    const lines = items.flatMap(x => x.my ? x.r.ideas.filter(y => y.kind === "audio" && y.layer === x.my.layer).sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0)).slice(0, 1) : []);
+    const sum = who
+      ? (items.length ? `You play in <b>${items.length}</b> of ${raw.length} sections${nKnown ? ` · <b>${nKnown}</b> learned` : ""}.` : `You sit this one out.`)
+      : `${raw.length} sections. Pick who you are to study your parts; this is everyone's.`;
+    const cards = items.map(({ r, i, my }) => {
+      const recs = r.ideas.filter(x => x.kind === "audio");
+      const mineRecs = my ? recs.filter(x => x.layer === my.layer).sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0)) : [];
+      const others = recs.filter(x => !mineRecs.includes(x)), notes = r.ideas.filter(x => x.kind !== "audio"), text = r.text.length > r.note.length ? r.text : "";
+      const cue = song.cues.find(c => c.at === i);
+      const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : "", r.note].filter(Boolean).map(esc).join(" · ");
+      const sound = my ? ((my.sounds || []).length ? my.sounds.join(" + ") : my.instrument) : "";
+      const take = x => `<div class="take${x.starred ? " star" : ""}">${playBtn(x.audio_id)}<span><b>${x.starred ? "★ the line" : "a take"}</b> <span class="muted">by ${esc(x.by_name)}${x.duration ? ` · ${Math.round(x.duration)}s` : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
+      const other = x => `<div class="take">${playBtn(x.audio_id)}<span><b>${esc(nameOf(x.author_id) === "Someone" ? x.by_name : x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}${x.starred ? " · ★" : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
+      const note = x => x.kind === "link" ? `<div class="take"><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></div>`
+        : `<div class="take"><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}</span><div>${esc(x.body)}</div></span></div>`;
+      const whoElse = r.lineup.filter(l => !my || l.member_id !== who).map(l => `${esc(nameOf(l.member_id))}: ${esc(l.part || LAYER_WORD[l.layer] || "")}`).join(" · ");
+      return `<article class="scard${known(r) ? " known" : ""}" data-loop="0" data-slow="0">
+        <header><div><div class="eyebrow">${i + 1} / ${raw.length}</div><h4>${esc(r.name)}</h4>${facts ? `<div class="muted small">${facts}</div>` : ""}</div>
+          ${who ? `<label class="know"><input type="checkbox" data-know="${esc(knowKey(r))}"${known(r) ? " checked" : ""}> I know this</label>` : ""}</header>
+        ${my ? `<p class="splay"><b>${esc(my.part || LAYER_WORD[my.layer] || "")}</b>${sound ? ` <span class="patch">${esc(sound)}</span>` : ""}</p>` : ""}
+        ${cue ? `<p class="scue">${esc(cueOn(cue))}</p>` : ""}
+        ${my ? (mineRecs.length ? `<div class="sline">${mineRecs.map(take).join("")}<div class="sctl"><button type="button" class="chip sm" data-loop aria-pressed="false">repeat</button><button type="button" class="chip sm" data-slow aria-pressed="false">slow</button></div></div>`
+          : `<p class="muted sline-none">No recording of this line yet. <a class="applink" href="${esc(appLink(song.id, r.id))}" target="_blank" rel="noopener">Record it in Shajara ↗</a></p>`) : ""}
+        ${others.length ? `<div class="sblock"><h5>${my ? "Around you" : "Recordings"}</h5>${others.map(other).join("")}</div>` : ""}
+        ${text || notes.length ? `<div class="sblock"><h5>Notes</h5>${text ? `<p class="sp-text">${esc(text)}</p>` : ""}${notes.map(note).join("")}</div>` : ""}
+        ${whoElse ? `<p class="muted small swith">With: ${whoElse}</p>` : ""}
+        <a class="applink small" href="${esc(appLink(song.id, r.id))}" target="_blank" rel="noopener">Open this section in Shajara ↗</a>
+      </article>`;
+    });
+    study.innerHTML = `<div class="shead"><p class="prep-sum">${sum}</p>${map}${lines.length > 1 ? `<button type="button" class="chip" data-playall>▶ Play my lines in order</button>` : ""}</div>
+      ${cards.join("") || ""}<button type="button" class="chip more sboard">${wrap.classList.contains("showboard") ? "Hide" : "Show"} the board and everyone’s parts</button>`;
+    study.querySelector(".sboard").addEventListener("click", () => { wrap.classList.toggle("showboard"); renderStudy(); fitAll(); });
+    const pa = study.querySelector("[data-playall]");
+    if (pa) pa.addEventListener("click", () => {
+      const btns = lines.map(l => study.querySelector(`.sline .pl-btn[data-audio="${l.audio_id}"]`)).filter(Boolean); let k = 0;
+      const next = () => { if (k >= btns.length) { NEXT_LINE = null; return; } const b = btns[k++]; NEXT_LINE = next; b.click(); };
+      next();
+    });
   };
-  wrap._renderPrep = renderPrep; renderPrep();
+  wrap._renderStudy = renderStudy; renderStudy();
   return wrap;
 }
 

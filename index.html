@@ -1379,7 +1379,7 @@ const S = {
   tracks: [],
   grooves: [],
   track: null,
-  view: {},
+  view: {}, after: '',
   expanded: {},
   picked: new Set(),
   pickedTrack: null,
@@ -1629,7 +1629,15 @@ async function loadState() {
 function route() {
   stopEverything();
   document.body.classList.remove('wide');
-  const h = location.hash.replace(/^#\/?/, '');
+  let h = location.hash.replace(/^#\/?/, '');
+  const deep = h.match(/^in\/([a-z0-9-]+)\/(.*)$/);
+  if (deep) {
+    const sp = Spaces.list().find(x => x.id === deep[1]);
+    if (sp && sp.key !== S.key) { Spaces.use(sp.key); loadState().then(() => { go(deep[2]); }).catch(e => toast(e.message)); return; }
+    if (sp) return go(deep[2]);
+    if (S.space && S.space.id === deep[1]) return go(deep[2]);
+    S.after = deep[2]; return viewGate();
+  }
   if (!S.key) return viewGate();
   if (!S.me || (!looking() && S.members.length && !S.members.some(m => m.id === S.me && canBeMe(m)))) return viewWho();
   const me = S.members.find(m => m.id === S.me);
@@ -1638,7 +1646,7 @@ function route() {
   if (h === 'me') return viewYou();
   if (h === 'shelf') return viewShelf();
   if (h === 'space') return viewSpace();
-  if (h.startsWith('t/')) return viewTrack(h.slice(2));
+  if (h.startsWith('t/')) { const [tid, sid] = h.slice(2).split('/'); if (sid) S.view[tid] = { ...(S.view[tid] || {}), sid }; return viewTrack(tid); }
   if (h.startsWith('p/')) return viewProject(h.slice(2));
   if (h === 'projects') return viewProjects();
   if (h === 'sets') return viewSets();
@@ -1762,7 +1770,7 @@ function viewGate(chosen) {
     $('#gs').innerHTML = list.map(x => `<button class="menu-item gate-space${pick === x.id ? ' sel' : ''}" data-id="${esc(x.id)}">${logoImg(x, 'gs-logo')}<span><b>${esc(x.name)}</b><span class="small muted">${known.some(k => k.id === x.id) ? 'on this phone · tap to open' : 'enter its passcode'}</span></span></button>`).join('');
     $('#gs').querySelectorAll('[data-id]').forEach(b => b.onclick = async () => {
       const k = known.find(x => x.id === b.dataset.id);
-      if (k) { Spaces.use(k.key); try { await loadState(); } catch (e) { return toast(e.message); } return route(); }
+      if (k) { Spaces.use(k.key); try { await loadState(); } catch (e) { return toast(e.message); } if (S.after) { const a = S.after; S.after = ''; return go(a); } return route(); }
       pick = b.dataset.id; draw(list);
       $('#gp').classList.remove('hidden');
       $('#pc').placeholder = `${list.find(x => x.id === pick).name} passcode`; $('#pc').focus();
@@ -1772,7 +1780,7 @@ function viewGate(chosen) {
   const submit = async () => {
     const v = $('#pc').value.trim();
     if (!v) return;
-    try { const sp = await peekSpace(v); Spaces.add(v, sp); Spaces.use(v); await loadState(); route(); }
+    try { const sp = await peekSpace(v); Spaces.add(v, sp); Spaces.use(v); await loadState(); if (S.after) { const a = S.after; S.after = ''; go(a); } else route(); }
     catch (e) { toast(e.message); }
   };
   $('#enter').onclick = submit;
@@ -5194,7 +5202,8 @@ function wireQuickIns(root, mid, after) {
 function viewWelcome() {
   const me = S.members.find(m => m.id === S.me);
   const step = S.welStep || 0;
-  const done = async () => { try { await patchMe({ ready: true }); } catch (e) { return toast(e.message); } S.welStep = 0; go(''); route(); };
+  // Arrived through a link to a track? Carry on there after the welcome.
+  const done = async () => { try { await patchMe({ ready: true }); } catch (e) { return toast(e.message); } S.welStep = 0; if (!/^#\/?t\//.test(location.hash)) go(''); route(); };
   const others = S.members.filter(m => m.id !== S.me && !m.guest);
   const steps = [
     () => `<div class="wel-hero">${logoOf(S.space) ? logoImg(S.space, 'logo-big') : `<div class="pe-tree">${['bloom', 'bark', 'ground', 'substrate'].map(k => `<i style="--c:${LAYER[k].c}"></i>`).join('')}</div>`}<h2>Ahlan, ${esc(me.name)}</h2>
