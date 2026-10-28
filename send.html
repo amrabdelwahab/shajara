@@ -237,6 +237,24 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .schip.has { border-color: var(--accent); cursor: pointer; } .schip:disabled { color: var(--muted); }
 .sarr { color: var(--muted); font-size: 11px; }
 .snote-open { font-size: 12.5px; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 10px; } .snote-open b { color: var(--fg); font-weight: 600; }
+#notesv { display: flex; flex-direction: column; gap: 18px; }
+.notes-song .sp-lane { margin-top: 6px; } .notes-song .sp-lane h4 { color: var(--accent); }
+.notes-song .you { font-size: 10px; letter-spacing: .08em; color: var(--ink); background: var(--amr); border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px; }
+.notes-song .sp-lane li { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; overflow-wrap: anywhere; }
+.notes-song .ico { width: 22px; text-align: center; color: var(--accent); flex: none; } .notes-song a { color: var(--accent); }
+.sp-lane.flash { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 4px; transition: outline-color 1s; }
+.sp-notes { align-self: flex-start; }
+.moderow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; align-self: flex-start; }
+.seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--ink); }
+.views { display: flex; gap: 18px; border-bottom: 1px solid var(--line); }
+.views button { font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); background: none; border: 0; padding: 8px 0 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
+.views button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+body.stage .views { display: none; }
+body.rehearsal #tab-notes, body.rehearsal .legend, body.rehearsal .blurb, body.rehearsal .meta-row, body.rehearsal .more, body.rehearsal .secpanel, body.rehearsal .lede { display: none !important; }
+body.rehearsal .sheets.folded .sheet:not(.mine) { display: none; }
+body.rehearsal .sec { cursor: pointer; }
 .sheet li.give .k, .sheet li.give .what, .steps li.give .do { color: var(--mar); }
 /* section panel */
 .sec .mks { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: 1px; }
@@ -264,10 +282,13 @@ body.stage .secpanel { display: none; }
     <div class="eyebrow">Next concert · running order</div>
     <h1>Loading the set…</h1>
     <p class="lede">Pick who you are, then a song. Each song is one board: a lane per player, the backing tracks, and the cues.</p>
-    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><button class="chip" id="stage" type="button" aria-pressed="false">Stage mode</button><button class="chip" id="theme" type="button">Light</button></div>
-    <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"><li role="presentation"><button role="tab" id="tab-night" aria-selected="false"><span class="n">★</span><span>My night</span></button></li></ol>
+    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div></div>
+    <div class="moderow"><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearsal</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button></div>
+    <div class="views" role="tablist" aria-label="View"><button role="tab" id="tab-songs" aria-selected="true">Songs</button><button role="tab" id="tab-night" aria-selected="false">My night</button><button role="tab" id="tab-notes" aria-selected="false">Notes</button></div>
+    <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"></ol>
   </header>
   <section id="night" hidden></section>
+  <section id="notesv" hidden></section>
   <div id="songs"></div>
 </div>
 <script type="module">
@@ -504,8 +525,8 @@ function renderSong(song, idx) {
   const secTrack = el("div", { class: "track" });
   secTrack.parentClass = "sections";
   song.sections.forEach((s, i) => {
-    const r = song.raw[i], nA = r.ideas.filter(x => x.kind === "audio").length, nT = r.ideas.length - nA + (r.text.length > r.note.length ? 1 : 0);
-    const marks = (nA ? `<span class="mk">▶ ${nA}</span>` : "") + (nT ? `<span class="mk">✎ ${nT}</span>` : "");
+    const r = song.raw[i], nA = r.ideas.filter(x => x.kind === "audio").length;
+    const marks = nA ? `<span class="mk">▶ ${nA}</span>` : "";
     const d = el("div", { class: "sec", "data-i": i, role: "button", tabindex: "0", title: "Open: notes and recordings" }, `${s.name}${marks ? `<span class="mks">${marks}</span>` : ""}<small>${s.sub}</small>`);
     d.style.left = pos(i) + "%"; d.style.width = `calc(${s.w / total * 100}% - 4px)`;
     d.addEventListener("click", () => openSec(i)); d.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { openSec(i); e.preventDefault(); } });
@@ -554,23 +575,25 @@ function renderSong(song, idx) {
   wrap.append(panel);
   let openI = -1;
   const openSec = i => {
+    if (document.body.classList.contains("rehearsal")) { setNow(nowI === i ? -1 : i); return; }
     if (openI === i) { openI = -1; panel.hidden = true; setNow(-1); return; }
     openI = i; setNow(i);
     const r = song.raw[i], nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
     const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : ""].filter(Boolean).map(esc).join(" · ");
     const who = r.lineup.map(l => `<li><b>${esc(nameOf(l.member_id))}</b> ${esc(l.part || LAYER_WORD[l.layer] || "")}${l.instrument ? ` <span class="muted">· ${esc(l.instrument)}</span>` : ""}${(l.sounds || []).length ? ` <span class="patch">${esc(l.sounds.join(" + "))}</span>` : ""}</li>`).join("");
     const lanes = ["bloom", "bark", "ground", "substrate", "transition"].map(l => {
-      const xs = r.ideas.filter(x => x.layer === l); if (!xs.length) return "";
+      const xs = r.ideas.filter(x => x.layer === l && x.kind === "audio"); if (!xs.length) return "";
       const item = x => x.kind === "audio" ? `<li>${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b>${x.starred ? ` <span class="star">★ the part</span>` : ""}${x.duration ? ` <span class="muted">${Math.round(x.duration)}s</span>` : ""}${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></li>`
         : x.kind === "link" ? `<li><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></li>`
         : `<li><span class="ico">✎</span><span><b>${esc(x.by_name)}</b><div>${esc(x.body)}</div></span></li>`;
       return `<div class="sp-lane"><h4>${l === "transition" ? "Into the next section" : LAYER_WORD[l]}</h4><ul>${xs.map(item).join("")}</ul></div>`;
     }).join("");
     panel.innerHTML = `<div class="sp-head"><div><div class="eyebrow">Section ${i + 1} of ${song.sections.length}</div><h4 class="sp-name">${esc(r.name)}</h4>${facts ? `<div class="muted">${facts}</div>` : ""}</div><button class="chip sm" type="button" data-close>Close</button></div>
-      ${r.text ? `<p class="sp-text">${esc(r.text)}</p>` : ""}
+      ${r.note ? `<p class="sp-text">${esc(r.note)}</p>` : ""}
+      ${notesIn(r) ? `<button type="button" class="chip sm sp-notes" data-gonotes="nt-${idx}-${i}">✎ ${notesIn(r)} note${notesIn(r) > 1 ? "s" : ""} on this section</button>` : ""}
       ${r.cues.length ? `<ul class="sp-cues">${r.cues.map(c => `<li class="from-${c.from === "production" ? "production" : "person"}">${esc(cueLine(c))}</li>`).join("")}</ul>` : ""}
       ${who ? `<div class="sp-lane"><h4>Who plays what</h4><ul class="sp-who">${who}</ul></div>` : ""}
-      ${lanes || `<p class="muted">Nothing recorded or written on this section yet.</p>`}`;
+      ${lanes || `<p class="muted">Nothing recorded on this section yet.</p>`}`;
     panel.hidden = false;
     panel.querySelector("[data-close]").addEventListener("click", () => openSec(i));
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -707,8 +730,41 @@ const meBtns = {};
 });
 function setMe(who) {
   ME = who; Object.entries(meBtns).forEach(([k, b]) => b.setAttribute("aria-pressed", String((k || null) === who)));
-  panels.forEach(p => p._apply(who)); renderNight(); writeHash();
+  panels.forEach(p => p._apply(who)); renderNight(); renderNotes(); writeHash();
   try { who ? localStorage.setItem("setlist-me", who) : localStorage.removeItem("setlist-me"); } catch (e) {}
+}
+// Notes: everything written on the set's sections, in one place, so the boards stay light.
+const notesIn = r => r.ideas.filter(x => x.kind !== "audio").length + (r.text.length > r.note.length ? 1 : 0);
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-gonotes]"); if (!b) return;
+  show("notes"); const t = document.getElementById(b.dataset.gonotes); if (t) { t.scrollIntoView({ behavior: "smooth", block: "start" }); t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 1400); }
+});
+const notesv = document.getElementById("notesv");
+let notesMine = true;
+function renderNotes() {
+  const plays = (k, i) => !!ME && song_lineup(k, i).some(l => l.member_id === ME);
+  const song_lineup = (k, i) => SONGS[k].raw[i].lineup;
+  let html = `<div class="song-title"><div class="eyebrow">Notes</div><h2>What’s written on the set</h2><p class="blurb">Notes and links left on sections in Shajara. Recordings stay on the boards (▶).</p></div>`;
+  if (ME) html += `<div class="chips"><button type="button" class="chip${notesMine ? "" : " on"}" data-nm="0" aria-pressed="${!notesMine}">All sections</button><button type="button" class="chip" data-nm="1" aria-pressed="${notesMine}">Where ${esc(PLAYERS[ME].name)} plays</button></div>`;
+  let any = false;
+  SONGS.forEach((song, k) => {
+    const secs = song.raw.map((r, i) => ({ r, i })).filter(({ r, i }) => notesIn(r) && (!ME || !notesMine || plays(k, i)));
+    if (!secs.length) return; any = true;
+    html += `<article class="night-song notes-song"><header><span class="n">${String(k + 1).padStart(2, "0")}</span><h3>${song.title}</h3><button class="chip sm" type="button" data-go="${k}">Open</button></header>`;
+    secs.forEach(({ r, i }) => {
+      const items = [];
+      if (r.text.length > r.note.length) items.push(`<li><span class="ico">¶</span><span><b>Section note</b><div>${esc(r.text)}</div></span></li>`);
+      r.ideas.filter(x => x.kind !== "audio").forEach(x => items.push(x.kind === "link"
+        ? `<li><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <span class="muted">${esc(LAYER_WORD[x.layer] || "")}</span> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></li>`
+        : `<li><span class="ico">✎</span><span><b>${esc(x.by_name)}</b> <span class="muted">${esc(LAYER_WORD[x.layer] || (x.layer === "transition" ? "Into the next section" : ""))}</span><div>${esc(x.body)}</div></span></li>`));
+      html += `<div class="sp-lane" id="nt-${k}-${i}"><h4>${esc(r.name)}${plays(k, i) ? ` <span class="you">you play</span>` : ""}</h4><ul>${items.join("")}</ul></div>`;
+    });
+    html += `</article>`;
+  });
+  if (!any) html += `<p class="lede">${ME && notesMine ? "No notes on the sections you play yet." : "No notes yet. Notes written on a section in Shajara show up here."}</p>`;
+  notesv.innerHTML = html;
+  notesv.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(+b.dataset.go)));
+  notesv.querySelectorAll("[data-nm]").forEach(b => b.addEventListener("click", () => { notesMine = b.dataset.nm === "1"; renderNotes(); }));
 }
 // My night: the whole set from one player's side
 const night = document.getElementById("night");
@@ -745,30 +801,43 @@ const themeBtn = document.getElementById("theme");
 const setTheme = t => { document.documentElement.dataset.theme = t; themeBtn.textContent = t === "light" ? "Dark" : "Light"; try { localStorage.setItem("setlist-theme", t); } catch (e) {} };
 try { setTheme(localStorage.getItem("setlist-theme") || "dark"); } catch (e) { setTheme("dark"); }
 themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light"));
-const stageBtn = document.getElementById("stage");
-let wake = null;
-stageBtn.addEventListener("click", async () => {
-  const on = document.body.classList.toggle("stage"); stageBtn.setAttribute("aria-pressed", String(on));
-  try { if (on && navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); else if (wake) { wake.release(); wake = null; } } catch (e) {}
+// Modes: study at home (everything), rehearsal (board + your part, screen awake), stage (your checklist only, screen awake).
+let wake = null, MODE = "study";
+const modeBtns = [...document.querySelectorAll("#modes [data-mode]")];
+async function setMode(m) {
+  MODE = m; document.body.classList.toggle("stage", m === "stage"); document.body.classList.toggle("rehearsal", m === "rehearsal");
+  modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+  try { localStorage.setItem("setlist-mode", m); } catch (e) {}
+  if (m !== "study" && (!night.hidden || !notesv.hidden) && (m === "stage" || !notesv.hidden)) show(lastSong);
+  try { if (m !== "study" && navigator.wakeLock) { if (!wake) wake = await navigator.wakeLock.request("screen"); } else if (wake) { wake.release(); wake = null; } } catch (e) {}
   fitAll();
-});
+}
+modeBtns.forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
 let tx = null;
 host.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
 host.addEventListener("touchend", e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 70) show(cur() + (dx < 0 ? 1 : -1)); }, { passive: true });
 document.addEventListener("keydown", e => { if (e.target.closest("button, input")) return; const p = panels[cur()]; if (!p || p.hidden) return; if (e.key === "ArrowDown" || e.key === "n") p._next(); if (e.key === "ArrowUp" || e.key === "p") p._prev(); });
 function cur() { return panels.findIndex(p => !p.hidden); }
-function writeHash() { const i = cur(); if (i < 0 && night.hidden) return; const h = (i >= 0 ? "s=" + (i + 1) : "night") + (ME ? "&me=" + ME : ""); history.replaceState(null, "", "#" + h); }
-const tabs = [...document.querySelectorAll('#setlist [role="tab"]:not(#tab-night)')];
+function writeHash() { const i = cur(); if (i < 0 && night.hidden && notesv.hidden) return; const h = (i >= 0 ? "s=" + (i + 1) : !night.hidden ? "night" : "notes") + (ME ? "&me=" + ME : ""); history.replaceState(null, "", "#" + h); }
+const tabs = [...document.querySelectorAll('#setlist [role="tab"]')];
+const songsTab = document.getElementById("tab-songs"), setlistEl = document.getElementById("setlist");
 function show(i) {
-  if (i === "night") { panels.forEach(p => { p.hidden = true; }); night.hidden = false; tabs.forEach(t => t.setAttribute("aria-selected", "false")); nightTab.setAttribute("aria-selected", "true"); writeHash(); return; }
+  if (i === "night" || i === "notes") {
+    panels.forEach(p => { p.hidden = true; }); night.hidden = i !== "night"; notesv.hidden = i !== "notes";
+    tabs.forEach(t => t.setAttribute("aria-selected", "false")); nightTab.setAttribute("aria-selected", String(i === "night")); notesTab.setAttribute("aria-selected", String(i === "notes"));
+    songsTab.setAttribute("aria-selected", "false"); setlistEl.hidden = true; writeHash(); return;
+  }
   i = Math.max(0, Math.min(SONGS.length - 1, i));
-  night.hidden = true; nightTab.setAttribute("aria-selected", "false");
+  night.hidden = true; notesv.hidden = true; nightTab.setAttribute("aria-selected", "false"); notesTab.setAttribute("aria-selected", "false");
+  songsTab.setAttribute("aria-selected", "true"); setlistEl.hidden = false;
   panels.forEach((p, j) => { p.hidden = j !== i; });
   tabs.forEach((t, j) => { t.setAttribute("aria-selected", String(j === i)); t.tabIndex = j === i ? 0 : -1; });
   fitAll(); writeHash();
-  try { localStorage.setItem("setlist-tab", String(i)); } catch (e) {}
+  lastSong = i; try { localStorage.setItem("setlist-tab", String(i)); } catch (e) {}
 }
 const nightTab = document.getElementById("tab-night"); nightTab.addEventListener("click", () => show("night"));
+const notesTab = document.getElementById("tab-notes"); notesTab.addEventListener("click", () => show("notes"));
+let lastSong = 0; songsTab.addEventListener("click", () => show(lastSong));
 tabs.forEach((t, i) => {
   t.addEventListener("click", () => show(i));
   t.addEventListener("keydown", e => {
@@ -783,9 +852,10 @@ try { const v = parseInt(localStorage.getItem("setlist-tab"), 10); if (!isNaN(v)
 const H = new URLSearchParams(location.hash.slice(1));
 if (H.get("me") && PLAYERS[H.get("me")]) ME = H.get("me");
 if (H.get("s")) start = parseInt(H.get("s"), 10) - 1;
-const wantNight = location.hash.startsWith("#night");
+const wantNight = location.hash.startsWith("#night"), wantNotes = location.hash.startsWith("#notes");
 setMe(ME);
-show(wantNight ? "night" : start);
+show(wantNight ? "night" : wantNotes ? "notes" : start);
+try { const m = localStorage.getItem("setlist-mode"); if (m && m !== "study") setMode(m); } catch (e) {}
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
 window.addEventListener("resize", fitAll);
 
