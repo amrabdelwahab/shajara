@@ -80,7 +80,15 @@ a { color: var(--accent); }
 input[type=text], input[type=password], input[type=number], input[type=url], textarea {
   width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none; font-family: var(--serif); font-size: 17px;
 }
-input:focus, textarea:focus { border-color: var(--text); }
+input[type=date], select {
+  width: 100%; background-color: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none;
+  font-family: var(--serif); font-size: 17px; min-height: 50px; color-scheme: dark;
+}
+select { appearance: none; -webkit-appearance: none; padding-right: 40px; text-overflow: ellipsis;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23999' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 15px center; background-size: 12px 8px; }
+input[type=date]::-webkit-calendar-picker-indicator { opacity: .55; cursor: pointer; }
+input:focus, textarea:focus, select:focus { border-color: var(--text); }
 textarea { resize: vertical; min-height: 90px; }
 label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--display); font-stretch: 112%; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 
@@ -625,7 +633,7 @@ label.field { display: block; margin: 18px 0 7px; font: 700 11px/1.2 var(--displ
 .wz-card .wz-en { border-bottom: 0; padding-bottom: 6px; }
 .wz-f { margin-top: 6px; }
 .wz-f input, .wz-f select { padding: 9px 11px; font-size: 16px; }
-.wz-f select { width: 100%; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; font-family: var(--serif); }
+.wz-f select { width: 100%; background-color: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 12px; font-family: var(--serif); }
 .fl-own { font: italic 12px/1 var(--serif); text-transform: none; letter-spacing: 0; color: var(--muted); margin-left: 4px; }
 .wz-sec { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
 .wz-sec .num { width: 22px; font: 800 12px/1 var(--display); color: var(--faint); text-align: right; }
@@ -1156,7 +1164,8 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
 .cues-strip .cue-l { font: 16px/1.3 var(--serif); display: flex; align-items: baseline; gap: 8px; }
 .cues-strip .cue-l i { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-yellow); flex: none; }
 .cues-strip .cue-l i.pr { background: var(--muted); }
-.cue-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.cue-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.cue-row select { grid-column: 1 / -1; }
 .lu-part { margin-top: 8px; }
 .set-mini { margin: 0; padding-left: 20px; font: 15px/1.45 var(--serif); }
 .set-mini li.faint { list-style: none; }
@@ -4833,7 +4842,7 @@ function editCues() {
   const C = parseCuesC(sec.cues).map(c => ({ ...c }));
   const who = [[PRODUCTION, 'Production (you hear it)'], ...(st ? st.people : []).map(id => [id, memberName(id) + ' (watch them)'])];
   const draw = root => {
-    $('#cl', root).innerHTML = C.map((c, i) => `<div class="cue-row" data-i="${i}"><select>${who.map(([id, l]) => `<option value="${esc(id)}"${c.from === id ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
+    $('#cl', root).innerHTML = C.map((c, i) => `<div class="cue-row" data-i="${i}"><select aria-label="Who gives this cue">${who.map(([id, l]) => `<option value="${esc(id)}"${c.from === id ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       <input type="text" placeholder="e.g. unison theme, drums in, nod" value="${esc(c.text)}"><button class="icon-btn" aria-label="Remove">✕</button></div>`).join('') || '<p class="small muted">No cues yet.</p>';
     root.querySelectorAll('.cue-row').forEach(r => { const c = C[+r.dataset.i];
       $('select', r).onchange = e => { c.from = e.target.value; }; $('input', r).oninput = e => { c.text = e.target.value; };
