@@ -269,6 +269,22 @@ let PLAYERS = {}, SONGS = [];
 const actText = a => a.kind === "set" ? `Set your sound: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`;
 const actWhen = (b, secName) => b.s === 0 || (b.act && b.act.kind === "set") ? "Before the song" : `Before ${secName}${b.act && b.act.rest ? ", while you rest" : ""}`;
 const cueLead = c => c.from === "production" ? "listen" : "watch " + (PLAYERS[c.from] ? PLAYERS[c.from].name : "the cue");
+// Cues read as plain sentences: "Marwan's signal for the theme", "Marwan nods Amr in", "You hear: the drums come in".
+const cueName = c => PLAYERS[c.from] ? PLAYERS[c.from].name : "the band";
+const cueLine = c => {
+  const t = String(c.text), n = cueName(c);
+  if (c.from === "production") return "You hear: " + t;
+  if (/^his\b/i.test(t)) return n + "’s" + t.slice(3);
+  if (/^he\b/i.test(t)) return n + t.slice(2);
+  return n + "’s cue: " + t;
+};
+const cueOn = c => {
+  const t = String(c.text), n = cueName(c);
+  if (c.from === "production") return "Come in when you hear: " + t;
+  if (/^his\b/i.test(t)) return "Come in on " + n + "’s" + t.slice(3);
+  if (/^he\b/i.test(t)) return "Come in when " + n + t.slice(2);
+  return "Come in on " + n + "’s cue: " + t;
+};
 let NOW_AUDIO = null, NOW_BTN = null;
 const playBtn = id => `<button class="pl-btn" type="button" data-audio="${esc(id)}" aria-label="Listen to this line">▶</button>`;
 document.addEventListener("click", e => {
@@ -316,7 +332,7 @@ function shape(d) {
     });
     ["bloom", "bark", "ground", "substrate"].forEach((layer, k) => {
       const blocks = blocksFor(s => s.lineup.find(l => l.member_id === "production" && l.layer === layer)).map(b => ({ ...b, cls: ["ab3", "ab2", "ab1", "ab2"][k] }));
-      if (blocks.length) lanes.push({ who: "production", label: LAYER_WORD[layer], sub: true, blocks });
+      if (blocks.length) lanes.push({ who: "production", label: [...new Set(blocks.map(b => b.tone).filter(Boolean))].slice(0, 2).join(" + ") || LAYER_WORD[layer], sub: true, blocks });
     });
     const cues = t.sections.flatMap((s, i) => s.cues.map(c => ({ at: i, text: esc(c.text), from: c.from === "production" ? "production" : c.from })));
     return { raw: t.sections, title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
@@ -399,7 +415,7 @@ function renderSong(song, idx) {
   const renderStrip = () => {
     // stage: a short checklist. One line per entry or change: the cue, then what to do, then the sound if it changes.
     const who = ME; const secs = song.sections;
-    const cueText = c => cueLead(c) + ": " + c.text;
+    const cueText = cueLine;
     const nav = `<div class="sbar"><button type="button" class="chip" data-act="prevsong">◀ previous song</button><span class="muted">${idx + 1} / ${SONGS.length}</span><button type="button" class="chip" data-act="nextsong">next song ▶</button></div>`;
     let lines = [];
     if (!who) lines = secs.map(x => `<li><span class="cue">${x.name}</span><span class="do">${x.sub}</span></li>`);
@@ -497,7 +513,7 @@ function renderSong(song, idx) {
     openI = i; setNow(i);
     const r = song.raw[i], nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
     const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : ""].filter(Boolean).map(esc).join(" · ");
-    const who = r.lineup.map(l => `<li><b>${esc(nameOf(l.member_id))}</b>${l.member_id === "production" ? ` <span class="muted">${LAYER_WORD[l.layer] || ""}</span>` : ""} ${esc(l.part || LAYER_WORD[l.layer] || "")}${l.instrument ? ` <span class="muted">· ${esc(l.instrument)}</span>` : ""}${(l.sounds || []).length ? ` <span class="patch">${esc(l.sounds.join(" + "))}</span>` : ""}</li>`).join("");
+    const who = r.lineup.map(l => `<li><b>${esc(nameOf(l.member_id))}</b> ${esc(l.part || LAYER_WORD[l.layer] || "")}${l.instrument ? ` <span class="muted">· ${esc(l.instrument)}</span>` : ""}${(l.sounds || []).length ? ` <span class="patch">${esc(l.sounds.join(" + "))}</span>` : ""}</li>`).join("");
     const lanes = ["bloom", "bark", "ground", "substrate", "transition"].map(l => {
       const xs = r.ideas.filter(x => x.layer === l); if (!xs.length) return "";
       const item = x => x.kind === "audio" ? `<li>${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b>${x.starred ? ` <span class="star">★ the part</span>` : ""}${x.duration ? ` <span class="muted">${Math.round(x.duration)}s</span>` : ""}${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></li>`
@@ -507,7 +523,7 @@ function renderSong(song, idx) {
     }).join("");
     panel.innerHTML = `<div class="sp-head"><div><div class="eyebrow">Section ${i + 1} of ${song.sections.length}</div><h4 class="sp-name">${esc(r.name)}</h4>${facts ? `<div class="muted">${facts}</div>` : ""}</div><button class="chip sm" type="button" data-close>Close</button></div>
       ${r.text ? `<p class="sp-text">${esc(r.text)}</p>` : ""}
-      ${r.cues.length ? `<ul class="sp-cues">${r.cues.map(c => `<li class="from-${c.from === "production" ? "production" : "person"}">${esc(cueLead(c))}: ${esc(c.text)}</li>`).join("")}</ul>` : ""}
+      ${r.cues.length ? `<ul class="sp-cues">${r.cues.map(c => `<li class="from-${c.from === "production" ? "production" : "person"}">${esc(cueLine(c))}</li>`).join("")}</ul>` : ""}
       ${who ? `<div class="sp-lane"><h4>Who plays what</h4><ul class="sp-who">${who}</ul></div>` : ""}
       ${lanes || `<p class="muted">Nothing recorded or written on this section yet.</p>`}`;
     panel.hidden = false;
@@ -537,7 +553,7 @@ function renderSong(song, idx) {
     {
       const ol = el("ol"); const secs = song.sections;
       const nameAt = x => secs[Math.min(Math.floor(x), secs.length - 1)].name;
-      const cueText = c => cueLead(c) + ": " + c.text;
+      const cueText = cueLine;
       // what the others are doing when you come in
       const around = at => song.lanes.filter(l => l.who !== who).flatMap(l => l.blocks.filter(b => b.s <= at && b.e > at).map(b => `${l.who === "production" ? l.label : PLAYERS[l.who].name}: ${b.what}`)).slice(0, 3).join(" · ");
       let prevEnd = 0, n = 0;
@@ -555,7 +571,7 @@ function renderSong(song, idx) {
         const cue = song.cues.filter(c => c.at <= b.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
         const w = around(b.s);
         if (b.act) ol.append(el("li", { class: "act" }, `<span class="k">⇄</span><span><div class="when">${actWhen(b, sec)}</div><div class="what">${actText(b.act)}</div></span>`));
-        ol.append(el("li", {}, `<span class="k">${++n}</span><span><div class="when">${when}</div><div class="what">${b.audio ? playBtn(b.audio) : ""}${what} · ${b.tone}</div>${cue ? `<div class="on">Come in on: ${cueText(cue)}</div>` : ""}${w ? `<div class="with">With: ${w}</div>` : ""}</span>`));
+        ol.append(el("li", {}, `<span class="k">${++n}</span><span><div class="when">${when}</div><div class="what">${b.audio ? playBtn(b.audio) : ""}${what} · ${b.tone}</div>${cue ? `<div class="on">${cueOn(cue)}</div>` : ""}${w ? `<div class="with">With: ${w}</div>` : ""}</span>`));
         prevEnd = Math.max(prevEnd, b.e);
       });
       rest(prevEnd, secs.length);
@@ -667,7 +683,7 @@ function renderNight() {
     }
     html = html.replace(/<ol class="changes">[\s\S]*$/, m => `<details><summary>Changes and cues</summary>${m}`) ;
     if (!/<details>/.test(html) && first) html += `<details><summary>Cues</summary>`;
-    if (first) html += `<ul class="cues">${song.cues.map(c => `<li class="from-${c.from}"><b>${secName(c.at)}</b> ${cueLead(c)}: ${c.text}</li>`).join("")}</ul></details>`;
+    if (first) html += `<ul class="cues">${song.cues.map(c => `<li class="from-${c.from}"><b>${secName(c.at)}</b> ${cueLine(c)}</li>`).join("")}</ul></details>`;
     card.innerHTML = html; card.querySelector("[data-go]").addEventListener("click", () => show(i)); night.append(card);
   });
 }
