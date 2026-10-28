@@ -174,22 +174,28 @@ async function sendout(env, tok, audioId) {
     q('SELECT m.id, m.name, m.guest, m.instruments FROM set_people x JOIN members m ON m.id = x.member_id WHERE x.set_id = ? ORDER BY x.position', set.id),
     tids.length ? q(`SELECT id, track_id, name, position, maqam, tempo, bars, notes, cues, weight FROM sections WHERE track_id IN (${inT}) ORDER BY position, created_at`, ...tids) : [],
     tids.length ? q(`SELECT h.* FROM holders h JOIN sections s ON s.id = h.section_id WHERE s.track_id IN (${inT})`, ...tids) : [],
-    tids.length ? q(`SELECT track_id, section_id, layer, author_id, audio_id, starred, body, created_at FROM ideas WHERE track_id IN (${inT}) AND kind = 'audio' AND audio_id IS NOT NULL AND section_id IS NOT NULL ORDER BY created_at DESC`, ...tids) : [],
+    tids.length ? q(`SELECT track_id, section_id, layer, author_id, kind, audio_id, url, starred, body, duration, created_at FROM ideas WHERE track_id IN (${inT}) AND section_id IS NOT NULL AND (kind IN ('text', 'link') OR (kind = 'audio' AND audio_id IS NOT NULL)) ORDER BY created_at DESC`, ...tids) : [],
     q('SELECT id, name FROM members WHERE space_id = ?', set.space_id),
   ]);
   const nm = Object.fromEntries(names.map(r => [r.id, r.name]));
+  // Sound names for the line-ups, so the page can say when someone sets or switches their sound.
+  const sids = [...new Set(holders.flatMap(h => (h.sound_ids || '').split(',').filter(Boolean)))];
+  const snd = sids.length ? Object.fromEntries((await q(`SELECT id, name FROM sounds WHERE id IN (${sids.map(() => '?').join(',')})`, ...sids)).map(r => [r.id, r.name])) : {};
   const songs = tracks.map(t => ({
     id: t.id, title: t.title, maqam: t.maqam, tonic: t.tonic, tempo: t.tempo, notes: (t.notes || '').slice(0, 600),
     sections: sections.filter(s => s.track_id === t.id).map(s => {
       // The line for each layer: the starred take, else the newest recording.
       const parts = {};
       for (const l of LAYERS) {
-        const takes = ideas.filter(i => i.section_id === s.id && i.layer === l);
+        const takes = ideas.filter(i => i.section_id === s.id && i.layer === l && i.kind === 'audio');
         const k = takes.find(i => i.starred) || takes[0];
         if (k) parts[l] = { audio_id: k.audio_id, by: k.author_id, by_name: nm[k.author_id] || '', note: (k.body || '').slice(0, 120) };
       }
       return { id: s.id, name: s.name, maqam: s.maqam, tempo: s.tempo, bars: s.bars, weight: s.weight, note: (s.notes || '').slice(0, 140), cues: parseCues(s.cues),
-        lineup: holders.filter(h => h.section_id === s.id).map(h => ({ member_id: h.member_id, layer: h.layer, part: h.part || '', instrument: h.instrument || '' })), parts };
+        text: (s.notes || '').slice(0, 2000),
+        lineup: holders.filter(h => h.section_id === s.id).map(h => ({ member_id: h.member_id, layer: h.layer, part: h.part || '', instrument: h.instrument || '', sounds: (h.sound_ids || '').split(',').map(x => snd[x]).filter(Boolean) })), parts,
+        // Everything left on the section: recordings, notes and links, newest first.
+        ideas: ideas.filter(i => i.section_id === s.id).slice(0, 40).map(i => ({ layer: i.layer, kind: i.kind, by_name: nm[i.author_id] || '', body: (i.body || '').slice(0, 1000), audio_id: i.kind === 'audio' ? i.audio_id : null, url: i.kind === 'link' ? i.url : null, starred: !!i.starred, duration: i.duration || null })) };
     }),
   }));
   const space = await env.DB.prepare('SELECT id, name, logo_v FROM spaces WHERE id = ?').bind(set.space_id).first();
@@ -639,8 +645,23 @@ async function route(req, env, url, member, space) {
     }
   }
   if (a === 'members') {
+    // Who's in this space, light: for other spaces on the same phone to bring people across.
+    if (m === 'GET' && !id) return json((await env.DB.prepare(`SELECT id, name, instruments, guest, ${PID} AS person_id FROM members WHERE space_id = ? ORDER BY guest, created_at`).bind(sp).all()).results);
     if (m === 'POST' && !id) {
       const b = await body(req);
+      if (b.from_key) {
+        // Someone from another space (proved by holding its passcode): a guest here who is the same person,
+        // so their instruments, sounds and shelf come along.
+        const other = await resolveSpace(env, typeof b.from_key === 'string' ? b.from_key.trim() : '');
+        const them = other && await env.DB.prepare(`SELECT id, name, instruments, ${PID} AS pid FROM members WHERE id = ? AND space_id = ?`).bind(str(b.from_member, 40), other.id).first();
+        if (!them) return json({ error: 'can’t find them in that space' }, 400);
+        const have = await env.DB.prepare(`SELECT * FROM members WHERE space_id = ? AND ${PID} = ?`).bind(sp, them.pid).first();
+        if (have) return json(have);
+        const row = { id: uid(), name: them.name, instruments: them.instruments || '', created_at: now(), space_id: sp, guest: 1, person_id: them.pid };
+        await env.DB.prepare('INSERT INTO members (id, name, instruments, created_at, space_id, guest, person_id) VALUES (?, ?, ?, ?, ?, ?, ?)')
+          .bind(row.id, row.name, row.instruments, row.created_at, sp, 1, row.person_id).run();
+        return json(row, 201);
+      }
       const name = str(b.name, 60);
       if (!name) return json({ error: 'name required' }, 400);
       const row = { id: uid(), name, instruments: str(b.instruments, 200), created_at: now(), space_id: sp, guest: b.guest ? 1 : 0 };

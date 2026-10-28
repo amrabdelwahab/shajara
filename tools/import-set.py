@@ -24,10 +24,13 @@ ROLE = {w: d["PLAYERS"][w]["role"] for w in d["PLAYERS"]}
 def layer_for(who, what, tone):
     t = (what + " " + tone).lower()
     if any(k in t for k in ["solo", "melody", "taqsim", "theme", "line", "improv", "conversation", "respond", "lyrical", "joins", "accents"]): return "bloom"
-    if "rhythm" in t or "drum" in t: return "substrate"
+    if "launches drums" in t or "builds drums" in t: return "substrate"
+    if "plays samples" in t: return "ground"
+    if "rhythm" in t: return "bark"
     if any(k in t for k in ["chord", "voicing", "pad", "accompan", "choir", "strings", "piano", "texture", "ii v i"]): return "bark"
     return {"amr": "bloom", "sherif": "bark", "marawan": "bark"}.get(who, "bloom")
-PROD_LAYER = {"Pads": "bark", "Drums": "substrate", "Samples": "bloom", "Ending": "bloom", "Ambience": "bark"}
+# Production holds substrate (pads, drums) and ground (samples); players alternate between bark and bloom.
+PROD_LAYER = {"Pads": "substrate", "Drums": "substrate", "Samples": "ground", "Ending": "ground", "Ambience": "substrate"}
 st = call("POST", "/sets", {"name": NAME, "people": list(PEOPLE.values()), "notes": "Imported from Marawan's set list. Section lengths are relative until we have bar counts."})
 print("set", st["id"], NAME)
 for song in d["SONGS"]:
@@ -43,7 +46,7 @@ for song in d["SONGS"]:
                 if not (lo <= i < hi): continue
                 part = b["what"] + (" · " + b["tone"] if b.get("tone") else "")
                 if lane["who"] == "ableton":
-                    L = PROD_LAYER.get(lane["label"], "bloom")
+                    L = PROD_LAYER.get(lane["label"], "ground")
                     x = prod.setdefault(L, {"instrument": [], "part": []})
                     if lane["label"] not in x["instrument"]: x["instrument"].append(lane["label"])
                     if part not in x["part"]: x["part"].append(part)

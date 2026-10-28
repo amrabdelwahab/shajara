@@ -219,6 +219,31 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .pl-btn { font: inherit; font-size: 10px; line-height: 1; width: 22px; height: 22px; border-radius: 50%; border: 0; background: rgba(0,0,0,.35); color: #fff; cursor: pointer; margin-right: 6px; vertical-align: middle; flex: none; }
 .sheet .pl-btn, .steps .pl-btn, .night-song .pl-btn { background: var(--accent); color: var(--ink); }
 .blk strong { display: flex; align-items: center; }
+/* sound actions */
+.sheet li.act .k { color: var(--accent); }
+.sheet li.act .what, .night-song .act { color: var(--accent); }
+.sheet li.act .what b, .steps li.act .do b, .night-song .act b { font-weight: 600; }
+.night-song .act { margin: 0; font-size: 14px; }
+.steps li.act .do { font-size: 18px; color: var(--accent); }
+.steps li.act .cue::before { content: ""; }
+/* section panel */
+.sec .mks { display: inline-flex; gap: 4px; margin-left: 6px; vertical-align: 1px; }
+.sec .mk { font-size: 9.5px; color: var(--fg); background: var(--surface); border-radius: 3px; padding: 0 4px; font-weight: 500; }
+.secpanel { background: var(--surface); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; border-top: 2px solid var(--accent); }
+.sp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.sp-name { font-family: var(--display); font-size: 26px; font-weight: 600; margin: 2px 0 0; }
+.sp-text { margin: 0; white-space: pre-wrap; max-width: 70ch; }
+.sp-cues { list-style: none; margin: 0; padding: 0; font-size: 13.5px; display: flex; flex-direction: column; gap: 3px; }
+.sp-cues li::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--accent); }
+.sp-cues li.from-production::before { background: var(--ab-2); box-shadow: 0 0 0 1px var(--muted); }
+.sp-lane h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.sp-lane ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.sp-lane li { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; overflow-wrap: anywhere; }
+.sp-lane .ico { width: 22px; text-align: center; color: var(--accent); flex: none; }
+.sp-lane .star { color: var(--accent); font-size: 12px; }
+.sp-lane a { color: var(--accent); }
+.secpanel .pl-btn { background: var(--accent); color: var(--ink); flex: none; }
+body.stage .secpanel { display: none; }
 </style><style id="pcss"></style>
 </head>
 <body>
@@ -241,6 +266,8 @@ const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&a
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
 let PLAYERS = {}, SONGS = [];
+const actText = a => a.kind === "set" ? `Set your sound: <b>${a.to}</b>` : `Switch to <b>${a.to}</b>`;
+const actWhen = (b, secName) => b.s === 0 || (b.act && b.act.kind === "set") ? "Before the song" : `Before ${secName}${b.act && b.act.rest ? ", while you rest" : ""}`;
 const cueLead = c => c.from === "production" ? "listen" : "watch " + (PLAYERS[c.from] ? PLAYERS[c.from].name : "the cue");
 let NOW_AUDIO = null, NOW_BTN = null;
 const playBtn = id => `<button class="pl-btn" type="button" data-audio="${esc(id)}" aria-label="Listen to this line">▶</button>`;
@@ -268,9 +295,10 @@ function shape(d) {
       t.sections.forEach((s, i) => {
         const h = pick(s); if (!h) return;
         const what = h.part || LAYER_WORD[h.layer] || "", tone = h.instrument || LAYER_WORD[h.layer] || "", audio = s.parts[h.layer] ? s.parts[h.layer].audio_id : "";
+        const patch = esc((h.sounds || []).join(" + "));
         const last = out[out.length - 1];
-        if (last && last.e === i && last.what === what && last.tone === tone && last.audio === audio) last.e = i + 1;
-        else out.push({ s: i, e: i + 1, what: esc(what), tone: esc(tone), audio, layer: h.layer });
+        if (last && last.e === i && last.what === esc(what) && last.tone === esc(tone) && last.audio === audio && last.patch === patch) last.e = i + 1;
+        else out.push({ s: i, e: i + 1, what: esc(what), tone: esc(tone), audio, layer: h.layer, patch });
       });
       return out;
     };
@@ -278,6 +306,12 @@ function shape(d) {
     [...Object.keys(PLAYERS).filter(k => k !== "production"), ...inSong.filter(k => k !== "production" && !PLAYERS[k])].forEach(who => {
       if (!PLAYERS[who]) { PLAYERS[who] = { name: (d.names || {})[who] || "Guest", role: "", color: "#999" }; }
       const blocks = blocksFor(s => s.lineup.find(l => l.member_id === who)).map(b => ({ ...b, cls: "pl p" + (idx[who] != null ? idx[who] : 0) + (/unison/i.test(b.what) ? " uni" : "") }));
+      // Sound actions: set it before your first entry, switch it when it changes from your last part.
+      blocks.forEach((b, i) => {
+        const p = blocks[i - 1], to = b.patch || b.tone;
+        if (!p) { if (b.patch) b.act = { kind: "set", to: b.patch }; }
+        else if (to !== (p.patch || p.tone) && (b.patch || p.patch || b.tone !== p.tone)) b.act = { kind: "switch", to, rest: b.s > p.e };
+      });
       if (blocks.length) lanes.push({ who, label: PLAYERS[who].name, role: PLAYERS[who].role, blocks });
     });
     ["bloom", "bark", "ground", "substrate"].forEach((layer, k) => {
@@ -285,7 +319,7 @@ function shape(d) {
       if (blocks.length) lanes.push({ who: "production", label: LAYER_WORD[layer], sub: true, blocks });
     });
     const cues = t.sections.flatMap((s, i) => s.cues.map(c => ({ at: i, text: esc(c.text), from: c.from === "production" ? "production" : c.from })));
-    return { title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
+    return { raw: t.sections, title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
   });
 }
 async function boot() {
@@ -373,14 +407,13 @@ function renderSong(song, idx) {
       const mine = song.lanes.filter(l => l.who === who).flatMap(l => l.blocks).sort((x, y) => x.s - y.s);
       if (!mine.length) lines = [`<li><span class="do muted">You sit this one out.</span></li>`];
       else {
-        let prevEnd = 0, prevPatch = null;
+        let prevEnd = 0;
         mine.forEach((bk, i) => {
           const k = Math.floor(bk.s);
           if (bk.s > prevEnd) lines.push(`<li class="rest"><span class="cue">${secs.slice(Math.floor(prevEnd), k).map(x => x.name).join(" · ")}</span><span class="do">rest</span></li>`);
           const cue = song.cues.filter(c => c.at <= bk.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
-          const sound = bk.patch && bk.patch !== prevPatch ? `<span class="patch">${bk.patch}</span>` : "";
-          lines.push(`<li><span class="cue">${cue ? cueText(cue) : secs[k].name}</span><span class="do">${bk.audio ? playBtn(bk.audio) : ""}${bk.what}${sound ? " " + sound : ""}</span></li>`);
-          if (bk.patch) prevPatch = bk.patch;
+          if (bk.act) lines.push(`<li class="act"><span class="cue">${actWhen(bk, secs[k].name)}</span><span class="do">⇄ ${actText(bk.act)}</span></li>`);
+          lines.push(`<li><span class="cue">${cue ? cueText(cue) : secs[k].name}</span><span class="do">${bk.audio ? playBtn(bk.audio) : ""}${bk.what}</span></li>`);
           prevEnd = Math.max(prevEnd, bk.e);
         });
         if (prevEnd < secs.length) {
@@ -410,9 +443,11 @@ function renderSong(song, idx) {
   const secTrack = el("div", { class: "track" });
   secTrack.parentClass = "sections";
   song.sections.forEach((s, i) => {
-    const d = el("div", { class: "sec", "data-i": i, role: "button", tabindex: "0", title: "Tap: we are here" }, `${s.name}<small>${s.sub}</small>`);
+    const r = song.raw[i], nA = r.ideas.filter(x => x.kind === "audio").length, nT = r.ideas.length - nA + (r.text.length > r.note.length ? 1 : 0);
+    const marks = (nA ? `<span class="mk">▶ ${nA}</span>` : "") + (nT ? `<span class="mk">✎ ${nT}</span>` : "");
+    const d = el("div", { class: "sec", "data-i": i, role: "button", tabindex: "0", title: "Open: notes and recordings" }, `${s.name}${marks ? `<span class="mks">${marks}</span>` : ""}<small>${s.sub}</small>`);
     d.style.left = pos(i) + "%"; d.style.width = `calc(${s.w / total * 100}% - 4px)`;
-    d.addEventListener("click", () => setNow(i)); d.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { setNow(i); e.preventDefault(); } });
+    d.addEventListener("click", () => openSec(i)); d.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { openSec(i); e.preventDefault(); } });
     secTrack.append(d);
   });
   const secRowWrap = el("div", { class: "sections", style: "display:contents" });
@@ -453,6 +488,32 @@ function renderSong(song, idx) {
   });
   board.append(cueTrack);
   wrap.append(scroll);
+  // One section, opened: its notes, cues, who plays what, and every recording and note left on it.
+  const panel = el("div", { class: "secpanel", hidden: "" });
+  wrap.append(panel);
+  let openI = -1;
+  const openSec = i => {
+    if (openI === i) { openI = -1; panel.hidden = true; setNow(-1); return; }
+    openI = i; setNow(i);
+    const r = song.raw[i], nameOf = id => id === "production" ? "Production" : (PLAYERS[id] ? PLAYERS[id].name : "Someone");
+    const facts = [r.maqam, r.tempo ? r.tempo + " bpm" : "", r.bars ? r.bars + " bars" : ""].filter(Boolean).map(esc).join(" · ");
+    const who = r.lineup.map(l => `<li><b>${esc(nameOf(l.member_id))}</b>${l.member_id === "production" ? ` <span class="muted">${LAYER_WORD[l.layer] || ""}</span>` : ""} ${esc(l.part || LAYER_WORD[l.layer] || "")}${l.instrument ? ` <span class="muted">· ${esc(l.instrument)}</span>` : ""}${(l.sounds || []).length ? ` <span class="patch">${esc(l.sounds.join(" + "))}</span>` : ""}</li>`).join("");
+    const lanes = ["bloom", "bark", "ground", "substrate", "transition"].map(l => {
+      const xs = r.ideas.filter(x => x.layer === l); if (!xs.length) return "";
+      const item = x => x.kind === "audio" ? `<li>${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b>${x.starred ? ` <span class="star">★ the part</span>` : ""}${x.duration ? ` <span class="muted">${Math.round(x.duration)}s</span>` : ""}${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></li>`
+        : x.kind === "link" ? `<li><span class="ico">↗</span><span><b>${esc(x.by_name)}</b> <a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.body || x.url)}</a></span></li>`
+        : `<li><span class="ico">✎</span><span><b>${esc(x.by_name)}</b><div>${esc(x.body)}</div></span></li>`;
+      return `<div class="sp-lane"><h4>${l === "transition" ? "Into the next section" : LAYER_WORD[l]}</h4><ul>${xs.map(item).join("")}</ul></div>`;
+    }).join("");
+    panel.innerHTML = `<div class="sp-head"><div><div class="eyebrow">Section ${i + 1} of ${song.sections.length}</div><h4 class="sp-name">${esc(r.name)}</h4>${facts ? `<div class="muted">${facts}</div>` : ""}</div><button class="chip sm" type="button" data-close>Close</button></div>
+      ${r.text ? `<p class="sp-text">${esc(r.text)}</p>` : ""}
+      ${r.cues.length ? `<ul class="sp-cues">${r.cues.map(c => `<li class="from-${c.from === "production" ? "production" : "person"}">${esc(cueLead(c))}: ${esc(c.text)}</li>`).join("")}</ul>` : ""}
+      ${who ? `<div class="sp-lane"><h4>Who plays what</h4><ul class="sp-who">${who}</ul></div>` : ""}
+      ${lanes || `<p class="muted">Nothing recorded or written on this section yet.</p>`}`;
+    panel.hidden = false;
+    panel.querySelector("[data-close]").addEventListener("click", () => openSec(i));
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
 
   const legend = el("details", { class: "legend" },
     `<summary>Legend</summary><span><i style="background:var(--ab-2)"></i>Production</span>
@@ -493,7 +554,8 @@ function renderSong(song, idx) {
         const what = who === "production" ? `${b.lane}: ${b.what}` : b.what;
         const cue = song.cues.filter(c => c.at <= b.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
         const w = around(b.s);
-        ol.append(el("li", {}, `<span class="k">${++n}</span><span><div class="when">${when}</div><div class="what">${b.audio ? playBtn(b.audio) : ""}${what} · ${b.tone}${b.patch ? ` <span class="patch">${b.patch}</span>` : ""}</div>${cue ? `<div class="on">Come in on: ${cueText(cue)}</div>` : ""}${w ? `<div class="with">With: ${w}</div>` : ""}</span>`));
+        if (b.act) ol.append(el("li", { class: "act" }, `<span class="k">⇄</span><span><div class="when">${actWhen(b, sec)}</div><div class="what">${actText(b.act)}</div></span>`));
+        ol.append(el("li", {}, `<span class="k">${++n}</span><span><div class="when">${when}</div><div class="what">${b.audio ? playBtn(b.audio) : ""}${what} · ${b.tone}</div>${cue ? `<div class="on">Come in on: ${cueText(cue)}</div>` : ""}${w ? `<div class="with">With: ${w}</div>` : ""}</span>`));
         prevEnd = Math.max(prevEnd, b.e);
       });
       rest(prevEnd, secs.length);
@@ -596,11 +658,12 @@ function renderNight() {
     else {
       const k = Math.floor(first.s), n = song.sections.length;
       if (k > 0) html += `<p class="wait">You wait through <b>${song.sections.slice(0, k).map(s => s.name).join(" · ")}</b>${k === 1 ? " (1 section)" : ` (${k} sections)`}.</p>`;
-      html += `<p class="entry">${k > 0 ? `Then you start at <b>${secName(first.s)}</b> (section ${k + 1} of ${n})` : `You play <b>from the top</b>`}: ${first.what} · ${first.tone}${first.patch ? ` <span class="patch">${first.patch}</span>` : ""}.</p>`;
+      if (first.act) html += `<p class="act">⇄ ${actText(first.act)}</p>`;
+      html += `<p class="entry">${k > 0 ? `Then you start at <b>${secName(first.s)}</b> (section ${k + 1} of ${n})` : `You play <b>from the top</b>`}: ${first.what} · ${first.tone}.</p>`;
       const changes = blocks.slice(1);
-      if (changes.length) html += `<ol class="changes">${changes.map(b => `<li><b>${secName(b.s)}</b> ${b.what} · ${b.tone}${b.patch ? ` <span class="patch">${b.patch}</span>` : ""}</li>`).join("")}</ol>`;
-      const patches = [...new Set(blocks.map(b => b.patch).filter(Boolean))];
-      if (patches.length > 1) html += `<p class="muted">Patch changes: ${patches.join(" → ")}</p>`;
+      if (changes.length) html += `<ol class="changes">${changes.map(b => `<li><b>${secName(b.s)}</b> ${b.what} · ${b.tone}</li>`).join("")}</ol>`;
+      const sw = blocks.slice(1).filter(b => b.act);
+      if (sw.length) html = html.replace(/(<ol class="changes">|$)/, m => `${sw.map(b => `<p class="act">⇄ ${actWhen(b, secName(b.s))}: ${actText(b.act)}</p>`).join("")}${m}`);
     }
     html = html.replace(/<ol class="changes">[\s\S]*$/, m => `<details><summary>Changes and cues</summary>${m}`) ;
     if (!/<details>/.test(html) && first) html += `<details><summary>Cues</summary>`;

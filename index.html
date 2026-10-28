@@ -4875,13 +4875,39 @@ function castPicker(root, picked) {
     const chip = m => `<button type="button" class="sug${picked.includes(m.id) ? ' on' : ''}" data-m="${esc(m.id)}">${picked.includes(m.id) ? '✓ ' : ''}${esc(m.name)}${m.instruments ? ` <span class="faint">${esc(m.instruments.split(',')[0])}</span>` : ''}</button>`;
     $('#cast', root).innerHTML = `<div class="sugs">${ms.map(chip).join('')}</div>${gs.length ? `<div class="list-head"><b>Guests</b></div><div class="sugs">${gs.map(chip).join('')}</div>` : ''}
       <div class="row2" style="margin-top:12px"><input id="oName" type="text" placeholder="someone from outside, e.g. Layla"><input id="oWhat" type="text" placeholder="plays what, e.g. vocals"></div>
-      <button type="button" class="btn block" id="oAdd" style="margin-top:8px">+ Add them to the set</button>`;
+      <button type="button" class="btn block" id="oAdd" style="margin-top:8px">+ Add them to the set</button>
+      <div id="elsewhere"></div>`;
     root.querySelectorAll('#cast [data-m]').forEach(b => b.onclick = () => { const id = b.dataset.m; const i = picked.indexOf(id); if (i < 0) picked.push(id); else picked.splice(i, 1); draw(); });
     $('#oAdd', root).onclick = async () => {
       const name = $('#oName', root).value.trim(); if (!name) return $('#oName', root).focus();
       try { const m = await api('/members', { method: 'POST', body: { name, guest: true, instruments: $('#oWhat', root).value.trim() } }); S.members.push(m); picked.push(m.id); draw(); } catch (e) { toast(e.message); }
     };
+    drawElsewhere();
   };
+  // People from the other spaces on this phone: they join as the same person, so their instruments and sounds come along.
+  let others = null;
+  const drawElsewhere = () => {
+    const box = $('#elsewhere', root); if (!box || !others) return;
+    const here = new Set(S.members.map(m => m.person_id || m.id));
+    const list = others.filter(o => !here.has(o.person_id));
+    if (!list.length) return;
+    box.innerHTML = `<div class="list-head"><b>From your other spaces</b></div><p class="small muted serif">They come with their instruments and sounds.</p>
+      <div class="sugs">${list.map((o, k) => `<button type="button" class="sug" data-o="${k}">+ ${esc(o.name)} <span class="faint">${esc(o.space)}</span></button>`).join('')}</div>`;
+    box.querySelectorAll('[data-o]').forEach(b => b.onclick = async () => {
+      const o = list[+b.dataset.o]; b.disabled = true;
+      try { const m = await api('/members', { method: 'POST', body: { from_key: o.key, from_member: o.id } }); if (!S.members.some(x => x.id === m.id)) S.members.push(m); if (!picked.includes(m.id)) picked.push(m.id); draw(); }
+      catch (e) { toast(e.message); b.disabled = false; }
+    });
+  };
+  (async () => {
+    const out = [];
+    for (const c of Spaces.list()) {
+      if (c.key === S.key) continue;
+      try { const r = await fetch(`${API}/api/members`, { headers: { 'X-Band-Key': c.key, 'X-Member': c.me || '' } }); if (r.ok) (await r.json()).forEach(m => out.push({ ...m, key: c.key, space: c.name })); } catch {}
+    }
+    const seen = new Set(); others = out.filter(o => !seen.has(o.person_id) && seen.add(o.person_id));
+    drawElsewhere();
+  })();
   draw();
 }
 function newSet() {
