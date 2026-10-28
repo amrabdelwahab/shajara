@@ -247,7 +247,12 @@ body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage)
 .smap span { font-size: 11.5px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
 .smap span.on { border-color: var(--accent); color: var(--fg); } .smap span.off { opacity: .45; } .smap span.done { background: var(--accent); color: var(--ink); border-color: var(--accent); }
 .scard { background: var(--surface); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
-.scard.known { opacity: .6; }
+.scard.known { background: color-mix(in srgb, var(--amr) 14%, var(--surface)); box-shadow: inset 3px 0 0 var(--amr); }
+.scard.known .scue, .scard.known .sline, .scard.known .sblock, .scard.known .swith, .scard.known .applink, .scard.known .sline-none { display: none; }
+.learned { font-size: 12px; font-weight: 600; color: var(--ink); background: var(--amr); border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+.knowbtn { font: inherit; font-size: 13.5px; font-weight: 600; width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--amr); background: transparent; color: var(--amr); cursor: pointer; }
+.scard.known .knowbtn { border-color: var(--line); color: var(--muted); font-weight: 500; padding: 6px 12px; width: auto; align-self: flex-start; }
+.prep-sum .ok { color: var(--amr); }
 .scard.out { opacity: .55; padding: 10px 14px; gap: 6px; background: transparent; border: 1px dashed var(--line); }
 .scard.out h4 { font-size: 17px; } .scard.out .eyebrow { font-size: 10.5px; } .scard.out .scue { font-size: 12.5px; }
 .scard.out .mk { font-size: 11px; color: var(--muted); align-self: center; }
@@ -388,9 +393,10 @@ document.addEventListener("click", e => {
   card.dataset[k] = card.dataset[k] === "1" ? "0" : "1"; t.setAttribute("aria-pressed", card.dataset[k] === "1");
   if (NOW_AUDIO && NOW_BTN && card.contains(NOW_BTN)) { NOW_AUDIO.loop = card.dataset.loop === "1"; NOW_AUDIO.playbackRate = card.dataset.slow === "1" ? 0.75 : 1; }
 });
-document.addEventListener("change", e => {
+document.addEventListener("click", e => {
   const c = e.target.closest("[data-know]"); if (!c) return;
-  try { c.checked ? localStorage.setItem(c.dataset.know, "1") : localStorage.removeItem(c.dataset.know); } catch (x) {}
+  const on = c.getAttribute("aria-pressed") !== "true";
+  try { on ? localStorage.setItem(c.dataset.know, "1") : localStorage.removeItem(c.dataset.know); } catch (x) {}
   const w = c.closest(".song"); if (w && w._renderStudy) w._renderStudy();
 });
 const playBtn = id => `<button class="pl-btn" type="button" data-audio="${esc(id)}" aria-label="Listen to this line">▶</button>`;
@@ -758,7 +764,7 @@ function renderSong(song, idx) {
     const map = `<div class="smap">${raw.map((r, i) => `<span class="${mineIn(r) ? "on" : who ? "off" : ""}${known(r) && mineIn(r) ? " done" : ""}">${esc(r.name)}</span>`).join("")}</div>`;
     const lines = items.flatMap(x => x.my ? x.r.ideas.filter(y => y.kind === "audio" && y.layer === x.my.layer).sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0)).slice(0, 1) : []);
     const sum = who
-      ? (items.length ? `You play in <b>${items.length}</b> of ${raw.length} sections${nKnown ? ` · <b>${nKnown}</b> learned` : ""}.` : `You sit this one out.`)
+      ? (items.length ? (nKnown === items.length ? `You play in <b>${items.length}</b> of ${raw.length} sections · <b class="ok">all learned ✓</b>` : `You play in <b>${items.length}</b> of ${raw.length} sections · <b>${items.length - nKnown}</b> still to learn.`) : `You sit this one out.`)
       : `${raw.length} sections. Pick who you are to study your parts; this is everyone's.`;
     const other = x => `<div class="take">${playBtn(x.audio_id)}<span><b>${esc(x.by_name)}</b> <span class="muted">${LAYER_WORD[x.layer] || ""}${x.starred ? " · ★" : ""}</span>${x.body ? `<div>${esc(x.body)}</div>` : ""}</span></div>`;
     const cards = all.map(({ r, i, my }) => {
@@ -783,7 +789,7 @@ function renderSong(song, idx) {
       const whoElse = r.lineup.filter(l => !my || l.member_id !== who).map(l => `${esc(nameOf(l.member_id))}: ${esc(l.part || LAYER_WORD[l.layer] || "")}`).join(" · ");
       return `<article class="scard${known(r) ? " known" : ""}" data-loop="0" data-slow="0">
         <header><div><div class="eyebrow">${i + 1} / ${raw.length}</div><h4>${esc(r.name)}</h4>${facts ? `<div class="muted small">${facts}</div>` : ""}</div>
-          ${who ? `<label class="know"><input type="checkbox" data-know="${esc(knowKey(r))}"${known(r) ? " checked" : ""}> I know this</label>` : ""}</header>
+          ${who && known(r) ? `<span class="learned">✓ Learned</span>` : ""}</header>
         ${my ? `<p class="splay"><b>${esc(my.part || LAYER_WORD[my.layer] || "")}</b>${sound ? ` <span class="patch">${esc(sound)}</span>` : ""}</p>` : ""}
         ${cue ? `<p class="scue">${esc(cueOn(cue))}</p>` : ""}
         ${my ? (mineRecs.length ? `<div class="sline">${mineRecs.map(take).join("")}<div class="sctl"><button type="button" class="chip sm" data-loop aria-pressed="false">repeat</button><button type="button" class="chip sm" data-slow aria-pressed="false">slow</button></div></div>`
@@ -792,6 +798,7 @@ function renderSong(song, idx) {
         ${text || notes.length ? `<div class="sblock"><h5>Notes</h5>${text ? `<p class="sp-text">${esc(text)}</p>` : ""}${notes.map(note).join("")}</div>` : ""}
         ${whoElse ? `<p class="muted small swith">With: ${whoElse}</p>` : ""}
         <a class="applink small" href="${esc(appLink(song.id, r.id))}" target="_blank" rel="noopener">Open this section in Shajara ↗</a>
+        ${who ? `<button type="button" class="knowbtn" data-know="${esc(knowKey(r))}" aria-pressed="${known(r)}">${known(r) ? "Still learning this" : "✓ I know this"}</button>` : ""}
       </article>`;
     });
     study.innerHTML = `<div class="shead"><p class="prep-sum">${sum}</p>${map}${lines.length > 1 ? `<button type="button" class="chip" data-playall>▶ Play my lines in order</button>` : ""}</div>
