@@ -447,7 +447,9 @@ function renderSong(song, idx) {
           const k = Math.floor(bk.s);
           if (bk.s > prevEnd) lines.push(`<li class="rest"><span class="cue">${secs.slice(Math.floor(prevEnd), k).map(x => x.name).join(" · ")}</span><span class="do">rest</span></li>`);
           gives(prevEnd, k);
-          const cue = theirs.filter(c => c.at <= bk.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
+          // when you bring yourself in, an earlier cue from someone else isn't yours to wait for
+          const own = song.cues.some(c => c.from === who && c.at === k);
+          const cue = theirs.filter(c => c.at <= bk.s && c.at >= (own ? k : prevEnd)).sort((x, y) => y.at - x.at)[0];
           if (bk.act) lines.push(`<li class="act"><span class="cue">${actWhen(bk, secs[k].name)}</span><span class="do">⇄ ${actText(bk.act)}</span></li>`);
           gives(k, k + 1);
           lines.push(`<li><span class="cue">${cue ? cueTag(cue) : `<b class="tg at">At</b>${secs[k].name}`}</span><span class="do">${bk.audio ? playBtn(bk.audio) : ""}${bk.what}</span></li>`);
@@ -595,7 +597,8 @@ function renderSong(song, idx) {
         const sec = nameAt(b.s), endSec = secs[Math.min(Math.ceil(b.e) - 1, secs.length - 1)].name;
         const when = sec === endSec ? sec : `${sec} → ${endSec}`;
         const what = who === "production" ? `${b.lane}: ${b.what}` : b.what;
-        const cue = theirs.filter(c => c.at <= b.s && c.at >= prevEnd).sort((x, y) => y.at - x.at)[0];
+        const own = song.cues.some(c => c.from === who && c.at === Math.floor(b.s));
+        const cue = theirs.filter(c => c.at <= b.s && c.at >= (own ? Math.floor(b.s) : prevEnd)).sort((x, y) => y.at - x.at)[0];
         const w = around(b.s);
         if (b.act) ol.append(el("li", { class: "act" }, `<span class="k">⇄</span><span><div class="when">${actWhen(b, sec)}</div><div class="what">${actText(b.act)}</div></span>`));
         gives(Math.floor(b.s), Math.floor(b.s) + 1);
