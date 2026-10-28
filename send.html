@@ -189,12 +189,15 @@ body.stage .wrap { gap: 18px; }
 body.stage .stage-view { display: block; }
 body.stage .board-scroll, body.stage .song-head .blurb, body.stage .song-head .eyebrow, body.stage h3, body.stage details.legend { display: none !important; }
 body.stage .wrap { max-width: 720px; }
+body.stage .song-head { display: none; }
 .sbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 18px 0 0; }
 .stitle { font-family: var(--display); font-size: 36px; font-weight: 600; line-height: 1.05; margin-bottom: 14px; }
 .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .steps li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 14px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--line); }
 .steps .cue { font-size: 15px; color: var(--muted); } .steps li:not(.rest) .cue { color: var(--fg); }
-.steps .cue::before { content: "→ "; color: var(--mar); }
+.steps .cue { position: static; transform: none; white-space: normal; display: block; opacity: 1; }
+.steps .cue::before { content: "→ "; color: var(--mar); width: auto; height: auto; border-radius: 0; background: none; display: inline; }
+@media (max-width: 560px) { .steps li { grid-template-columns: 1fr; gap: 2px; padding: 12px 0; } .steps .do { font-size: 20px; } }
 .steps .do { font-size: 22px; font-weight: 500; }
 .steps li.rest .do { color: var(--muted); font-size: 17px; font-weight: 400; }
 .steps .patch { font-size: 13px; vertical-align: middle; }
