@@ -251,7 +251,9 @@ body.stage .setlist button { padding: 6px 10px; font-size: 14px; }
 .seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--ink); }
 .seg { align-self: center; } .seg button { padding: 5px 12px; font-size: 12.5px; }
-body.stage #tab-night { display: none; }
+body.stage .prep, body.rehearsal #tab-night, body.stage #tab-night, body.stage .setlist, body.stage #me, body.stage .topbar .lbl, body.stage #asof { display: none; }
+body.stage .sbar .chip { font-size: 16px; padding: 10px 16px; white-space: nowrap; } body.stage .sbar { padding: 0 0 6px; }
+body.stage .stitle { margin-top: 10px; }
 body.rehearsal .prep, body.rehearsal .legend, body.rehearsal .blurb, body.rehearsal .meta-row, body.rehearsal .more, body.rehearsal .secpanel, body.rehearsal .lede { display: none !important; }
 body.rehearsal .sheets.folded .sheet:not(.mine) { display: none; }
 body.rehearsal .sec { cursor: pointer; }
@@ -282,7 +284,7 @@ body.stage .secpanel { display: none; }
     <div class="eyebrow">Next concert · running order</div>
     <h1>Loading the set…</h1>
     <p class="lede">Pick who you are, then a song. Each song is one board: a lane per player, the backing tracks, and the cues.</p>
-    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearsal</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button></div>
+    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearsal</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button><button class="chip sm" id="asof" type="button" hidden title="Reload to pick up changes made in Shajara"></button></div>
     <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"><li role="presentation"><button role="tab" id="tab-night" aria-selected="false"><span class="n">★</span><span>My night</span></button></li></ol>
   </header>
   <section id="night" hidden></section>
@@ -295,7 +297,9 @@ const TOKEN = (location.hash.match(/^#([A-Za-z0-9]{10,40})/) || [])[1] || new UR
 const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
-let PLAYERS = {}, SONGS = [];
+let PLAYERS = {}, SONGS = [], LOADED_AT = 0;
+document.getElementById("asof").addEventListener("click", () => location.reload());
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && LOADED_AT && Date.now() - LOADED_AT > 15 * 60e3 && !document.body.classList.contains("stage")) location.reload(); });
 // Written notes and links on a section (recordings don't count; they stay on the board).
 const notesIn = r => r.ideas.filter(x => x.kind !== "audio").length + (r.text.length > r.note.length ? 1 : 0);
 // What the sound is, in its owner's words (a patch, a preset, a pedal), under the step.
@@ -411,6 +415,8 @@ async function boot() {
   document.querySelector("h1").textContent = d.set.name;
   document.querySelector("header .eyebrow").textContent = [d.space ? d.space.name : "", d.set.date ? new Date(d.set.date + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) : "", d.set.venue].filter(Boolean).join(" · ");
   document.querySelector(".lede").textContent = d.set.notes || "Pick who you are, then a song. Each song is one board: a lane per player, the production, and the cues. ▶ plays a recorded line.";
+  const asof = document.getElementById("asof"); LOADED_AT = offline || Date.now();
+  asof.textContent = "as of " + new Date(LOADED_AT).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) + " ↻"; asof.hidden = false;
   if (offline) document.querySelector(".lede").textContent = `Offline: this is the copy from ${new Date(offline).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}. Recordings need a connection.`;
   if (!SONGS.length) { document.querySelector(".lede").textContent = "No tracks in this set yet."; return false; }
   return true;
@@ -480,7 +486,7 @@ function renderSong(song, idx) {
     // stage: a short checklist. One line per entry or change: the cue, then what to do, then the sound if it changes.
     const who = ME; const secs = song.sections;
     const cueText = cueLine;
-    const nav = `<div class="sbar"><button type="button" class="chip" data-act="prevsong">◀ previous song</button><span class="muted">${idx + 1} / ${SONGS.length}</span><button type="button" class="chip" data-act="nextsong">next song ▶</button></div>`;
+    const nav = `<div class="sbar"><button type="button" class="chip" data-act="prevsong">◀ previous</button><span class="muted">${idx + 1} / ${SONGS.length}</span><button type="button" class="chip" data-act="nextsong">next ▶</button></div>`;
     let lines = [];
     if (!who) lines = secs.map(x => `<li><span class="cue">${x.name}</span><span class="do">${x.sub}</span></li>`);
     else {
@@ -511,9 +517,9 @@ function renderSong(song, idx) {
         }
       }
     }
-    stage.innerHTML = `<div class="stitle">${song.title}</div><ol class="steps">${lines.join("")}</ol>${nav}`;
-    stage.querySelector('[data-act="prevsong"]').addEventListener("click", () => show(idx - 1));
-    stage.querySelector('[data-act="nextsong"]').addEventListener("click", () => show(idx + 1));
+    stage.innerHTML = `${nav}<div class="stitle">${song.title}</div><ol class="steps">${lines.join("")}</ol>${nav}`;
+    stage.querySelectorAll('[data-act="prevsong"]').forEach(b => b.addEventListener("click", () => show(idx - 1)));
+    stage.querySelectorAll('[data-act="nextsong"]').forEach(b => b.addEventListener("click", () => show(idx + 1)));
   };
   wrap._renderStrip = renderStrip; wrap._next = () => setNow(Math.min(song.sections.length - 1, nowI + 1)); wrap._prev = () => setNow(Math.max(0, nowI - 1));
   renderStrip();
@@ -808,7 +814,7 @@ async function setMode(m) {
   MODE = m; document.body.classList.toggle("stage", m === "stage"); document.body.classList.toggle("rehearsal", m === "rehearsal");
   modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
   try { localStorage.setItem("setlist-mode", m); } catch (e) {}
-  if (m === "stage" && !night.hidden) show(lastSong);
+  if (m !== "study" && !night.hidden) show(lastSong);
   try { if (m !== "study" && navigator.wakeLock) { if (!wake) wake = await navigator.wakeLock.request("screen"); } else if (wake) { wake.release(); wake = null; } } catch (e) {}
   fitAll();
 }

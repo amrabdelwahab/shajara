@@ -1631,7 +1631,7 @@ function route() {
   document.body.classList.remove('wide');
   const h = location.hash.replace(/^#\/?/, '');
   if (!S.key) return viewGate();
-  if (!S.me || (!looking() && S.members.length && !S.members.some(m => m.id === S.me && !m.guest))) return viewWho();
+  if (!S.me || (!looking() && S.members.length && !S.members.some(m => m.id === S.me && canBeMe(m)))) return viewWho();
   const me = S.members.find(m => m.id === S.me);
   if (me && !me.ready) return viewWelcome();
   if (h === 'band') return viewBand();
@@ -1965,13 +1965,16 @@ function newSpaceSheet() {
   render();
 }
 
+// Members, and guests who came from another space (they are the same person there), can act as themselves.
+// A guest added by name only is a nameplate in line-ups, not someone who logs in.
+const canBeMe = m => !m.guest || !!m.person_id;
 async function viewWho() {
   if (!S.members.length) { try { await loadState(); } catch (e) { return toast(e.message); } }
   $('#app').innerHTML = `<div class="wrap"><div class="gate">
     ${isBand() && !(S.space && S.space.logo_v) ? '' : logoImg(S.space, 'logo-big')}
     <h2>${esc(spaceName())}</h2>
     <p class="muted">Which one is you? So everyone knows who posted what.</p>
-    <div class="people">${S.members.filter(m => !m.guest).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${esc(instrumentsOf(m.id).join(', ')) || (m.ready ? '&nbsp;' : 'hasn’t joined yet')}</span></button>`).join('')}</div>
+    <div class="people">${S.members.filter(canBeMe).map(m => `<button class="person" data-id="${esc(m.id)}"><b>${esc(m.name)}</b><span class="small muted">${m.guest ? 'playing with us · ' : ''}${esc(instrumentsOf(m.id).join(', ')) || (m.ready || m.guest ? '&nbsp;' : 'hasn’t joined yet')}</span></button>`).join('')}</div>
     <label class="field">Not on the list?</label>
     <div class="tempo-row"><input id="newMe" type="text" placeholder="Your name"><button class="btn primary" id="joinMe">Add me</button></div>
     <div class="who-out"><button class="btn block" id="lookOnly">Just looking</button>
