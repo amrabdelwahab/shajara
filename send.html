@@ -332,7 +332,7 @@ function shape(d) {
     });
     ["bloom", "bark", "ground", "substrate"].forEach((layer, k) => {
       const blocks = blocksFor(s => s.lineup.find(l => l.member_id === "production" && l.layer === layer)).map(b => ({ ...b, cls: ["ab3", "ab2", "ab1", "ab2"][k] }));
-      if (blocks.length) lanes.push({ who: "production", label: [...new Set(blocks.map(b => b.tone).filter(Boolean))].slice(0, 2).join(" + ") || LAYER_WORD[layer], sub: true, blocks });
+      if (blocks.length) lanes.push({ who: "production", label: [...new Set(blocks.flatMap(b => b.tone.split(" + ")).filter(Boolean))].slice(0, 3).join(" + ") || LAYER_WORD[layer], sub: true, blocks });
     });
     const cues = t.sections.flatMap((s, i) => s.cues.map(c => ({ at: i, text: esc(c.text), from: c.from === "production" ? "production" : c.from })));
     return { raw: t.sections, title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
