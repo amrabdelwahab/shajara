@@ -395,16 +395,24 @@ function shape(d) {
     return { raw: t.sections, title: esc(t.title), blurb: t.notes ? t.notes.split("\n")[0].slice(0, 260) : "", sections: secs.map(x => ({ ...x, name: esc(x.name), sub: esc(x.sub) })), lanes, cues };
   });
 }
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 async function boot() {
   if (!TOKEN) { document.querySelector(".lede").textContent = "This link is missing its set. Ask for the send-out link again."; return false; }
-  let d;
-  try { const r = await fetch(`${API}/api/sendout/${TOKEN}`); d = await r.json(); if (!r.ok) throw new Error(d.error || "Couldn’t load the set"); }
-  catch (e) { document.querySelector(".lede").textContent = e.message + "."; return false; }
+  // Keep the last copy on the phone, so the set still opens at a venue with no signal.
+  let d, offline = null; const KEEP = "sendout:" + TOKEN;
+  try { const r = await fetch(`${API}/api/sendout/${TOKEN}`); d = await r.json(); if (!r.ok) { if (r.status === 404) { try { localStorage.removeItem(KEEP); } catch (e) {} } throw new Error(d.error || "Couldn’t load the set"); }
+    try { localStorage.setItem(KEEP, JSON.stringify({ at: Date.now(), d })); } catch (e) {} }
+  catch (e) {
+    let kept = null; try { kept = JSON.parse(localStorage.getItem(KEEP) || "null"); } catch (x) {}
+    if (!kept) { document.querySelector(".lede").textContent = e.message + "."; return false; }
+    d = kept.d; offline = kept.at;
+  }
   SONGS = shape(d);
   document.title = d.set.name + " · set";
   document.querySelector("h1").textContent = d.set.name;
   document.querySelector("header .eyebrow").textContent = [d.space ? d.space.name : "", d.set.date ? new Date(d.set.date + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) : "", d.set.venue].filter(Boolean).join(" · ");
   document.querySelector(".lede").textContent = d.set.notes || "Pick who you are, then a song. Each song is one board: a lane per player, the production, and the cues. ▶ plays a recorded line.";
+  if (offline) document.querySelector(".lede").textContent = `Offline: this is the copy from ${new Date(offline).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}. Recordings need a connection.`;
   if (!SONGS.length) { document.querySelector(".lede").textContent = "No tracks in this set yet."; return false; }
   return true;
 }
@@ -818,7 +826,7 @@ host.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passi
 host.addEventListener("touchend", e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 70) show(cur() + (dx < 0 ? 1 : -1)); }, { passive: true });
 document.addEventListener("keydown", e => { if (e.target.closest("button, input")) return; const p = panels[cur()]; if (!p || p.hidden) return; if (e.key === "ArrowDown" || e.key === "n") p._next(); if (e.key === "ArrowUp" || e.key === "p") p._prev(); });
 function cur() { return panels.findIndex(p => !p.hidden); }
-function writeHash() { const i = cur(); if (i < 0 && night.hidden && notesv.hidden) return; const h = (i >= 0 ? "s=" + (i + 1) : !night.hidden ? "night" : "notes") + (ME ? "&me=" + ME : ""); history.replaceState(null, "", "#" + h); }
+function writeHash() { const i = cur(); if (i < 0 && night.hidden && notesv.hidden) return; const h = TOKEN + "&" + (i >= 0 ? "s=" + (i + 1) : !night.hidden ? "v=night" : "v=notes") + (ME ? "&me=" + ME : ""); history.replaceState(null, "", "#" + h); }
 const tabs = [...document.querySelectorAll('#setlist [role="tab"]')];
 const songsTab = document.getElementById("tab-songs"), setlistEl = document.getElementById("setlist");
 function show(i) {
@@ -852,7 +860,7 @@ try { const v = parseInt(localStorage.getItem("setlist-tab"), 10); if (!isNaN(v)
 const H = new URLSearchParams(location.hash.slice(1));
 if (H.get("me") && PLAYERS[H.get("me")]) ME = H.get("me");
 if (H.get("s")) start = parseInt(H.get("s"), 10) - 1;
-const wantNight = location.hash.startsWith("#night"), wantNotes = location.hash.startsWith("#notes");
+const wantNight = H.get("v") === "night", wantNotes = H.get("v") === "notes";
 setMe(ME);
 show(wantNight ? "night" : wantNotes ? "notes" : start);
 try { const m = localStorage.getItem("setlist-mode"); if (m && m !== "study") setMode(m); } catch (e) {}
