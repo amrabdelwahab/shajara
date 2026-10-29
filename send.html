@@ -48,9 +48,12 @@ h2 { font-family: var(--display); font-weight: 500; font-size: clamp(28px, 3.6vw
 h3 { margin: 0; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .lede { color: var(--muted); max-width: 62ch; margin: 0; }
 
-.setlist { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.setlist { display: flex; flex-wrap: nowrap; gap: 8px; list-style: none; margin: 0 -16px; padding: 4px 16px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.setlist::-webkit-scrollbar { display: none; }
+.setlist li { scroll-snap-align: center; flex: none; }
+@media (min-width: 900px) { .setlist { flex-wrap: wrap; margin: 0; padding: 0; overflow: visible; } }
 .setlist li { display: flex; }
-.setlist button { font: inherit; color: var(--fg); background: transparent; display: flex; align-items: baseline; gap: 10px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.setlist button { font: inherit; color: var(--fg); background: transparent; display: flex; align-items: baseline; gap: 10px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; white-space: nowrap; }
 .setlist button:hover { border-color: var(--muted); }
 .setlist button[aria-selected="true"] { border-color: var(--accent); background: var(--surface); }
 .setlist button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -150,7 +153,21 @@ details.legend { font-size: 12px; } details.legend summary { cursor: pointer; co
 .night-song { padding: 12px 16px; gap: 6px; }
 .night-song details { font-size: 13px; } .night-song summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
 .night-song .changes { margin-top: 6px; } .night-song .cues { margin-top: 6px; }
-.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.who { position: relative; }
+.who-pill { font: inherit; font-size: 14px; font-weight: 600; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px 8px 14px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.who-pill .k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.who-pill.set { border-color: var(--accent); } .who-pill .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+.who-pill .car { color: var(--muted); font-size: 12px; }
+.who-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 7; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 4px; min-width: 200px; box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+.who-menu[hidden] { display: none; }
+.who-menu .chip { border: 0; border-radius: 8px; justify-content: flex-start; padding: 9px 12px; font-size: 15px; }
+.who-menu .chip[aria-pressed="true"] { background: var(--bg); color: var(--accent); }
+.tools { display: inline-flex; gap: 6px; margin-left: auto; order: 2; }
+.topbar .who { order: 1; } .topbar .seg { order: 3; }
+@media (max-width: 640px) { .topbar .seg { flex-basis: 100%; display: flex; } .topbar .seg button { flex: 1; } }
+.ibtn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.ibtn:hover { color: var(--fg); border-color: var(--muted); }
 .topbar .lbl { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .chip.sm { padding: 4px 10px; font-size: 12px; }
 #stage[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
@@ -316,7 +333,7 @@ body:not(.stage) .tkfab { display: block; }
 .seg button { font: inherit; font-size: 13px; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--ink); }
 .seg { align-self: center; } .seg button { padding: 5px 12px; font-size: 12.5px; }
-body.stage .prep, body.rehearsal #tab-night, body.review #tab-night, body.review .legend, body.review .blurb, body.review .lede, body.stage #tab-night, body.stage .setlist, body.stage #me, body.stage .topbar .lbl, body.stage #asof { display: none; }
+body.stage .prep, body.rehearsal #tab-night, body.review #tab-night, body.review .legend, body.review .blurb, body.review .lede, body.stage #tab-night, body.stage .setlist, body.stage .who, body.stage #asof { display: none; }
 body.stage .sbar .chip { font-size: 16px; padding: 10px 16px; white-space: nowrap; } body.stage .sbar { padding: 0 0 6px; }
 body.stage .stitle { margin-top: 10px; }
 body.rehearsal .prep, body.rehearsal .legend, body.rehearsal .blurb, body.rehearsal .meta-row, body.rehearsal .more, body.rehearsal .secpanel, body.rehearsal .lede { display: none !important; }
@@ -349,7 +366,7 @@ body.stage .secpanel { display: none; }
     <div class="eyebrow">Next concert · running order</div>
     <h1>Loading the set…</h1>
     <p class="lede">Pick who you are, then a song. Each song is one board: a lane per player, the backing tracks, and the cues.</p>
-    <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="review" aria-pressed="false">Review</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearse</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button><button class="chip sm" id="asof" type="button" hidden title="Reload to pick up changes made in Shajara"></button></div>
+    <div class="topbar"><div class="who"><button type="button" class="who-pill" id="whoBtn" aria-haspopup="true" aria-expanded="false"><span class="k">I am</span><span id="whoName">Everyone</span><span class="car">▾</span></button><div class="who-menu" id="me" role="group" aria-label="Who are you" hidden></div></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="review" aria-pressed="false">Review</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearse</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><span class="tools"><button class="ibtn" id="theme" type="button" aria-label="Light or dark">◐</button><button class="ibtn" id="asof" type="button" hidden title="Reload to pick up changes made in Shajara">↻</button></span></div>
     <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"><li role="presentation"><button role="tab" id="tab-night" aria-selected="false"><span class="n">★</span><span>My night</span></button></li></ol>
   </header>
   <section id="tasks" hidden></section>
@@ -548,7 +565,7 @@ async function boot() {
   document.querySelector("header .eyebrow").textContent = [d.space ? d.space.name : "", d.set.date ? new Date(d.set.date + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) : "", d.set.venue].filter(Boolean).join(" · ");
   document.querySelector(".lede").textContent = d.set.notes || "Pick who you are, then a song. Each song is one board: a lane per player, the production, and the cues. ▶ plays a recorded line.";
   const asof = document.getElementById("asof"); LOADED_AT = offline || Date.now();
-  asof.textContent = "as of " + new Date(LOADED_AT).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) + " ↻"; asof.hidden = false;
+  asof.title = "Loaded " + new Date(LOADED_AT).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) + " · tap to reload"; asof.hidden = false;
   if (offline) document.querySelector(".lede").textContent = `Offline: this is the copy from ${new Date(offline).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" })}. Recordings need a connection.`;
   if (!SONGS.length) { document.querySelector(".lede").textContent = "No tracks in this set yet."; return false; }
   return true;
@@ -949,8 +966,13 @@ const meBtns = {};
   const b = el("button", { class: "chip", type: "button", "aria-pressed": "false" }, (k ? `<i class="dot" style="background:${PLAYERS[k].color}"></i>` : "") + label);
   b.addEventListener("click", () => setMe(k || null)); meChips.append(b); meBtns[k] = b;
 });
+const whoBtn = document.getElementById("whoBtn"), whoName = document.getElementById("whoName");
+whoBtn.addEventListener("click", () => { const open = meChips.hidden; meChips.hidden = !open; whoBtn.setAttribute("aria-expanded", String(open)); });
+document.addEventListener("click", e => { if (!e.target.closest(".who")) { meChips.hidden = true; whoBtn.setAttribute("aria-expanded", "false"); } });
 function setMe(who) {
   ME = who; Object.entries(meBtns).forEach(([k, b]) => b.setAttribute("aria-pressed", String((k || null) === who)));
+  whoName.innerHTML = who && PLAYERS[who] ? `<i class="dot" style="background:${PLAYERS[who].color}"></i>${esc(PLAYERS[who].name)}` : "Everyone";
+  whoBtn.classList.toggle("set", !!who); meChips.hidden = true; whoBtn.setAttribute("aria-expanded", "false");
   panels.forEach(p => p._apply(who)); renderNight(); renderTasks(); writeHash();
   try { who ? localStorage.setItem("setlist-me", who) : localStorage.removeItem("setlist-me"); } catch (e) {}
 }
@@ -990,7 +1012,7 @@ function renderNight() {
 }
 // stage mode: big type, only what matters, screen stays awake, swipe between songs
 const themeBtn = document.getElementById("theme");
-const setTheme = t => { document.documentElement.dataset.theme = t; themeBtn.textContent = t === "light" ? "Dark" : "Light"; try { localStorage.setItem("setlist-theme", t); } catch (e) {} };
+const setTheme = t => { document.documentElement.dataset.theme = t; themeBtn.setAttribute("aria-label", t === "light" ? "Switch to dark" : "Switch to light"); try { localStorage.setItem("setlist-theme", t); } catch (e) {} };
 try { setTheme(localStorage.getItem("setlist-theme") || "dark"); } catch (e) { setTheme("dark"); }
 themeBtn.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light"));
 // Modes: study at home (your parts), review together (section by section, for the room), rehearsal (board + your part, screen awake), stage (your checklist only, screen awake).
@@ -1019,6 +1041,7 @@ function show(i) {
   night.hidden = true; nightTab.setAttribute("aria-selected", "false");
   panels.forEach((p, j) => { p.hidden = j !== i; });
   tabs.forEach((t, j) => { t.setAttribute("aria-selected", String(j === i)); t.tabIndex = j === i ? 0 : -1; });
+  try { tabs[i].scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" }); } catch (e) {}
   fitAll(); writeHash();
   lastSong = i; try { localStorage.setItem("setlist-tab", String(i)); } catch (e) {}
 }
