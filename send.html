@@ -283,6 +283,13 @@ body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage)
 .applink { color: var(--accent); font-size: 13px; text-decoration: none; } .applink:hover { text-decoration: underline; } .sline-none .applink { font-size: inherit; }
 .sboard { align-self: flex-start; display: inline-flex; }
 body.stage #tasks { display: none; }
+.tasks.lite { padding: 10px 14px; } .tasks.lite > b { font-family: var(--display); font-size: 18px; font-weight: 600; } .tasks.lite .task-list { margin-top: 4px; } .tasks.lite .task { padding: 6px 0; }
+.tkfab { display: none; position: fixed; right: 16px; bottom: 16px; z-index: 5; font: 600 14px/1 var(--body); padding: 12px 16px; border-radius: 999px; border: 0; background: var(--accent); color: var(--ink); box-shadow: 0 4px 14px rgba(0,0,0,.35); cursor: pointer; }
+body:not(.stage) .tkfab { display: block; }
+.tkpop { position: fixed; left: 12px; right: 12px; bottom: 64px; z-index: 6; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 8px 30px rgba(0,0,0,.45); max-width: 520px; margin-left: auto; }
+.tkpop[hidden] { display: none; }
+.tkpop input { font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.tkpop-row { display: flex; justify-content: flex-end; gap: 8px; }
 .tasks { background: var(--surface); border-radius: 10px; padding: 12px 16px; }
 .tasks summary { cursor: pointer; display: flex; gap: 10px; align-items: baseline; list-style: none; } .tasks summary::-webkit-details-marker { display: none; }
 .tasks summary b { font-family: var(--display); font-size: 20px; font-weight: 600; } .tasks summary::after { content: "▾"; margin-left: auto; color: var(--muted); } .tasks[open] summary::after { content: "▴"; }
@@ -348,6 +355,8 @@ body.stage .secpanel { display: none; }
   <section id="tasks" hidden></section>
   <section id="night" hidden></section>
   <div id="songs"></div>
+  <button type="button" class="tkfab" id="tkfab" hidden>+ Task</button>
+  <form class="tkpop" id="tkpop" hidden><input type="text" name="t" placeholder="what needs doing?" maxlength="200" enterkeyhint="done" autocomplete="off"><div class="chips" id="tkpopwho"></div><div class="tkpop-row"><button type="button" class="chip" id="tkpopx">Cancel</button><button type="submit" class="chip on">Add task</button></div></form>
 </div>
 <script type="module">
 // ---- Shajara send-out: the set from the API, shaped like Marawan's set list ----
@@ -359,9 +368,35 @@ const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b
 let PLAYERS = {}, SONGS = [], LOADED_AT = 0, SPACE_ID = "", TASKS = [];
 // Tasks around the set, through the link: add one, give it to someone, tick it. Anyone with the link, as who they picked.
 const tasksEl = document.getElementById("tasks");
+const tkfab = document.getElementById("tkfab"), tkpop = document.getElementById("tkpop");
+function renderFab() {
+  const open = TASKS.filter(k => !k.done).length, cast = Object.keys(PLAYERS).filter(k => k !== "production");
+  tkfab.textContent = open ? `+ Task · ${open} open` : "+ Task"; tkfab.hidden = false;
+  document.getElementById("tkpopwho").innerHTML = cast.map(id => `<button type="button" class="chip sm${id === ME ? " on" : ""}" data-who="${esc(id)}" aria-pressed="${id === ME}">${id === ME ? "me" : esc(PLAYERS[id].name)}</button>`).join("") + `<button type="button" class="chip sm${ME ? "" : " on"}" data-who="" aria-pressed="${!ME}">anyone</button>`;
+  tkpop.querySelectorAll("[data-who]").forEach(b => b.addEventListener("click", () => tkpop.querySelectorAll("[data-who]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); })));
+}
+tkfab.addEventListener("click", () => { tkpop.hidden = !tkpop.hidden; if (!tkpop.hidden) tkpop.t.focus(); });
+document.getElementById("tkpopx").addEventListener("click", () => { tkpop.hidden = true; });
+tkpop.addEventListener("submit", e => {
+  e.preventDefault(); const t = tkpop.t.value.trim(); if (!t) return; const w = tkpop.querySelector("[data-who].on");
+  fetch(`${API}/api/sendout/${TOKEN}/tasks`, { method: "POST", headers: { "Content-Type": "application/json", "X-Member": ME || "" }, body: JSON.stringify({ text: t, member_id: w ? w.dataset.who : "" }) })
+    .then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.error || "didn’t work"); TASKS = d; tkpop.t.value = ""; tkpop.hidden = true; renderTasks(); })
+    .catch(e => alert(e.message));
+});
 function renderTasks() {
+  renderFab();
   const open = TASKS.filter(k => !k.done), cast = Object.keys(PLAYERS).filter(k => k !== "production");
   const name = id => id === ME ? "me" : PLAYERS[id] ? PLAYERS[id].name : "anyone";
+  const STUDY = !document.body.classList.contains("review") && !document.body.classList.contains("rehearsal") && !document.body.classList.contains("stage");
+  if (STUDY) {
+    // At home: just what's yours to finish, one tick each. Adding happens in the room.
+    const mine = open.filter(k => !ME || !k.member_id || k.member_id === ME);
+    tasksEl.innerHTML = mine.length ? `<div class="tasks lite"><b>${ME ? "Your tasks" : "Open tasks"}</b><ul class="task-list">${mine.map(k => `<li class="task"><button type="button" class="tk-tick" data-tk="${esc(k.id)}" aria-label="Done"></button><span class="tk-main"><span class="tk-text">${esc(k.text)}</span>${!ME && k.member_id ? `<span class="muted small">${esc(name(k.member_id))}</span>` : ""}</span></li>`).join("")}</ul></div>` : "";
+    tasksEl.hidden = !mine.length;
+    tasksEl.querySelectorAll("[data-tk]").forEach(b => b.addEventListener("click", () => fetch(`${API}/api/sendout/${TOKEN}/tasks/${b.dataset.tk}`, { method: "PATCH", headers: { "Content-Type": "application/json", "X-Member": ME || "" }, body: JSON.stringify({ done: true }) })
+      .then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.error || "didn’t work"); TASKS = d; renderTasks(); }).catch(e => alert(e.message))));
+    return;
+  }
   const row = k => `<li class="task${k.done ? " done" : ""}"><button type="button" class="tk-tick" data-tk="${esc(k.id)}" aria-label="${k.done ? "Not done" : "Done"}">${k.done ? "✓" : ""}</button>
     <span class="tk-main"><span class="tk-text">${esc(k.text)}</span><span class="muted small">${k.member_id ? esc(name(k.member_id)) : "anyone"}${k.by && k.by !== k.member_id && PLAYERS[k.by] ? ` · asked by ${esc(PLAYERS[k.by].name)}` : ""}</span></span>
     <button type="button" class="tk-del" data-tkdel="${esc(k.id)}" aria-label="Remove">✕</button></li>`;
@@ -967,7 +1002,7 @@ async function setMode(m) {
   try { localStorage.setItem("setlist-mode", m); } catch (e) {}
   if (m !== "study" && !night.hidden) show(lastSong);
   try { if (m !== "study" && navigator.wakeLock) { if (!wake) wake = await navigator.wakeLock.request("screen"); } else if (wake) { wake.release(); wake = null; } } catch (e) {}
-  panels.forEach(p => p._renderStudy && p._renderStudy());
+  panels.forEach(p => p._renderStudy && p._renderStudy()); renderTasks();
   fitAll();
 }
 modeBtns.forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
