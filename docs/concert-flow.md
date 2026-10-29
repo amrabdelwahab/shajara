@@ -20,9 +20,16 @@ Whoever runs the night: **Sets → New set** — name, date, venue, cast. Cast =
 - No recording of your line yet? **Record it in Shajara ↗** on the card opens the app on that section (switches to the right space, asks for its passcode once). Same link to leave a note.
 - The arrangement board is one tap away ("Show the board") but not the point here.
 
-## 5. Rehearsal (Rehearsal mode)
-- Board + your part, screen stays awake, tap a section = "we're here".
-- What we change in the room goes into the set's version on one phone; everyone ↻.
+## 5. Rehearsal — one track at a time
+Everyone has the link open on their phone; one person has the set open in Shajara to write things down.
+
+1. **Read it together, instruments down** · *Review mode, Everyone.* Go card by card: section name, who plays what, the cue into it. Tap the card = "we're here". Play the recorded lines (▶) so everyone hears the same thing. Questions get settled here, not with instruments in hand.
+2. **Fix what's wrong on the spot** · the person with Shajara edits the set's version (line-up, cue, sound, a note). Everyone taps ↻.
+3. **Run it section by section** · *Rehearse mode, I am me.* Board + your part. Tap the section you're on. Stop, fix, repeat the section until it sits.
+4. **Run the whole track** · stay in Rehearse, or try Stage mode to see if the checklist is enough for you on the night.
+5. **Before moving on: tasks and notes** · open the Tasks box: "I'll fix the pad levels" → who. Lines that still need a recording → note it on the section ("Open this section in Shajara" from the card) or record it right there.
+
+Next track. At the end, the open tasks are the homework; My night is what everyone studies before the next one.
 
 ## 6. Stage (Stage mode)
 - Only your checklist per song: **WATCH / LISTEN** + what to do, sound set-up and switches in between. Prev/next song, swipe works.
