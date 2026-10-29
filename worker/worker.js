@@ -156,10 +156,35 @@ async function moveTrack(env, tid, from, to) {
   await env.DB.batch(stmts);
 }
 
+// Tasks around a set: who does what, ticked when done. Used by the app and by the send-out (with its token).
+const taskRows = async (env, sid) => (await env.DB.prepare('SELECT * FROM set_tasks WHERE set_id = ? ORDER BY done, created_at').bind(sid).all()).results;
+async function taskWrite(env, set, m, tid, b, who, castOk) {
+  if (m === 'POST' && !tid) {
+    const text = str(b.text, 200); if (!text) return json({ error: 'say what the task is' }, 400);
+    const mid = str(b.member_id, 40); if (mid && !castOk(mid)) return json({ error: 'not in this set' }, 400);
+    await env.DB.prepare('INSERT INTO set_tasks (id, set_id, member_id, by, text, done, created_at) VALUES (?, ?, ?, ?, ?, 0, ?)').bind(uid(), set.id, mid || null, who || null, text, now()).run();
+    return json(await taskRows(env, set.id), 201);
+  }
+  const cur = tid && await env.DB.prepare('SELECT * FROM set_tasks WHERE id = ? AND set_id = ?').bind(tid, set.id).first();
+  if (!cur) return json({ error: 'not found' }, 404);
+  if (m === 'PATCH') {
+    const done = 'done' in b ? (b.done ? 1 : 0) : cur.done, mid = 'member_id' in b ? (str(b.member_id, 40) || null) : cur.member_id;
+    if (mid && !castOk(mid)) return json({ error: 'not in this set' }, 400);
+    await env.DB.prepare('UPDATE set_tasks SET text = ?, member_id = ?, done = ?, done_at = ? WHERE id = ?').bind(str(b.text, 200) || cur.text, mid, done, done ? (cur.done ? cur.done_at : now()) : null, tid).run();
+    return json(await taskRows(env, set.id));
+  }
+  if (m === 'DELETE') { await env.DB.prepare('DELETE FROM set_tasks WHERE id = ?').bind(tid).run(); return json(await taskRows(env, set.id)); }
+  return json({ error: 'not found' }, 404);
+}
 // The public send-out of a set: everything the cast needs, and the recorded parts, nothing else of the space.
-async function sendout(env, tok, audioId) {
+async function sendout(env, tok, audioId, task) {
   const set = await env.DB.prepare('SELECT * FROM sets WHERE share = ?').bind(tok).first();
   if (!set) return json({ error: 'this link no longer works' }, 404);
+  if (task) {
+    // Tasks through the link: anyone with it, as the person they picked on the page.
+    const cast = (await env.DB.prepare('SELECT member_id FROM set_people WHERE set_id = ?').bind(set.id).all()).results.map(r => r.member_id);
+    return taskWrite(env, set, task.m, task.id, task.b, cast.includes(task.by) ? task.by : null, mid => cast.includes(mid));
+  }
   const q = (sql, ...a) => env.DB.prepare(sql).bind(...a).all().then(r => r.results);
   const tracks = await q('SELECT t.id, t.title, t.maqam, t.tonic, t.tempo, t.notes, t.version_of FROM set_tracks x JOIN tracks t ON t.id = x.track_id WHERE x.set_id = ? ORDER BY x.position', set.id);
   const tids = tracks.map(t => t.id), inT = tids.length ? tids.map(() => '?').join(',') : "''";
@@ -200,7 +225,7 @@ async function sendout(env, tok, audioId) {
     }),
   }));
   const space = await env.DB.prepare('SELECT id, name, logo_v FROM spaces WHERE id = ?').bind(set.space_id).first();
-  return json({ set: { name: set.name, date: set.date, venue: set.venue, notes: set.notes }, space, people, songs });
+  return json({ set: { name: set.name, date: set.date, venue: set.venue, notes: set.notes }, space, people, songs, tasks: await taskRows(env, set.id) });
 }
 
 async function route(req, env, url, member, space) {
@@ -294,7 +319,8 @@ async function route(req, env, url, member, space) {
     const st = await env.DB.prepare('SELECT * FROM sets WHERE space_id = ? ORDER BY CASE WHEN date = \'\' THEN 1 ELSE 0 END, date, created_at').bind(sp).all();
     const stt = await env.DB.prepare('SELECT x.set_id, x.track_id FROM set_tracks x JOIN sets s ON s.id = x.set_id WHERE s.space_id = ? ORDER BY x.position').bind(sp).all();
     const stp = await env.DB.prepare('SELECT x.set_id, x.member_id FROM set_people x JOIN sets s ON s.id = x.set_id WHERE s.space_id = ? ORDER BY x.position').bind(sp).all();
-    const sets = st.results.map(x => ({ ...x, track_ids: stt.results.filter(y => y.set_id === x.id).map(y => y.track_id), people: stp.results.filter(y => y.set_id === x.id).map(y => y.member_id) }));
+    const stk = await env.DB.prepare('SELECT k.* FROM set_tasks k JOIN sets s ON s.id = k.set_id WHERE s.space_id = ? ORDER BY k.done, k.created_at').bind(sp).all();
+    const sets = st.results.map(x => ({ ...x, track_ids: stt.results.filter(y => y.set_id === x.id).map(y => y.track_id), people: stp.results.filter(y => y.set_id === x.id).map(y => y.member_id), tasks: stk.results.filter(k => k.set_id === x.id) }));
     return json({ sets, projects, space: { id: space.id, name: space.name, logo_v: space.logo_v || null, genres: parseGenres(space.genres) }, instruments: ins.results, sounds: snd.results, sound_takes: takes.results, members: members.results, tracks: tracks.results.map(t => byTrack[t.id]), grooves: grooves.results });
   }
 
@@ -539,7 +565,7 @@ async function route(req, env, url, member, space) {
         env.DB.prepare('SELECT track_id FROM set_tracks WHERE set_id = ? ORDER BY position').bind(sid).all(),
         env.DB.prepare('SELECT member_id FROM set_people WHERE set_id = ? ORDER BY position').bind(sid).all(),
       ]);
-      return { ...x, track_ids: tr.results.map(r => r.track_id), people: pe.results.map(r => r.member_id) };
+      return { ...x, track_ids: tr.results.map(r => r.track_id), people: pe.results.map(r => r.member_id), tasks: await taskRows(env, sid) };
     };
     const setPeople = async (sid, ids) => {
       const ok = (await env.DB.prepare('SELECT id FROM members WHERE space_id = ?').bind(sp).all()).results.map(r => r.id);
@@ -636,6 +662,7 @@ async function route(req, env, url, member, space) {
       return json(await read(id));
     }
     // The send-out: a link anyone in the set can open without the space's passcode.
+    if (sub === 'tasks') return taskWrite(env, cur, m, subId, m === 'DELETE' ? {} : await body(req), member, mid => cur.people.includes(mid));
     if (sub === 'share' && m === 'POST') {
       if (!cur.share) await env.DB.prepare('UPDATE sets SET share = ? WHERE id = ?').bind((uid() + uid()).slice(0, 22), id).run();
       return json(await read(id));
@@ -968,10 +995,11 @@ export default {
       const rows = await env.DB.prepare('SELECT id, name, logo_v FROM spaces ORDER BY created_at').all();
       return json({ spaces: rows.results, epoch: env.LOGOUT_EPOCH || '' }, 200, h);
     }
-    const so = url.pathname.match(/^\/api\/sendout\/([A-Za-z0-9]{10,40})(?:\/audio\/([a-z0-9]+))?$/);
-    if (so && req.method === 'GET') {
+    const so = url.pathname.match(/^\/api\/sendout\/([A-Za-z0-9]{10,40})(?:\/audio\/([a-z0-9]+)|\/tasks(?:\/([a-z0-9]+))?)?$/);
+    if (so && (req.method === 'GET' || (so[0].includes('/tasks') && ['POST', 'PATCH', 'DELETE'].includes(req.method)))) {
       try {
-        const res = await sendout(env, so[1], so[2]);
+        const task = so[0].includes('/tasks') && req.method !== 'GET' ? { m: req.method, id: so[3], b: await body(req), by: req.headers.get('X-Member') || '' } : null;
+        const res = await sendout(env, so[1], so[2], task);
         for (const [k, v] of Object.entries(h)) res.headers.set(k, v);
         return res;
       } catch (e) { return json({ error: String(e && e.message || e) }, 500, h); }

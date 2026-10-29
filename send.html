@@ -282,6 +282,19 @@ body:not(.stage):not(.rehearsal) .song:not(.showboard) .sheets, body:not(.stage)
 .swith { margin: 0; }
 .applink { color: var(--accent); font-size: 13px; text-decoration: none; } .applink:hover { text-decoration: underline; } .sline-none .applink { font-size: inherit; }
 .sboard { align-self: flex-start; display: inline-flex; }
+body.stage #tasks { display: none; }
+.tasks { background: var(--surface); border-radius: 10px; padding: 12px 16px; }
+.tasks summary { cursor: pointer; display: flex; gap: 10px; align-items: baseline; list-style: none; } .tasks summary::-webkit-details-marker { display: none; }
+.tasks summary b { font-family: var(--display); font-size: 20px; font-weight: 600; } .tasks summary::after { content: "▾"; margin-left: auto; color: var(--muted); } .tasks[open] summary::after { content: "▴"; }
+.task-list { list-style: none; margin: 10px 0 0; padding: 0; }
+.task { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.tk-tick { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--muted); background: transparent; color: var(--ink); font: 700 13px/1 var(--body); cursor: pointer; }
+.task.done .tk-tick { background: var(--amr); border-color: var(--amr); }
+.tk-main { display: flex; flex-direction: column; min-width: 0; } .tk-text { font-size: 14.5px; } .task.done .tk-text { text-decoration: line-through; color: var(--muted); }
+.tk-del { background: none; border: 0; color: var(--muted); font-size: 14px; cursor: pointer; padding: 4px 6px; }
+.task-add { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.task-add input { font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.chip.on { border-color: var(--accent); color: var(--accent); }
 .prep { display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid var(--line); }
 .prep-sum { margin: 0; font-size: 14px; } .prep-sum b { color: var(--accent); }
 .prep-sec { background: var(--surface); border-radius: 8px; padding: 12px 16px; }
@@ -332,6 +345,7 @@ body.stage .secpanel { display: none; }
     <div class="topbar"><span class="lbl">I am</span><div class="chips" id="me" role="group" aria-label="Who are you"></div><div class="seg" id="modes" role="group" aria-label="Mode"><button type="button" data-mode="study" aria-pressed="true">Study</button><button type="button" data-mode="review" aria-pressed="false">Review</button><button type="button" data-mode="rehearsal" aria-pressed="false">Rehearse</button><button type="button" data-mode="stage" aria-pressed="false">Stage</button></div><button class="chip" id="theme" type="button">Light</button><button class="chip sm" id="asof" type="button" hidden title="Reload to pick up changes made in Shajara"></button></div>
     <ol class="setlist" id="setlist" role="tablist" aria-label="Songs in running order"><li role="presentation"><button role="tab" id="tab-night" aria-selected="false"><span class="n">★</span><span>My night</span></button></li></ol>
   </header>
+  <section id="tasks" hidden></section>
   <section id="night" hidden></section>
   <div id="songs"></div>
 </div>
@@ -342,7 +356,28 @@ const TOKEN = (location.hash.match(/^#([A-Za-z0-9]{10,40})/) || [])[1] || new UR
 const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const LAYER_WORD = { bloom: "Melody", bark: "Harmony", ground: "Bass", substrate: "Rhythm" };
 const PALETTE = ["#8fc1d6", "#a7bd8f", "#ebdfc8", "#e3a7c0", "#c9a7e3", "#f0c27b", "#9fd3c7", "#d6b08f"];
-let PLAYERS = {}, SONGS = [], LOADED_AT = 0, SPACE_ID = "";
+let PLAYERS = {}, SONGS = [], LOADED_AT = 0, SPACE_ID = "", TASKS = [];
+// Tasks around the set, through the link: add one, give it to someone, tick it. Anyone with the link, as who they picked.
+const tasksEl = document.getElementById("tasks");
+function renderTasks() {
+  const open = TASKS.filter(k => !k.done), cast = Object.keys(PLAYERS).filter(k => k !== "production");
+  const name = id => id === ME ? "me" : PLAYERS[id] ? PLAYERS[id].name : "anyone";
+  const row = k => `<li class="task${k.done ? " done" : ""}"><button type="button" class="tk-tick" data-tk="${esc(k.id)}" aria-label="${k.done ? "Not done" : "Done"}">${k.done ? "✓" : ""}</button>
+    <span class="tk-main"><span class="tk-text">${esc(k.text)}</span><span class="muted small">${k.member_id ? esc(name(k.member_id)) : "anyone"}${k.by && k.by !== k.member_id && PLAYERS[k.by] ? ` · asked by ${esc(PLAYERS[k.by].name)}` : ""}</span></span>
+    <button type="button" class="tk-del" data-tkdel="${esc(k.id)}" aria-label="Remove">✕</button></li>`;
+  tasksEl.innerHTML = `<details class="tasks"${open.length ? " open" : ""}><summary><b>Tasks</b><span class="muted">${open.length ? open.length + " open" : TASKS.length ? "all done" : "none yet"}</span></summary>
+    <ul class="task-list">${[...open, ...TASKS.filter(k => k.done)].map(row).join("")}</ul>
+    <form class="task-add"><input type="text" name="t" placeholder="e.g. fix the pad levels" maxlength="200" enterkeyhint="done">
+      <div class="chips">${cast.map(id => `<button type="button" class="chip sm${id === ME ? " on" : ""}" data-who="${esc(id)}" aria-pressed="${id === ME}">${esc(name(id))}</button>`).join("")}<button type="button" class="chip sm${ME ? "" : " on"}" data-who="" aria-pressed="${!ME}">anyone</button></div>
+      <button type="submit" class="chip">+ Task</button></form></details>`;
+  tasksEl.hidden = false;
+  const call = (path, method, body) => fetch(`${API}/api/sendout/${TOKEN}/tasks${path}`, { method, headers: { "Content-Type": "application/json", "X-Member": ME || "" }, body: body ? JSON.stringify(body) : undefined })
+    .then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.error || "didn’t work"); TASKS = d; renderTasks(); }).catch(e => alert(e.message));
+  tasksEl.querySelectorAll("[data-tk]").forEach(b => b.addEventListener("click", () => { const k = TASKS.find(x => x.id === b.dataset.tk); call("/" + k.id, "PATCH", { done: !k.done }); }));
+  tasksEl.querySelectorAll("[data-tkdel]").forEach(b => b.addEventListener("click", () => call("/" + b.dataset.tkdel, "DELETE")));
+  tasksEl.querySelectorAll("[data-who]").forEach(b => b.addEventListener("click", () => tasksEl.querySelectorAll("[data-who]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); })));
+  tasksEl.querySelector("form").addEventListener("submit", e => { e.preventDefault(); const t = e.target.t.value.trim(); if (!t) return; const w = tasksEl.querySelector("[data-who].on"); call("", "POST", { text: t, member_id: w ? w.dataset.who : "" }); });
+}
 // The Shajara app sits next to this page; a deep link opens that space, that track, that section.
 const APP = location.href.replace(/send\.html.*$/, "");
 const appLink = (trackId, sectionId) => `${APP}#in/${SPACE_ID}/t/${trackId}/${sectionId}`;
@@ -472,7 +507,7 @@ async function boot() {
     if (!kept) { document.querySelector(".lede").textContent = e.message + "."; return false; }
     d = kept.d; offline = kept.at;
   }
-  SONGS = shape(d);
+  SONGS = shape(d); TASKS = d.tasks || [];
   document.title = d.set.name + " · set";
   document.querySelector("h1").textContent = d.set.name;
   document.querySelector("header .eyebrow").textContent = [d.space ? d.space.name : "", d.set.date ? new Date(d.set.date + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) : "", d.set.venue].filter(Boolean).join(" · ");
@@ -881,7 +916,7 @@ const meBtns = {};
 });
 function setMe(who) {
   ME = who; Object.entries(meBtns).forEach(([k, b]) => b.setAttribute("aria-pressed", String((k || null) === who)));
-  panels.forEach(p => p._apply(who)); renderNight(); writeHash();
+  panels.forEach(p => p._apply(who)); renderNight(); renderTasks(); writeHash();
   try { who ? localStorage.setItem("setlist-me", who) : localStorage.removeItem("setlist-me"); } catch (e) {}
 }
 document.addEventListener("click", e => {

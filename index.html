@@ -1180,6 +1180,14 @@ details.aside .small { font: italic 13px/1.3 var(--serif); }
 .st-who { font: 15px/1.3 var(--serif); color: var(--text); }
 .st-warn { font: italic 14px/1.3 var(--serif); color: #ff9f43; }
 .st-ord { display: flex; gap: 0; } .st-ord .icon-btn { width: 34px; height: 34px; } .st-ord .icon-btn[disabled] { opacity: .25; }
+.task-list { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; }
+.task { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.task:first-child { border-top: 0; }
+.tk-tick { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--muted); background: transparent; color: var(--bg); font: 700 14px/1 var(--sans); cursor: pointer; }
+.task.done .tk-tick { background: var(--text); border-color: var(--text); }
+.tk-main { display: flex; flex-direction: column; gap: 1px; min-width: 0; } .tk-text { font: 16px/1.3 var(--serif); }
+.task.done .tk-text { text-decoration: line-through; color: var(--muted); }
+.task-add { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; } .task-add .sugs { margin: 0; }
 .sw-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr); gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
 .sw-row b { font: 17px/1.2 var(--serif); }
 </style>
@@ -4873,7 +4881,7 @@ function setCard(st) {
   return `<button class="pcard set-card" onclick="go('set/${esc(st.id)}')"><div class="pc-top">${st.date ? `<span class="pc-date">${esc(fmtDate(st.date))}</span>` : ''}${st.venue ? `<span class="pc-scale">${esc(st.venue)}</span>` : ''}${st.share ? '<span class="pc-scale">sent out</span>' : ''}</div>
     <b class="pc-name">${esc(st.name)}</b>
     ${ts.length ? `<ol class="set-mini">${ts.slice(0, 6).map(t => `<li>${esc(t.title)}</li>`).join('')}${ts.length > 6 ? `<li class="faint">+ ${ts.length - 6} more</li>` : ''}</ol>` : '<p class="pc-phil faint">No tracks yet.</p>'}
-    <div class="pc-foot">${people.map(m => avatar(m, 'xs')).join('')}<span class="sp"></span><span class="faint">${plural(ts.length, 'track')}${dd != null && dd >= 0 ? ` · ${dd === 0 ? 'today' : plural(dd, 'day') + ' to go'}` : ''}</span></div></button>`;
+    <div class="pc-foot">${people.map(m => avatar(m, 'xs')).join('')}<span class="sp"></span><span class="faint">${plural(ts.length, 'track')}${(st.tasks || []).some(k => !k.done) ? ` · ${plural((st.tasks || []).filter(k => !k.done).length, 'open task')}` : ''}${dd != null && dd >= 0 ? ` · ${dd === 0 ? 'today' : plural(dd, 'day') + ' to go'}` : ''}</span></div></button>`;
 }
 function viewSets() {
   const render = () => {
@@ -5015,6 +5023,29 @@ function sendOutSheet(id) {
   };
   draw();
 }
+// Tasks around a set: the small jobs that come up in a rehearsal ("I'll fix the levels"). Quick to add, quick to tick.
+function tasksBlock(st) {
+  const ks = st.tasks || [], open = ks.filter(k => !k.done);
+  const cast = st.people.map(pid => S.members.find(m => m.id === pid)).filter(Boolean);
+  const row = k => `<li class="task${k.done ? ' done' : ''}"><button class="tk-tick" data-tk="${esc(k.id)}" aria-label="${k.done ? 'Not done' : 'Done'}">${k.done ? '✓' : ''}</button>
+    <span class="tk-main"><span class="tk-text">${esc(k.text)}</span><span class="small faint">${k.member_id ? esc(firstName(k.member_id)) : 'anyone'}${k.by && k.by !== k.member_id ? ` · asked by ${esc(firstName(k.by))}` : ''}</span></span>
+    <button class="icon-btn sm" data-tkdel="${esc(k.id)}" aria-label="Remove">✕</button></li>`;
+  return `<div class="list-head"><b>Tasks</b><span class="small muted">${open.length ? plural(open.length, 'open task') : ks.length ? 'all done' : 'nothing yet'}</span></div>
+    <ul class="task-list">${[...open, ...ks.filter(k => k.done)].map(row).join('')}</ul>
+    <div class="task-add"><input id="tkText" type="text" placeholder="e.g. fix the pad levels before Thursday" enterkeyhint="done">
+      <div class="sugs" id="tkWho">${cast.map(m => `<button type="button" class="sug${m.id === S.me ? ' on' : ''}" data-who="${esc(m.id)}">${esc(m.id === S.me ? 'me' : firstName(m.id))}</button>`).join('')}<button type="button" class="sug${cast.some(m => m.id === S.me) ? '' : ' on'}" data-who="">anyone</button></div>
+      <button class="btn block" id="tkAdd">+ Task</button></div>`;
+}
+function wireTasks(id, render) {
+  const apply = r => { S.sets = (S.sets || []).map(x => x.id === id ? { ...x, tasks: r } : x); render(); };
+  const call = (path, opts) => api('/sets/' + id + '/tasks' + path, opts).then(apply).catch(e => toast(e.message));
+  document.querySelectorAll('[data-tk]').forEach(b => b.onclick = () => { const k = setOf(id).tasks.find(x => x.id === b.dataset.tk); call('/' + b.dataset.tk, { method: 'PATCH', body: { done: !k.done } }); });
+  document.querySelectorAll('[data-tkdel]').forEach(b => b.onclick = () => call('/' + b.dataset.tkdel, { method: 'DELETE' }));
+  const who = $('#tkWho'); if (!who) return;
+  who.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { who.querySelectorAll('.sug').forEach(x => x.classList.toggle('on', x === b)); });
+  const add = () => { const t = $('#tkText').value.trim(); if (!t) return $('#tkText').focus(); const w = who.querySelector('.sug.on'); call('', { method: 'POST', body: { text: t, member_id: w ? w.dataset.who : '' } }); };
+  $('#tkAdd').onclick = add; $('#tkText').onkeydown = e => { if (e.key === 'Enter') add(); };
+}
 function viewSet(id) {
   const render = () => {
     const st = setOf(id);
@@ -5036,6 +5067,7 @@ function viewSet(id) {
         ${st.notes ? `<p class="notes">${esc(st.notes)}</p>` : ''}
         <div class="set-cast">${cast.map(m => `<span class="sc">${avatar(m, 'xs')}${esc(m.name)}${m.guest ? '<i class="guest-tag">guest</i>' : ''}</span>`).join('')}<button class="chip ghost" onclick="editSetSheet('${esc(id)}')">+ people</button></div>
         <button class="btn primary block" onclick="sendOutSheet('${esc(id)}')">${st.share ? 'Send-out link' : 'Send out to the cast'}</button></div>
+      ${tasksBlock(st)}
       <div class="list-head"><b>Running order</b><span class="small muted">tap a track to change its version</span></div>
       <ol class="st-list">${ts.map(row).join('')}</ol>
       <button class="pcard new" onclick="addToSet('${esc(id)}')"><span class="pn-plus">+</span><b>Add a track</b><span class="faint">one of yours, or a new one</span></button>
@@ -5043,6 +5075,7 @@ function viewSet(id) {
     wireTabs();
     const order = ts.map(t => t.id);
     const move = async (i, d) => { const o = order.slice(); [o[i], o[i + d]] = [o[i + d], o[i]]; try { await patchSet(id, { track_ids: o }); render(); } catch (e) { toast(e.message); } };
+    wireTasks(id, render);
     document.querySelectorAll('[data-up]').forEach(b => b.onclick = () => move(+b.dataset.up, -1));
     document.querySelectorAll('[data-dn]').forEach(b => b.onclick = () => move(+b.dataset.dn, 1));
     document.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { const t = versionOf(b.dataset.rm);
