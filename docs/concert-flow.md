@@ -15,7 +15,7 @@ Whoever runs the night: **Sets → New set** — name, date, venue, cast. Cast =
 - One phone edits the set ("Change this section in Shajara ↗" lands on it); everyone else taps **↻** to catch up.
 
 ## 4. At home (Study)
-- Pick yourself. Per song: **your parts, one card each** — the section, what you play and on which sound, how you come in, the line to learn (▶, repeat, slow), what's around you, notes. Tick **I know this** as you go; "Play my lines in order" runs through the song.
+- Pick yourself. Per song: **your parts, one card each** — the section, what you play and on which sound, how you come in, the line to learn (▶, repeat, slow), what's around you, notes. Mark a card **I know this** when it sits (it turns green and folds); "Play my lines in order" runs through the song.
 - **My night** = your whole night in order: entries, sound changes, what you wait for.
 - No recording of your line yet? **Record it in Shajara ↗** on the card opens the app on that section (switches to the right space, asks for its passcode once). Same link to leave a note.
 - The arrangement board is one tap away ("Show the board") but not the point here.
@@ -27,7 +27,7 @@ Everyone has the link open on their phone; one person has the set open in Shajar
 2. **Fix what's wrong on the spot** · the person with Shajara edits the set's version (line-up, cue, sound, a note). Everyone taps ↻.
 3. **Run it section by section** · *Rehearse mode, I am me.* Board + your part. Tap the section you're on. Stop, fix, repeat the section until it sits.
 4. **Run the whole track** · stay in Rehearse, or try Stage mode to see if the checklist is enough for you on the night.
-5. **Before moving on: tasks and notes** · open the Tasks box: "I'll fix the pad levels" → who. Lines that still need a recording → note it on the section ("Open this section in Shajara" from the card) or record it right there.
+5. **Before moving on: tasks and notes** · open the Tasks box (on the link, or on the set's page in Shajara): "I'll fix the pad levels" → who. Lines that still need a recording → note it on the section ("Open this section in Shajara" from the card) or record it right there.
 
 Next track. At the end, the open tasks are the homework; My night is what everyone studies before the next one.
 
