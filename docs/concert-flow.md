@@ -32,7 +32,7 @@ Everyone has the link open on their phone; one person has the set open in Shajar
 Next track. At the end, the open tasks are the homework; My night is what everyone studies before the next one.
 
 ## 6. Stage (Stage mode)
-- Only your checklist per song: **WATCH / LISTEN** + what to do, sound set-up and switches in between. Prev/next song, swipe works.
+- Your part card from Rehearse, one song at a time, in big type: your entries in order with the cue tagged **WATCH / LISTEN**, sound set-ups and switches lit up, the cues you give marked in your colour, rests dimmed. Prev/next song, swipe works.
 - Opens without signal (last copy kept on the phone; ▶ needs a connection).
 
 ## Honest gaps
