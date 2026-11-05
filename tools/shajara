@@ -443,6 +443,9 @@ description: Read and edit the band's Shajara space (sets, tracks, sections, lin
 
 Use the `shajara` command (Python 3, installed at {path}; call it by that path if `shajara` isn't on PATH).
 If it says "Not logged in", ask the person for their space passcode and name, then run `shajara login <passcode> --as <name>`.
+A person can be in several spaces (a band, a side project). Logging into another space adds it and switches to it;
+`shajara use <space name>` switches between spaces they've logged into. Check `shajara whoami` before changing anything,
+and if they mention a set or track you can't find, it may be in their other space.
 Run `shajara guide` first in a session:
 it explains the tree model (sections, the four layers, one layer per person per section, cues, sets).
 

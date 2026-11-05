@@ -14,6 +14,19 @@ It installs `shajara` into `~/.local/bin`, adds the Claude Code skill, and asks 
 and your name. From a checkout of this repo, `make install-cli` does the same.
 The passcode is saved in `~/.config/shajara/config.json`, readable only by you.
 
+## More than one space
+
+Log into each space once; `use` switches between them.
+
+```sh
+shajara login <ghorab passcode> --as Marwan    # adds Ghorab and switches to it
+shajara use "ala bab allah"                    # back to the band
+shajara use ghorab
+shajara whoami                                 # where am I now
+```
+
+With Claude, just say which one: "switch to Ghorab and show me Laden 2".
+
 ## Reading
 
 ```sh
