@@ -1,0 +1,558 @@
+#!/usr/bin/env python3
+"""shajara: read and edit a Shajara space from the terminal (and through Claude).
+
+Talks to the same API as the app, with your space's passcode. Nothing to install but Python 3.
+Start with:  shajara login <passcode> --as <your name>
+Then:        shajara sets · shajara set show <set> · shajara track show <track> · shajara guide
+"""
+import argparse, json, os, re, sys, urllib.error, urllib.request
+
+API = os.environ.get("SHAJARA_API", "https://shajara-api.amrabdelwahab.workers.dev")
+APP = os.environ.get("SHAJARA_APP", "https://amrabdelwahab.github.io/shajara")
+CONF = os.path.expanduser(os.environ.get("SHAJARA_CONFIG", "~/.config/shajara/config.json"))
+
+LAYERS = ["bloom", "bark", "ground", "substrate"]
+LAYER_NAME = {"bloom": "Flowers & leaves (melody)", "bark": "Bark (harmony)", "ground": "Ground (bass)", "substrate": "Substrate (rhythm)"}
+LAYER_ALIAS = {"melody": "bloom", "flowers": "bloom", "leaves": "bloom", "harmony": "bark", "bass": "ground", "rhythm": "substrate", "drums": "substrate"}
+PRODUCTION = "production"
+
+GUIDE = """How Shajara thinks (read this before editing)
+
+A space holds tracks (the band says "tracks", not "songs"). A track has sections in order (Intro, Groove, Break...).
+Each section is a tree with four layers, top to bottom:
+  bloom      Flowers & leaves: melody, solos, taksim, maradat, question-and-answer phrases
+  bark       Tree bark: harmony; also oud/guitar playing a groove riff
+  ground     Ground: bass. Layers follow the frequency range an instrument holds, not its role
+  substrate  Substrate: rhythm, drums, percussion
+People are the finite resource: in each section a person sits in exactly ONE layer, or is out.
+"production" (samples, pads, backing from a laptop) is not a person and can sit in any number of layers.
+A line-up entry is: who, layer, what they play it on (instrument and sound), and their part in words.
+
+A set is something you play: a cast and a running order. Every track in a set is the set's own version,
+so editing it never touches the original track. Each section in a set can carry cues: how the band moves
+INTO that section, and who gives the signal (a member, or "production" when it's something you hear).
+Write cue text from the giver's side, short and plain: "he slowly starts the groove out of his solo".
+Energy is 1 to 5. Chords use bars: "Am | Am9", "Dm | E7 | Am".
+Tasks are small to-dos on a set, for one person or anyone.
+
+Working with a bandmate:
+- Go track by track, section by section. Read first (set show / track show), then change, then show the result.
+- Their words decide. Don't invent parts, drums or cues they didn't describe; leave them open and ask.
+- Ask who gives each cue per track; it differs between tracks.
+- Deleting a section deletes its recordings too. Check `track show` for recordings and ask before deleting.
+- Refer to things by name: sets, tracks and members by (part of) their name; a section as "Track:Section"
+  or "Track:3" (third section).
+"""
+
+
+# ---------- config and HTTP
+
+def load_conf():
+    try:
+        with open(CONF) as f: return json.load(f)
+    except (OSError, ValueError): return {"spaces": {}}
+
+def save_conf(c):
+    os.makedirs(os.path.dirname(CONF), exist_ok=True)
+    with open(CONF, "w") as f: json.dump(c, f, indent=2)
+    os.chmod(CONF, 0o600)
+
+def current():
+    c = load_conf()
+    key, me = os.environ.get("SHAJARA_KEY"), os.environ.get("SHAJARA_ME")
+    if key: return {"key": key, "me": me or ""}
+    sp = c.get("spaces", {}).get(c.get("current", ""))
+    if not sp: die("Not logged in. Run: shajara login <passcode> --as <your name>")
+    return sp
+
+def call(method, path, body=None, key=None, me=None):
+    if key is None:
+        sp = current(); key, me = sp["key"], sp.get("me", "")
+    req = urllib.request.Request(API + "/api" + path, method=method,
+        data=json.dumps(body).encode() if body is not None else None,
+        headers={"X-Band-Key": key, "X-Member": me or "", "Content-Type": "application/json", "User-Agent": "shajara-cli"})
+    try:
+        with urllib.request.urlopen(req) as r: return json.loads(r.read() or b"null")
+    except urllib.error.HTTPError as e:
+        try: msg = json.loads(e.read()).get("error")
+        except ValueError: msg = None
+        die(f"{method} {path}: {msg or e.reason} ({e.code})")
+    except urllib.error.URLError as e:
+        die(f"Couldn't reach Shajara: {e.reason}")
+
+def die(msg):
+    print(msg, file=sys.stderr); sys.exit(1)
+
+
+# ---------- finding things by name
+
+_state = None
+def state():
+    global _state
+    if _state is None: _state = call("GET", "/state")
+    return _state
+
+def pick(items, ref, label, name=lambda x: x["name"]):
+    ref = ref.strip()
+    for x in items:
+        if x["id"] == ref: return x
+    low = ref.lower()
+    exact = [x for x in items if name(x).lower() == low]
+    if len(exact) == 1: return exact[0]
+    hits = [x for x in items if low in name(x).lower()] or [x for x in items if x["id"].startswith(ref)]
+    if len(hits) == 1: return hits[0]
+    if not hits: die(f"No {label} matches '{ref}'. Have: " + ", ".join(name(x) for x in items))
+    die(f"'{ref}' matches several {label}s: " + ", ".join(name(x) for x in hits) + ". Be more specific.")
+
+def find_set(ref): return pick(state()["sets"], ref, "set")
+
+def all_tracks():
+    return state()["tracks"]
+
+def find_track(ref):
+    ts = all_tracks()
+    if ":" in ref: die("That looks like a section. Give just the track.")
+    return pick(ts, ref, "track", lambda t: t["title"])
+
+def find_member(ref, allow_production=True):
+    if allow_production and ref.lower() in (PRODUCTION, "prod"): return PRODUCTION
+    return pick(state()["members"], ref, "member")["id"]
+
+def member_name(mid):
+    if mid == PRODUCTION: return "Production"
+    for m in state()["members"]:
+        if m["id"] == mid: return m["name"]
+    return mid or "?"
+
+def layer_of(s):
+    s = s.lower()
+    s = LAYER_ALIAS.get(s, s)
+    if s not in LAYERS: die(f"Unknown layer '{s}'. Use bloom/melody, bark/harmony, ground/bass or substrate/rhythm.")
+    return s
+
+def load_track(tid): return call("GET", f"/tracks/{tid}")
+
+def find_section(ref):
+    """'Track:Section' or 'Track:3' → (track, section)."""
+    if ":" not in ref: die(f"Name a section as Track:Section or Track:number (got '{ref}').")
+    tref, sref = ref.rsplit(":", 1)
+    t = load_track(find_track(tref)["id"])
+    secs = sorted(t["sections"], key=lambda s: s["position"])
+    if sref.strip().isdigit():
+        n = int(sref)
+        if not 1 <= n <= len(secs): die(f"{t['title']} has {len(secs)} sections.")
+        return t, secs[n - 1]
+    return t, pick(secs, sref, "section")
+
+
+# ---------- printing
+
+def cues_of(sec):
+    try: return json.loads(sec.get("cues") or "[]")
+    except ValueError: return []
+
+def sound_names(ids):
+    names = {s["id"]: s["name"] for s in state()["sounds"]}
+    return [names.get(i, i) for i in (ids or "").split(",") if i]
+
+def print_track(t, num=None):
+    head = f"{num}. " if num else ""
+    facts = " · ".join(x for x in [t.get("maqam"), t.get("tonic") and f"on {t['tonic']}", t.get("tempo") and f"{t['tempo']} bpm"] if x)
+    print(f"## {head}{t['title']}" + (f"  ({facts})" if facts else "") + f"  [{t['id']}]")
+    if t.get("notes"): print("   " + t["notes"].replace("\n", "\n   "))
+    if t.get("chords"): print(f"   chords: {t['chords']}")
+    secs = sorted(t["sections"], key=lambda s: s["position"])
+    for i, s in enumerate(secs, 1):
+        bits = [f"energy {s['energy']}" if s.get("energy") else "", f"{s['meter_n']}/{4 if s['meter_sub'] == 1 else 8 if s['meter_sub'] == 2 else 16}" if s.get("meter_n") else "",
+                f"{s['bars']} bars" if s.get("bars") else "", f"chords {s['chords']}" if s.get("chords") else ""]
+        print(f"\n   {i}. {s['name']}" + (f"  ({', '.join(b for b in bits if b)})" if any(bits) else "") + f"  [{s['id']}]")
+        for c in cues_of(s): print(f"      cue  {member_name(c['from'])}: {c['text']}")
+        hs = [h for h in t["holders"] if h["section_id"] == s["id"]]
+        for L in LAYERS:
+            for h in (h for h in hs if h["layer"] == L):
+                on = " · ".join(x for x in [h.get("instrument")] + sound_names(h.get("sound_ids")) if x)
+                print(f"      {L:<9} {member_name(h['member_id'])}" + (f" on {on}" if on else "") + (f": {h['part']}" if h.get("part") else ""))
+        for b in (b for b in t["beats"] if b["section_id"] == s["id"]):
+            print(f"      beat      {b['layer']}: {b['name'] or 'own'} ({b['pattern']})")
+        if not hs: print("      (nobody in it yet)")
+        if s.get("notes"): print("      notes: " + s["notes"].replace("\n", " "))
+        n = sum(1 for x in t.get("ideas", []) if x.get("section_id") == s["id"])
+        if n: print(f"      recordings and notes: {n}")
+
+def out(data, args, fn):
+    if getattr(args, "json", False): print(json.dumps(data, indent=2, ensure_ascii=False))
+    else: fn(data)
+
+
+# ---------- commands
+
+def cmd_login(a):
+    sp = call("GET", "/state", key=a.passcode, me="")
+    me = ""
+    if a.as_:
+        global _state
+        _state = sp
+        me = find_member(a.as_, allow_production=False)
+    c = load_conf()
+    c.setdefault("spaces", {})[sp["space"]["id"]] = {"key": a.passcode, "me": me, "name": sp["space"]["name"]}
+    c["current"] = sp["space"]["id"]
+    save_conf(c)
+    print(f"In {sp['space']['name']}" + (f" as {member_name(me)}" if me else " (not as anyone; add --as <name> to make changes as yourself)") + f". Saved to {CONF}.")
+
+def cmd_use(a):
+    c = load_conf()
+    hit = [k for k, v in c.get("spaces", {}).items() if a.space.lower() in (k.lower(), v["name"].lower()) or a.space.lower() in v["name"].lower()]
+    if len(hit) != 1: die("Spaces you're logged into: " + ", ".join(v["name"] for v in c.get("spaces", {}).values()))
+    c["current"] = hit[0]; save_conf(c)
+    print(f"Now in {c['spaces'][hit[0]]['name']}.")
+
+def cmd_whoami(a):
+    s = state(); me = current().get("me")
+    print(f"{s['space']['name']}" + (f", as {member_name(me)}" if me else ", not as anyone"))
+
+def cmd_people(a):
+    s = state()
+    def show(_):
+        for m in s["members"]:
+            ins = [i for i in s["instruments"] if i["member_id"] == (m.get("person_id") or m["id"])]
+            line = "; ".join(i["name"] + (": " + ", ".join(x["name"] for x in s["sounds"] if x["instrument_id"] == i["id"]) if any(x["instrument_id"] == i["id"] for x in s["sounds"]) else "") for i in ins)
+            print(f"{m['name']}{' (guest)' if m.get('guest') else ''}  [{m['id']}]" + (f"\n   {line}" if line else ""))
+    out(s["members"], a, show)
+
+def cmd_sets(a):
+    s = state()
+    def show(sets):
+        for x in sets:
+            print(f"{x['name']}  {x['date'] or 'no date'}  {x['venue']}  · {len(x['track_ids'])} tracks · cast: {', '.join(member_name(p) for p in x['people'])}  [{x['id']}]")
+    out(s["sets"], a, show)
+
+def cmd_set_show(a):
+    st = find_set(a.set)
+    tracks = [load_track(t) for t in st["track_ids"]]
+    def show(_):
+        print(f"# {st['name']}  {st['date'] or 'no date'}  {st['venue']}")
+        print("cast: " + ", ".join(member_name(p) for p in st["people"]))
+        if st.get("notes"): print(st["notes"])
+        if st.get("share"): print(f"send-out: {APP}/send.html#{st['share']}")
+        for i, t in enumerate(tracks, 1):
+            print(); print_track(t, i)
+        if st.get("tasks"):
+            print("\n# Tasks")
+            for k in st["tasks"]: print(f"   [{'x' if k['done'] else ' '}] {member_name(k['member_id']) if k['member_id'] else 'anyone'}: {k['text']}  [{k['id']}]")
+    out({**st, "tracks": tracks}, a, show)
+
+def cmd_set_edit(a):
+    st = find_set(a.set)
+    b = {k: v for k, v in {"name": a.name, "date": a.date, "venue": a.venue, "notes": a.notes}.items() if v is not None}
+    if a.cast: b["people"] = [find_member(x, False) for x in a.cast.split(",")]
+    if not b: die("Nothing to change.")
+    r = call("PATCH", f"/sets/{st['id']}", b)
+    print(f"Updated {r['name']}.")
+
+def cmd_set_move(a):
+    st = find_set(a.set)
+    order = list(st["track_ids"])
+    titles = {t["id"]: t for t in all_tracks()}
+    t = pick([titles[x] for x in order], a.track, "track in the set", lambda t: t["title"])
+    order.remove(t["id"]); order.insert(max(0, min(len(order), a.position - 1)), t["id"])
+    call("PATCH", f"/sets/{st['id']}", {"track_ids": order})
+    for i, x in enumerate(order, 1): print(f"{i}. {titles[x]['title']}")
+
+def cmd_set_add_track(a):
+    st = find_set(a.set)
+    if a.version_of:
+        src = find_track(a.version_of)
+        r = call("POST", f"/sets/{st['id']}/versions", {"from": src["id"], "swap": {}, "title": a.title or ""})
+        print(f"Added the set's own version of {src['title']} [{r['track_id']}].")
+    else:
+        if not a.title: die("Give --title for a new track, or --version-of to bring an existing one in.")
+        secs = [{"name": n.strip()} for n in (a.sections or "Main").split(",") if n.strip()]
+        r = call("POST", "/tracks", {"title": a.title, "set_id": st["id"], "sections": secs, "maqam": a.maqam or "", "tempo": a.tempo})
+        print(f"Planted {r['title']} in {st['name']} with sections: {', '.join(s['name'] for s in r['sections'])} [{r['id']}].")
+
+def cmd_set_remove_track(a):
+    st = find_set(a.set)
+    titles = {t["id"]: t for t in all_tracks()}
+    t = pick([titles[x] for x in st["track_ids"]], a.track, "track in the set", lambda t: t["title"])
+    if not a.yes: die(f"This deletes the set's version of {t['title']}, with its sections, line-ups and recordings. Run again with --yes.")
+    call("DELETE", f"/sets/{st['id']}/tracks/{t['id']}")
+    print(f"Removed {t['title']} from {st['name']}.")
+
+def cmd_tracks(a):
+    s = state()
+    def show(ts):
+        for t in ts:
+            where = next((x["name"] for x in s["sets"] if x["id"] == t.get("set_id")), None)
+            print(f"{t['title']}" + (f"  (in set {where})" if where else "") + f"  · {len(t['sections'])} sections  [{t['id']}]")
+    out(s["tracks"], a, show)
+
+def cmd_track_show(a):
+    t = load_track(find_track(a.track)["id"])
+    out(t, a, print_track)
+
+def cmd_track_edit(a):
+    t = find_track(a.track)
+    b = {k: v for k, v in {"title": a.title, "maqam": a.maqam, "tonic": a.tonic, "chords": a.chords, "notes": a.notes, "genre": a.genre}.items() if v is not None}
+    if a.tempo is not None: b["tempo"] = a.tempo
+    if not b: die("Nothing to change.")
+    r = call("PATCH", f"/tracks/{t['id']}", b)
+    print(f"Updated {r['title']}.")
+
+def renumber(t, order):
+    for i, s in enumerate(order):
+        if s["position"] != i: call("PATCH", f"/sections/{s['id']}", {"position": i})
+
+def cmd_section_show(a):
+    t, s = find_section(a.section)
+    out({**s, "holders": [h for h in t["holders"] if h["section_id"] == s["id"]]}, a,
+        lambda _: print_track({**t, "sections": [s], "notes": "", "chords": ""}))
+
+def cmd_section_add(a):
+    t = load_track(find_track(a.track)["id"])
+    b = {"name": a.name}
+    if a.copy_from: b["copy_from"] = find_section(f"{t['id']}:{a.copy_from}")[1]["id"]
+    r = call("POST", f"/tracks/{t['id']}/sections", b)
+    new = next(s for s in r["sections"] if s["id"] == r["new_section"])
+    if a.at:
+        order = [s for s in sorted(r["sections"], key=lambda s: s["position"]) if s["id"] != new["id"]]
+        order.insert(max(0, a.at - 1), new); renumber(r, order)
+    print(f"Added {a.name} to {t['title']} [{new['id']}].")
+
+def cmd_section_edit(a):
+    t, s = find_section(a.section)
+    b = {k: v for k, v in {"name": a.name, "notes": a.notes, "chords": a.chords}.items() if v is not None}
+    for k in ("energy", "bars", "weight"):
+        if getattr(a, k) is not None: b[k] = getattr(a, k)
+    if a.meter:
+        m = re.fullmatch(r"(\d+)/(4|8|16)", a.meter)
+        if not m: die("Meter like 4/4, 7/8 or 6/8.")
+        b["meter_n"], b["meter_sub"] = int(m[1]), {"4": 1, "8": 2, "16": 4}[m[2]]
+    if not b: die("Nothing to change.")
+    call("PATCH", f"/sections/{s['id']}", b)
+    print(f"Updated {t['title']}: {b.get('name', s['name'])}.")
+
+def cmd_section_move(a):
+    t, s = find_section(a.section)
+    order = [x for x in sorted(t["sections"], key=lambda x: x["position"]) if x["id"] != s["id"]]
+    order.insert(max(0, min(len(order), a.position - 1)), s); renumber(t, order)
+    for i, x in enumerate(order, 1): print(f"{i}. {x['name']}")
+
+def cmd_section_delete(a):
+    t, s = find_section(a.section)
+    n = sum(1 for x in t.get("ideas", []) if x.get("section_id") == s["id"])
+    if not a.yes:
+        die(f"This deletes {s['name']} from {t['title']}" + (f", with {n} recordings/notes in it" if n else "") + ". Run again with --yes.")
+    call("DELETE", f"/sections/{s['id']}")
+    print(f"Deleted {s['name']} from {t['title']}.")
+
+def lineup_of(t, s):
+    return [{k: h.get(k) or "" for k in ("member_id", "layer", "instrument", "sound_ids", "part")} for h in t["holders"] if h["section_id"] == s["id"]]
+
+def sound_ids(member_id, names):
+    if not names: return ""
+    person = next((m.get("person_id") or m["id"] for m in state()["members"] if m["id"] == member_id), member_id)
+    ins = {i["id"] for i in state()["instruments"] if i["member_id"] == person}
+    mine = [x for x in state()["sounds"] if x["instrument_id"] in ins]
+    return ",".join(pick(mine, n, f"sound of {member_name(member_id)}")["id"] for n in names.split(","))
+
+def cmd_lineup_put(a):
+    t, s = find_section(a.section)
+    mid, layer = find_member(a.member), layer_of(a.layer)
+    hs = lineup_of(t, s)
+    old = next((h for h in hs if h["member_id"] == mid and (mid != PRODUCTION or h["layer"] == layer)), None)
+    hs = [h for h in hs if h is not old]
+    h = {"member_id": mid, "layer": layer,
+         "instrument": a.on if a.on is not None else (old or {}).get("instrument", ""),
+         "sound_ids": sound_ids(mid, a.sounds) if a.sounds is not None else (old or {}).get("sound_ids", ""),
+         "part": a.part if a.part is not None else (old or {}).get("part", "")}
+    call("PUT", f"/sections/{s['id']}/lineup", {"holders": hs + [h]})
+    print(f"{t['title']}: {s['name']}: {member_name(mid)} in {layer}" + (f" on {h['instrument']}" if h["instrument"] else "") + (f": {h['part']}" if h["part"] else ""))
+
+def cmd_lineup_drop(a):
+    t, s = find_section(a.section)
+    mid = find_member(a.member)
+    hs = lineup_of(t, s)
+    keep = [h for h in hs if not (h["member_id"] == mid and (not a.layer or h["layer"] == layer_of(a.layer)))]
+    if len(keep) == len(hs): die(f"{member_name(mid)} isn't in {s['name']}.")
+    call("PUT", f"/sections/{s['id']}/lineup", {"holders": keep})
+    print(f"{t['title']}: {s['name']}: {member_name(mid)} is out.")
+
+def cmd_lineup_clear(a):
+    t, s = find_section(a.section)
+    if not a.yes: die(f"This empties the whole line-up of {s['name']}. Run again with --yes.")
+    call("PUT", f"/sections/{s['id']}/lineup", {"holders": []})
+    print(f"{t['title']}: {s['name']} has nobody in it now.")
+
+def cmd_cue(a):
+    t, s = find_section(a.section)
+    cues = [] if a.action in ("set", "clear") else cues_of(s)
+    if a.action != "clear":
+        if not a.text: die("Say what the cue is.")
+        cues.append({"from": find_member(a.giver), "text": a.text})
+    call("PATCH", f"/sections/{s['id']}", {"cues": cues})
+    print(f"{t['title']}: into {s['name']}: " + ("; ".join(f"{member_name(c['from'])}: {c['text']}" for c in cues) or "no cues"))
+
+def presets():
+    try:
+        with urllib.request.urlopen(urllib.request.Request(APP + "/index.html", headers={"User-Agent": "shajara-cli"})) as r: html = r.read().decode()
+    except urllib.error.URLError as e: die(f"Couldn't load the groove presets: {e.reason}")
+    found = [{"name": n, "sub": int(sb), "pattern": p} for n, sb, p in re.findall(r"\{ name: '([^']+)', sub: (\d), p: '([-DTK]+)'", html)]
+    found += [{"name": g["name"] + " (ours)", "sub": g.get("sub") or 2, "pattern": g["pattern"]} for g in state().get("grooves", []) if g.get("pattern")]
+    return [dict(g, id=g["name"]) for g in found]
+
+def cmd_beat(a):
+    if a.action == "presets":
+        for g in presets(): print(f"{g['name']:<34} {g['pattern']}  (sub {g['sub']})")
+        return
+    t, s = find_section(a.section)
+    layer = layer_of(a.layer)
+    if a.action == "clear":
+        call("PUT", f"/sections/{s['id']}/beats/{layer}", {"name": "", "pattern": ""})
+        print(f"{t['title']}: {s['name']}: no beat on {layer}."); return
+    if a.pattern:
+        g = {"name": a.name or "", "pattern": a.pattern.upper(), "sub": a.sub or 2}
+    elif a.name:
+        g = pick(presets(), a.name, "groove preset")
+    else: die("Give a preset name (see: shajara beat presets) or --pattern.")
+    call("PUT", f"/sections/{s['id']}/beats/{layer}", {"name": g["name"], "pattern": g["pattern"], "sub": g["sub"]})
+    print(f"{t['title']}: {s['name']}: {g['name'] or 'own beat'} ({g['pattern']}) on {layer}.")
+
+def cmd_task(a):
+    st = find_set(a.set)
+    if a.action == "list":
+        for k in st["tasks"]: print(f"[{'x' if k['done'] else ' '}] {member_name(k['member_id']) if k['member_id'] else 'anyone'}: {k['text']}  [{k['id']}]")
+        if not st["tasks"]: print("No tasks.")
+        return
+    if a.action == "add":
+        call("POST", f"/sets/{st['id']}/tasks", {"text": a.text, "member_id": find_member(a.for_, False) if a.for_ else ""})
+        print(f"Task added to {st['name']}: {a.text}"); return
+    k = pick(st["tasks"], a.text, "task", lambda k: k["text"])
+    if a.action == "done":
+        call("PATCH", f"/sets/{st['id']}/tasks/{k['id']}", {"done": True}); print(f"Done: {k['text']}")
+    elif a.action == "undo":
+        call("PATCH", f"/sets/{st['id']}/tasks/{k['id']}", {"done": False}); print(f"Open again: {k['text']}")
+    elif a.action == "drop":
+        call("DELETE", f"/sets/{st['id']}/tasks/{k['id']}"); print(f"Removed: {k['text']}")
+
+def cmd_guide(a): print(GUIDE)
+
+SKILL = """---
+name: shajara
+description: Read and edit the band's Shajara space (sets, tracks, sections, line-ups, cues, beats, tasks) with the `shajara` command. Use when someone asks to look at or change a set, a track's sections, who plays what, cues, or set tasks in Shajara.
+---
+
+Use the `shajara` command (Python 3, installed at {path}; call it by that path if `shajara` isn't on PATH).
+If it says "Not logged in", ask the person for their space passcode and name, then run `shajara login <passcode> --as <name>`.
+Run `shajara guide` first in a session:
+it explains the tree model (sections, the four layers, one layer per person per section, cues, sets).
+
+Read before you change:
+  shajara whoami                      which space, and who you're acting as
+  shajara sets                        sets in the space
+  shajara set show "<set>"            the whole set: every track, section, line-up, cue, beat, task
+  shajara track show "<track>"        one track
+  shajara people                      members, instruments and their sounds
+
+Change (sections are "Track:Section" or "Track:<number>"; names can be partial):
+  shajara set edit "<set>" --date 2026-11-07 --venue ... --notes ... --cast "Amr,Sherif"
+  shajara set move "<set>" "<track>" <position>
+  shajara set add-track "<set>" --title "New one" --sections "Intro,Groove,Outro"
+  shajara set add-track "<set>" --version-of "<track from the space>"
+  shajara track edit "<track>" --maqam Bayati --tonic G --tempo 95 --chords "Am | Am9" --notes ...
+  shajara section add "<track>" "<name>" [--at 3] [--copy-from "<section>"]
+  shajara section edit "Track:Section" --name ... --energy 1-5 --chords ... --notes ... --meter 4/4 --bars 8
+  shajara section move "Track:Section" <position>
+  shajara lineup put "Track:Section" <member> <layer> --on "Oud" --part "Arpeggios" [--sounds "Main,Solo"]
+  shajara lineup drop "Track:Section" <member>
+  shajara cue set|add "Track:Section" <giver> "he nods us into the break"   (giver: a member or production)
+  shajara cue clear "Track:Section"
+  shajara beat presets ; shajara beat set "Track:Section" "Rock ballad" ; shajara beat clear "Track:Section"
+  shajara task add "<set>" "text" --for Sherif ; shajara task done "<set>" "<part of the text>"
+Deleting (section delete, set remove-track, lineup clear) needs --yes: ask the person first.
+
+Work like this: go track by track, section by section. Read the current state, restate what you
+understood in a short table, make the change, then show the result. Use their words; don't invent
+parts or cues they didn't describe; ask who gives each cue. Add --json to any read for raw data.
+"""
+
+def cmd_skill(a):
+    d = os.path.expanduser("~/.claude/skills/shajara")
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, "SKILL.md"), "w") as f: f.write(SKILL.replace("{path}", os.path.abspath(sys.argv[0])))
+    print(f"Claude skill written to {d}/SKILL.md. In Claude Code, ask e.g. \"show me our set in Shajara\".")
+
+
+def main():
+    p = argparse.ArgumentParser(prog="shajara", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = p.add_subparsers(dest="cmd", required=True)
+    def cmd(name, fn, help, json_flag=False):
+        q = sub.add_parser(name, help=help); q.set_defaults(fn=fn)
+        if json_flag: q.add_argument("--json", action="store_true", help="raw data")
+        return q
+    def group(name, help):
+        g = sub.add_parser(name, help=help).add_subparsers(dest="sub", required=True)
+        def c(n, fn, h, json_flag=False):
+            q = g.add_parser(n, help=h); q.set_defaults(fn=fn)
+            if json_flag: q.add_argument("--json", action="store_true", help="raw data")
+            return q
+        return c
+
+    q = cmd("login", cmd_login, "log into a space with its passcode"); q.add_argument("passcode"); q.add_argument("--as", dest="as_", help="your name in the space")
+    q = cmd("use", cmd_use, "switch between spaces you're logged into"); q.add_argument("space")
+    cmd("whoami", cmd_whoami, "which space, and who you are")
+    cmd("people", cmd_people, "members, instruments and sounds", True)
+    cmd("sets", cmd_sets, "list sets", True)
+    cmd("tracks", cmd_tracks, "list tracks", True)
+    cmd("guide", cmd_guide, "how Shajara's model works (read this first)")
+    q = sub.add_parser("skill", help="install the Claude Code skill"); q.add_argument("action", choices=["install"]); q.set_defaults(fn=cmd_skill)
+
+    c = group("set", "show or change a set")
+    q = c("show", cmd_set_show, "everything in a set", True); q.add_argument("set")
+    q = c("edit", cmd_set_edit, "name, date, venue, notes, cast"); q.add_argument("set")
+    for f in ("name", "date", "venue", "notes"): q.add_argument("--" + f)
+    q.add_argument("--cast", help="comma-separated names")
+    q = c("move", cmd_set_move, "move a track in the running order"); q.add_argument("set"); q.add_argument("track"); q.add_argument("position", type=int)
+    q = c("add-track", cmd_set_add_track, "plant a new track in the set, or bring in a version of one"); q.add_argument("set")
+    for f in ("title", "sections", "maqam", "version-of"): q.add_argument("--" + f)
+    q.add_argument("--tempo", type=int)
+    q = c("remove-track", cmd_set_remove_track, "delete the set's version of a track"); q.add_argument("set"); q.add_argument("track"); q.add_argument("--yes", action="store_true")
+
+    c = group("track", "show or change a track")
+    q = c("show", cmd_track_show, "a track's sections and line-ups", True); q.add_argument("track")
+    q = c("edit", cmd_track_edit, "title, maqam, tonic, tempo, chords, notes, genre"); q.add_argument("track")
+    for f in ("title", "maqam", "tonic", "chords", "notes", "genre"): q.add_argument("--" + f)
+    q.add_argument("--tempo", type=int)
+
+    c = group("section", "show, add, change, move or delete a section")
+    q = c("show", cmd_section_show, "one section", True); q.add_argument("section")
+    q = c("add", cmd_section_add, "add a section"); q.add_argument("track"); q.add_argument("name"); q.add_argument("--at", type=int); q.add_argument("--copy-from")
+    q = c("edit", cmd_section_edit, "change a section"); q.add_argument("section")
+    for f in ("name", "notes", "chords", "meter"): q.add_argument("--" + f)
+    q.add_argument("--energy", type=int, choices=range(1, 6)); q.add_argument("--bars", type=int); q.add_argument("--weight", type=float)
+    q = c("move", cmd_section_move, "move a section to a position"); q.add_argument("section"); q.add_argument("position", type=int)
+    q = c("delete", cmd_section_delete, "delete a section (and its recordings)"); q.add_argument("section"); q.add_argument("--yes", action="store_true")
+
+    c = group("lineup", "who plays what in a section")
+    q = c("put", cmd_lineup_put, "put someone in a layer (replaces where they were in this section)"); q.add_argument("section"); q.add_argument("member"); q.add_argument("layer")
+    q.add_argument("--on", help="instrument"); q.add_argument("--part", help="what they play, in words"); q.add_argument("--sounds", help="comma-separated sound names")
+    q = c("drop", cmd_lineup_drop, "take someone out of a section"); q.add_argument("section"); q.add_argument("member"); q.add_argument("--layer")
+    q = c("clear", cmd_lineup_clear, "empty a section's line-up"); q.add_argument("section"); q.add_argument("--yes", action="store_true")
+
+    q = sub.add_parser("cue", help="how the band moves into a section"); q.set_defaults(fn=cmd_cue)
+    q.add_argument("action", choices=["set", "add", "clear"]); q.add_argument("section"); q.add_argument("giver", nargs="?", default=""); q.add_argument("text", nargs="?", default="")
+
+    q = sub.add_parser("beat", help="a rhythm grid on a section's layer"); q.set_defaults(fn=cmd_beat)
+    q.add_argument("action", choices=["presets", "set", "clear"]); q.add_argument("section", nargs="?"); q.add_argument("name", nargs="?")
+    q.add_argument("--layer", default="substrate"); q.add_argument("--pattern", help="D dum, T tak, K ka, - rest"); q.add_argument("--sub", type=int, choices=[1, 2, 3, 4, 6, 8])
+
+    q = sub.add_parser("task", help="small to-dos on a set"); q.set_defaults(fn=cmd_task)
+    q.add_argument("action", choices=["list", "add", "done", "undo", "drop"]); q.add_argument("set"); q.add_argument("text", nargs="?", default="")
+    q.add_argument("--for", dest="for_", help="who does it (default: anyone)")
+
+    a = p.parse_args()
+    if a.cmd == "beat" and a.action != "presets" and not a.section: die("Which section? Track:Section")
+    if a.cmd == "cue" and a.action != "clear" and not a.giver: die("Who gives the cue? A member's name or production.")
+    a.fn(a)
+
+if __name__ == "__main__":
+    main()
